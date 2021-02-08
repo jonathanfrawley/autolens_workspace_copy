@@ -1,6 +1,16 @@
 PyAutoLens Workspace
 ====================
 
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD
+
+|binder|
+
+`Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
+`readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
+`Overview on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/664a86aa84ddf8fdf044e2e4e7db21876ac1de91?filepath=overview.ipynb>`_ |
+`HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+
 Welcome to the **PyAutoLens** Workspace. You can get started right away by going to the `autolens workspace
 Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/664a86aa84ddf8fdf044e2e4e7db21876ac1de91?filepath=overview.ipynb>`_.
 Alternatively, you can get set up by following the installation guide on our`readthedocs <https://pyautolens.readthedocs.io/>`_.
