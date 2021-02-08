@@ -42,7 +42,7 @@ In the ``imaging`` and ``interferometer`` folders you'll find the following pack
 - ``simulators``: Scripts for simulating realistic imaging and interferometer data of strong lenses.
 - ``preprocess``: Tools to preprocess ``data`` before an analysis (e.g. convert units, create masks).
 
-The `advanced` sections are for veteran users and contain:
+The ``advanced`` sections are for veteran users and contain:
 
 - ``pipelines``: Example pipelines for modeling strong lenses using non-linear search chaining.
 - ``SLaM``: The Source, Light and Mass (SLaM) lens modeling pipelines.
