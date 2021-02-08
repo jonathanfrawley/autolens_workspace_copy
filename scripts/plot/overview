@@ -1,0 +1,70 @@
+Matplotlib Wrapper Objects
+==========================
+
+The PyAutoLens API provides a simple interface with matplotlib for making plots that does not require the user to write
+any matplotlib code themselves.
+
+For example, you may have seen we are able to plots objects like an imaging dataset or a tracer using a command like:
+
+import autolens.plot as aplt
+
+aplt.Imaging.noise_map(imaging=imaging)
+aplt.Tracer.image(tracer=tracer, grid=grid)
+
+
+However, this raises the question of how a user uses these plotting tools but customizes their appearance using
+standard matplotlib inputs. PyAutoLens does this by passing matplotlib wrapper objects (shortered to `mat_wrap`) to a
+`mat_plot_2d` object, which is then passed to the method above.
+
+For example, we can make a figure appear using a figsize of (10, 10) as follows:
+
+figure = aplt.Figure(figsize=(10, 10))   [The name `Figure` indicates this object wraps the matplotlib method `plt.figure`]
+
+mat_plot_2d = aplt.MatPlot2D(figure=figure)  [The `mat_plot_2d` can take many different matplotlib wrapper objects]
+
+aplt.Imaging.noise_map(imaging=imaging, mat_plot_2d=mat_plot_2d) [The noise_map will be plotted on a figure with size (10, 10).
+
+
+In the `autolens_workspace.plot.mat_wrap` section we provide example Python scripts of every matplotlib Wrapper object,
+illustrating how they are used to custimize a figure and making it straight forward for a user to copy and paste them
+for their own plots.
+
+
+Base, Structure and Objects
+===========================
+
+The matplotlib example wrapper scripts are grouped into the following three folders:
+
+    - mat_base: These wrappers controls the base matplotlib settings, such as the figure appearance, colormap, colorbar
+      and legend.
+
+    - mat_structure: These wrappers plot data structures (e.g. an `Array2D` or a `Grid2D`) using matplotlib methods like
+      `plt.imshow`, `plt.plot` and `plt.scatter`.
+
+    - mat_obj: These wrappers customize the appearance of specific data components, for example how critical curves
+      and caustics appear on figures.
+
+
+Config Files
+============
+
+In `autolens_workspace.config.visualize` you'll note there are many configuration files corresponding to these
+matplotlib wrappers. If a setting is listed in one of these config files, this setting will always be used by
+default when that matplotlib method is called.
+
+For example, the `Figure.ini` config file has the following lines:
+
+[figure]
+figsize=(7, 7)
+aspect=square
+
+[subplot]
+figsize=auto
+aspect=square
+
+This means that when a figure (e.g. a single image) is plotted it will use `figsize=(7,7)` and `aspect="square` if the
+values of these parameters are not manually set by the user via the `mat_plot_2d`. Subplots (e.g. more than one image) will
+always use `figsize="auto` by default.
+
+These configuration files can be customized such that the appearance of figures and subplots for a user is optimal for
+your computer set up.
