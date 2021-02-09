@@ -15,6 +15,26 @@ Welcome to the **PyAutoLens** Workspace. You can get started right away by going
 Binder <https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD>`_.
 Alternatively, you can get set up by following the installation guide on our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 
+Getting Started
+---------------
+
+If you haven't already, install `PyAutoLens via pip or conda <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_.
+
+Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on
+the ``autolens_workspace``, reducing the download size):
+
+.. code-block:: bash
+
+   cd /path/on/your/computer/you/want/to/put/the/autolens_workspace
+   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
+   cd autolens_workspace
+
+Run the ``welcome.py`` script to get started!
+
+.. code-block:: bash
+
+   python3 welcome.py
+
 Workspace Structure
 -------------------
 
@@ -56,7 +76,7 @@ tutorials.
 Workspace Version
 -----------------
 
-This version of the workspace are built and tested for using **PyAutoLens v1.12.0**.
+This version of the workspace are built and tested for using **PyAutoLens v1.12.1**.
 
 HowToLens
 ---------

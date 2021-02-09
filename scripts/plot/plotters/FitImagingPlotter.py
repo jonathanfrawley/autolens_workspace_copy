@@ -48,23 +48,22 @@ lens_galaxy = al.Galaxy(
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.mp.EllipticalPowerLaw(
+    mass=al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=45.0),
-        slope=2.5,
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
     ),
-    shear=al.mp.ExternalShear(elliptical_comps=(0.0, 0.05)),
+    shear=al.mp.ExternalShear(elliptical_comps=(0.05, 0.05)),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllipticalSersic(
-        centre=(0.1, 0.1),
+        centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,
-        effective_radius=1.0,
-        sersic_index=2.5,
+        effective_radius=0.1,
+        sersic_index=1.0,
     ),
 )
 
