@@ -9,11 +9,6 @@ In this example script, we fit `Imaging` of a strong lens system where:
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
  - The source galaxy's light is modeled parametrically as an `EllipticalSersic`.
-
-Load the strong lens dataset `mass_sie__source_sersic` `from .fits files, which is the dataset we will
-use to perform lens modeling.
-
-This is the same dataset we fitted in the `autolens/intro/fitting.py` example.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -21,6 +16,12 @@ This is the same dataset we fitted in the `autolens/intro/fitting.py` example.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+"""
+Load the strong lens dataset `mass_sie__source_sersic` `from .fits files, which is the dataset we will
+use to perform lens modeling.
+
+This is the same dataset we fitted in the `autolens/intro/fitting.py` example.
+"""
 from os import path
 import autofit as af
 import autolens as al

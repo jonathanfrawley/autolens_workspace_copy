@@ -32,7 +32,7 @@ standards I describe in this tutorial!
 imaging_path = path.join(dataset_path, "imaging")
 
 psf = al.Kernel2D.from_fits(
-    file_path=f"{imaging_path}/psf.fits", hdu=0, pixel_scales=0.1
+    file_path=path.join(imaging_path, "psf.fits"), hdu=0, pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=psf)
@@ -51,7 +51,7 @@ Lets look at an image where a large PSF kernel is loaded.
 imaging_path = path.join(dataset_path, "imaging_with_large_psf")
 
 large_psf = al.Kernel2D.from_fits(
-    file_path=f"{imaging_path}/psf.fits", hdu=0, pixel_scales=0.1
+    file_path=path.join(imaging_path, "psf.fits"), hdu=0, pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=large_psf)
@@ -74,7 +74,7 @@ the convolution routine which can lead to systematics in the lens analysis.
 imaging_path = path.join(dataset_path, "imaging_with_even_psf")
 
 even_psf = al.Kernel2D.from_fits(
-    file_path=f"{imaging_path}/psf.fits", hdu=0, pixel_scales=0.1
+    file_path=path.join(imaging_path, "psf.fits"), hdu=0, pixel_scales=0.1
 )
 
 print(even_psf.shape_native)
@@ -109,7 +109,7 @@ being False.
 imaging_path = path.join(dataset_path, "imaging_with_unnormalized_psf")
 
 unnormalized_psf = al.Kernel2D.from_fits(
-    file_path=f"{imaging_path}/psf.fits", hdu=0, pixel_scales=0.1, renormalize=False
+    file_path=path.join(imaging_path, "psf.fits"), hdu=0, pixel_scales=0.1, renormalize=False
 )
 
 array_plotter = aplt.Array2DPlotter(array=unnormalized_psf)

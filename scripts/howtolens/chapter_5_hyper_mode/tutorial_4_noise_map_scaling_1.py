@@ -186,7 +186,6 @@ source_hyper_galaxy = al.Galaxy(
     ),
     hyper_galaxy_image=hyper_image,
     hyper_model_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 fit = fit_masked_imaging_with_source_galaxy(
@@ -232,7 +231,6 @@ source_contribution_factor_1 = al.Galaxy(
     hyper_galaxy=al.HyperGalaxy(contribution_factor=1.0),
     hyper_galaxy_image=hyper_image,
     hyper_model_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 contribution_map = source_contribution_factor_1.hyper_galaxy.contribution_map_from_hyper_images(
@@ -249,7 +247,6 @@ source_contribution_factor_3 = al.Galaxy(
     hyper_galaxy=al.HyperGalaxy(contribution_factor=3.0),
     hyper_galaxy_image=hyper_image,
     hyper_model_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 contribution_map = source_contribution_factor_3.hyper_galaxy.contribution_map_from_hyper_images(
@@ -264,7 +261,6 @@ source_hyper_galaxy = al.Galaxy(
     hyper_galaxy=al.HyperGalaxy(contribution_factor=5.0),
     hyper_galaxy_image=hyper_image,
     hyper_model_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 contribution_map = source_hyper_galaxy.hyper_galaxy.contribution_map_from_hyper_images(
@@ -300,7 +296,6 @@ source_no_hyper_galaxy = al.Galaxy(
         inner_coefficient=0.001, outer_coefficient=0.2, signal_scale=2.0
     ),
     hyper_galaxy_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 fit = fit_masked_imaging_with_source_galaxy(

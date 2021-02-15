@@ -185,17 +185,17 @@ tracer_plotter.figures(image=True)
 """
 To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. This performs the following:
 
-    1) Blurs the tracer`s image with the lens data's PSF, ensuring the telescope optics are included in the fit. This 
-    creates the fit`s `model_image`.
+ 1) Blurs the tracer`s image with the lens data's PSF, ensuring the telescope optics are included in the fit. This 
+ creates the fit`s `model_image`.
 
-    2) Computes the difference between this model_image and the observed image-data, creating the fit`s `residual_map`.
+ 2) Computes the difference between this model_image and the observed image-data, creating the fit`s `residual_map`.
 
-    3) Divides the residual-map by the noise-map, creating the fit`s `normalized_residual_map`.
+ 3) Divides the residual-map by the noise-map, creating the fit`s `normalized_residual_map`.
 
-    4) Squares every value in the normalized residual-map, creating the fit`s `chi_squared_map`.
+ 4) Squares every value in the normalized residual-map, creating the fit`s `chi_squared_map`.
 
-    5) Sums up these chi-squared values and converts them to a `log_likelihood`, which quantifies how good the tracer`s 
-       fit to the data was (higher log_likelihood = better fit).
+ 5) Sums up these chi-squared values and converts them to a `log_likelihood`, which quantifies how good the tracer`s 
+ fit to the data was (higher log_likelihood = better fit).
 """
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
@@ -248,27 +248,16 @@ We can customize the `MaskedImaging` we set up, using the `SettingsMaskedImaging
 
 For example, we can: 
 
- - Specify the `Grid2D` used by the `MaskedImaging` to fit the data, where we below increase it from its default value of
-   2 to 5.
- 
- - Bin-up the masked `Imaging` by a factor 2. This decreases the resolution of the data losing us  information, but 
-   makes the fit computationally faster (which will be important in the next chapter).
+ - Specify the `Grid2D` used by the `MaskedImaging` to fit the data, where we below increase it from its default 
+ value of 2 to 4.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(
-    grid_class=al.Grid2D, sub_size=4, bin_up_factor=2
+    grid_class=al.Grid2D, sub_size=4,
 )
 
 masked_imaging_custom = al.MaskedImaging(
     imaging=imaging, mask=mask, settings=settings_masked_imaging
 )
-
-"""
-If we use this data to perform a fit, we can immediately note how the resolution of the data has been binned up.
-"""
-fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
-
-fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit_custom, include_2d=include_2d)
-fit_imaging_plotter.subplot_fit_imaging()
 
 """
 The use of `Settings` objects is a core feature of the **PyAutoLens** API and will appear throughout the **HowToLens**

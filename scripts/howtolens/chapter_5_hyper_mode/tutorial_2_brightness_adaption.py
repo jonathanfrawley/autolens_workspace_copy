@@ -114,8 +114,8 @@ source_galaxy_brightness = al.Galaxy(
         pixels=500, weight_floor=0.0, weight_power=10.0
     ),
     regularization=al.reg.Constant(coefficient=0.5),
+    hyper_model_image=hyper_image,
     hyper_galaxy_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_brightness])
@@ -194,8 +194,8 @@ source_weight_power_0 = al.Galaxy(
         pixels=500, weight_floor=0.0, weight_power=0.0
     ),
     regularization=al.reg.Constant(coefficient=1.0),
+    hyper_model_image=hyper_image,
     hyper_galaxy_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 cluster_weight_power_0 = source_weight_power_0.pixelization.weight_map_from_hyper_image(
@@ -213,8 +213,8 @@ source_weight_power_5 = al.Galaxy(
         pixels=500, weight_floor=0.0, weight_power=5.0
     ),
     regularization=al.reg.Constant(coefficient=1.0),
+    hyper_model_image=hyper_image,
     hyper_galaxy_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 cluster_weight_power_5 = source_weight_power_5.pixelization.weight_map_from_hyper_image(
@@ -232,8 +232,8 @@ source_weight_power_10 = al.Galaxy(
         pixels=500, weight_floor=0.0, weight_power=10.0
     ),
     regularization=al.reg.Constant(coefficient=1.0),
+    hyper_model_image=hyper_image,
     hyper_galaxy_image=hyper_image,
-    binned_hyper_galaxy_image=hyper_image,
 )
 
 cluster_weight_power_10 = source_weight_power_10.pixelization.weight_map_from_hyper_image(
