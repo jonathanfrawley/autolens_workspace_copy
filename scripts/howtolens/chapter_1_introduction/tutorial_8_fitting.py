@@ -251,9 +251,7 @@ For example, we can:
  - Specify the `Grid2D` used by the `MaskedImaging` to fit the data, where we below increase it from its default 
  value of 2 to 4.
 """
-settings_masked_imaging = al.SettingsMaskedImaging(
-    grid_class=al.Grid2D, sub_size=4,
-)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=4)
 
 masked_imaging_custom = al.MaskedImaging(
     imaging=imaging, mask=mask, settings=settings_masked_imaging

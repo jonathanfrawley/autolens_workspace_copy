@@ -117,7 +117,9 @@ def make_pipeline_single_plane(slam, settings, mass_results):
 
     class GridPhase(
         af.as_grid_search(
-            phase_class=al.PhaseImaging, parallel=slam.setup_subhalo.parallel
+            phase_class=al.PhaseImaging,
+            number_of_cores=slam.setup_subhalo.number_of_cores,
+            number_of_steps=slam.setup_subhalo.number_of_steps,
         )
     ):
         @property
@@ -182,7 +184,6 @@ def make_pipeline_single_plane(slam, settings, mass_results):
         ),
         hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
         settings=settings,
-        number_of_steps=slam.setup_subhalo.grid_size,
     )
 
     # subhalo = al.GalaxyModel(redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow)
@@ -270,7 +271,9 @@ def make_pipeline_multi_plane(slam, settings, mass_results):
 
     class GridPhase(
         af.as_grid_search(
-            phase_class=al.PhaseImaging, parallel=slam.setup_subhalo.parallel
+            phase_class=al.PhaseImaging,
+            number_of_cores=slam.setup_subhalo.number_of_cores,
+            number_of_steps=slam.setup_subhalo.number_of_steps,
         )
     ):
         @property
@@ -337,7 +340,6 @@ def make_pipeline_multi_plane(slam, settings, mass_results):
         hyper_image_sky=phase1.result.instance.optional.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
         settings=settings,
-        number_of_steps=slam.setup_subhalo.grid_size,
     )
 
     # subhalo = al.GalaxyModel(redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow)

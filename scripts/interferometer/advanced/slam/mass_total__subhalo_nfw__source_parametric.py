@@ -182,7 +182,9 @@ For this runner the `SetupSubhalo` customizes:
    during the subhalo detection grid search.
  - The NxN size of the grid-search.
 """
-setup_subhalo = al.SetupSubhalo(mass_is_model=True, source_is_model=True, grid_size=5)
+setup_subhalo = al.SetupSubhalo(
+    mass_is_model=True, source_is_model=True, number_of_steps=5
+)
 
 """
 __SLaM__

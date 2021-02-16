@@ -109,7 +109,10 @@ being False.
 imaging_path = path.join(dataset_path, "imaging_with_unnormalized_psf")
 
 unnormalized_psf = al.Kernel2D.from_fits(
-    file_path=path.join(imaging_path, "psf.fits"), hdu=0, pixel_scales=0.1, renormalize=False
+    file_path=path.join(imaging_path, "psf.fits"),
+    hdu=0,
+    pixel_scales=0.1,
+    renormalize=False,
 )
 
 array_plotter = aplt.Array2DPlotter(array=unnormalized_psf)

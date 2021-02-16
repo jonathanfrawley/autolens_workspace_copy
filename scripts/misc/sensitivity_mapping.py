@@ -47,14 +47,15 @@ use to perform lens modeling.
 
 This is the same dataset we fitted in the `autolens/intro/fitting.py` example.
 """
-dataset_name = "mass_sie__source_sersic"
+
+dataset_name = "mass_sie__subhalo_nfw__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
 
 imaging = al.Imaging.from_fits(
     image_path=path.join(dataset_path, "image.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    pixel_scales=0.1,
+    pixel_scales=0.05,
 )
 
 """
@@ -75,16 +76,39 @@ Below, we set up a simple lens model which we will use in this example to demons
 settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
-
 """
-To begin, we define the `base_model` that we use to perform sensitivity mapping. This model is used to simulate every 
-strong lens image. It is also the lens model that is fitted to every simulated strong lens without including a subhalo, 
-giving us the Bayesian evidence of every model without a subhalo (to compare to the model which includes one!). 
+We are going to perform sensitivity mapping to determine where a subhalo is detectable. This will require us to simulate 
+many realizations of our dataset with a lens model, called the `simulation_instance`. To get this model, we therefore 
+fit the data before performing sensitivity mapping so that we can set the `simulation_instance` as the maximum 
+likelihood model.
+
+We perform this fit using the lens model we will use to perform sensitivity mapping, which we call the `base_model`.
 """
 base_model = af.CollectionPriorModel(
     lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-    source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+    source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
 )
+
+search_base = af.DynestyStatic(
+    path_prefix=path.join("misc", dataset_name),
+    name="sensitivity_mapping_base",
+    n_live_points=50,
+)
+
+phase = al.PhaseImaging(search=search_base, galaxies=base_model, settings=settings)
+
+result = phase.run(dataset=imaging, mask=mask)
+
+"""
+We now define the `base_model` that we use to perform sensitivity mapping. This is the lens model that is fitted to 
+every simulated strong lens without a subhalo, giving us the Bayesian evidence which we compare to the model which 
+includes one!). 
+
+For this model, we can use the `base_model` above, however we will use the result of fitting this model to the dataset
+before sensitivity mapping. This ensures the priors associated with each parameter are initialized so as to speed up
+each non-linear search performed during sensitivity mapping.
+"""
+base_model = result.model
 
 """
 We now define the `perturbation_model`, which is the model component whose parameters we iterate over to perform 
@@ -98,7 +122,7 @@ subhalo and whose Bayesian evidence we compare to the simpler model-fits consist
 determine if the subhalo was detectable.
 
 By fitting both models to every simulated lens, we therefore infer the Bayesian evidence of every model to every 
-dataset. Sensitivity mapping therefore maps out for what values of `centre` and `mass_at_200` in the dark mattter 
+dataset. Sensitivity mapping therefore maps out for what values of `centre` and `mass_at_200` in the dark matter 
 subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
 therefore when it is detectable!).
 """
@@ -110,36 +134,23 @@ and clear we are going to fix the `centre` of the subhalo to a value near the Ei
 iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e11, of which only the latter
 will be shown to be detectable.
 """
-perturbation_model.centre = (1.6, 0.0)
-perturbation_model.redshift_object = perturbation_model.redshift
-perturbation_model.redshift_source = 1.0
-perturbation_model.mass_at_200 = af.LogUniformPrior(lower_limit=1e6, upper_limit=1e11)
-
-"""
-We are performing sensitivity mapping to determine when a subhalo is detectable. However, every simulated dataset must 
-be simulated with a lens model. To get this model, we therefore fit the data before performing sensitivity mapping
-and set the maximum log likelihood result as the `base_instance`.
-
-This means that it will be used as the model of the lens galaxy and source in the simulation of every dataset.
-"""
-search_base = af.DynestyStatic(
-    path_prefix=path.join("misc", dataset_name),
-    name="sensitivity_mapping_base",
-    n_live_points=50,
+perturbation_model.mass.centre.centre_0 = 1.6
+perturbation_model.mass.centre.centre_1 = 0.0
+perturbation_model.mass.redshift_object = 0.5
+perturbation_model.mass.redshift_source = 1.0
+perturbation_model.mass.mass_at_200 = af.LogUniformPrior(
+    lower_limit=1e6, upper_limit=1e13
 )
 
-phase = al.PhaseImaging(
-    search=search_base,
-    galaxies=base_model,
-    settings=settings,
-)
-
-result = phase.run(dataset=imaging, mask=mask)
-
-base_instance = result.instance
+"""
+We are going to perform sensitivity mapping to determine where a subhalo is detectable. This will require us to 
+simulate many realizations of our dataset with a lens model, called the `simulation_instance`. This model uses the
+result of the fit above.
+"""
+simulation_instance = result.instance
 
 """
-We now write the `simulate_function`, which takes the `base_instance` of our model (defined above) and uses it to 
+We now write the `simulate_function`, which takes the `simulation_instance` of our model (defined above) and uses it to 
 simulate a dataset which is subsequently fitted.
 
 Note that when this dataset is simulated, the quantity `instance.perturbation` is used in the `simulate_function`.
@@ -149,6 +160,8 @@ based on the value of sensitivity being computed.
 In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
 1e6 MSun and 1e11 MSun.
 """
+
+
 def simulate_function(instance):
 
     """
@@ -168,27 +181,27 @@ def simulate_function(instance):
     match the S/N and noise properties of the observed data you are performing sensitivity mapping on.
     """
     grid = al.Grid2DIterate.uniform(
-        shape_native=(100, 100),
-        pixel_scales=0.2,
+        shape_native=mask.shape_native,
+        pixel_scales=mask.pixel_scales,
         fractional_accuracy=0.9999,
         sub_steps=[2, 4, 8, 16, 24],
     )
 
-    psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), sigma=0.1, pixel_scales=grid.pixel_scales
-    )
-
     simulator = al.SimulatorImaging(
-        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
+        exposure_time=300.0,
+        psf=imaging.psf,
+        background_sky_level=0.1,
+        add_poisson_noise=True,
     )
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    simulated_imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     """
     The data generated by the simulate function is that which is fitted, so we should apply the mask for the analysis 
     here before we return the simulated data.
     """
-    return al.MaskedImaging(imaging=imaging, mask=mask)
+    return al.MaskedImaging(imaging=simulated_imaging, mask=mask)
+
 
 """
 Each model-fit performed by sensitivity mapping creates a new instance of an `Analysis` class, which contains the
@@ -199,15 +212,14 @@ This requires us to write a wrapper around the PyAutoLens `Analysis` class.
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase.imaging import analysis as a
 
-class Analysis(a.Analysis):
 
+class Analysis(a.Analysis):
     def __init__(self, masked_imaging):
 
         super().__init__(
-            masked_imaging=masked_imaging,
-            settings=settings,
-            cosmology=cosmo.Planck15,
+            masked_imaging=masked_imaging, settings=settings, cosmology=cosmo.Planck15
         )
+
 
 """
 We next specify the search used to perform each model fit by the sensitivity mapper.
@@ -222,39 +234,39 @@ search = af.DynestyStatic(
 We can now combine all of the objects created above and perform sensitivity mapping. The inputs to the `Sensitivity`
 object below are:
 
-- base_instance: This is an instance of the model used to simulate every dataset that is fitted. In this example it 
-is a lens model that does not include a subhalo, which was inferred by fitting the dataset we perform sensitivity 
+- `simulation_instance`: This is an instance of the model used to simulate every dataset that is fitted. In this example 
+it is a lens model that does not include a subhalo, which was inferred by fitting the dataset we perform sensitivity 
 mapping on.
 
-- base_model: This is the lens model that is fitted to every simulated dataset, which does not include a subhalo. In 
+- `base_model`: This is the lens model that is fitted to every simulated dataset, which does not include a subhalo. In 
 this example is composed of an `EllipticalIsothermal` lens and `EllipticalSersic` source.
 
-- perturbation_model: This is the extra model component that alongside the `base_model` is fitted to every simulated 
+- `perturbation_model`: This is the extra model component that alongside the `base_model` is fitted to every simulated 
 dataset. In this example it is a `SphericalNFWMCRLudlow` dark matter subhalo.
 
-- simulate_function: This is the function that uses the `base_instance` and many instances of the `pertubation_model` 
+- `simulate_function`: This is the function that uses the `simulation_instance` and many instances of the `pertubation_model` 
 to simulate many datasets that are fitted with the `base_model` and `base_model` + `perturbation_model`.
 
-- analysis_class: The wrapper `Analysis` class that passes each simulated dataset to the `Analysis` class that fits 
+- `analysis_class`: The wrapper `Analysis` class that passes each simulated dataset to the `Analysis` class that fits 
 the data.
 
-- step_size: The size of steps over which the parameters in the `perturbation_model` are iterated. In this example, 
-`mass_at_200` has a `LogUniformPrior` with lower limit 1e6 and upper limit 1e11, therefore the `step_size` of 0.5 will
-simulate and fit just 2 datasets where the intensity is 1e6 and 1e11.
+- `number_of_steps`: The number of steps over which the parameters in the `perturbation_model` are iterated. In this 
+example, `mass_at_200` has a `LogUniformPrior` with lower limit 1e6 and upper limit 1e11, therefore 
+the `number_of_steps` of 2 will simulate and fit just 2 datasets where the `mass_at_200` is between 1e6 and 1e11.
 
-- number_of_cores: The number of cores over which the sensitivity mapping is performed, enabling parallel processing
+- `number_of_cores`: The number of cores over which the sensitivity mapping is performed, enabling parallel processing
 if set above 1.
 """
 from autofit.non_linear.grid import sensitivity as s
 
 sensitivity = s.Sensitivity(
     search=search,
-    base_instance=base_instance,
+    simulation_instance=simulation_instance,
     base_model=base_model,
     perturbation_model=perturbation_model,
     simulate_function=simulate_function,
     analysis_class=Analysis,
-    step_size=0.5,
+    number_of_steps=2,
     number_of_cores=2,
 )
 
