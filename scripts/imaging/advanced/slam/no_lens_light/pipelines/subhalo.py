@@ -426,13 +426,19 @@ def sensitivity_mapping(slam, mask, psf, mass_results, analysis_cls):
     iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e11, of which only the latter
     will be shown to be detectable.
     """
-    perturbation_model.mass.centre.centre_0 = 1.6
-    perturbation_model.mass.centre.centre_1 = 0.0
-    perturbation_model.mass.redshift_object = 0.5
-    perturbation_model.mass.redshift_source = 1.0
     perturbation_model.mass.mass_at_200 = af.LogUniformPrior(
         lower_limit=1e6, upper_limit=1e11
     )
+    perturbation_model.mass.centre.centre_0 = af.UniformPrior(
+        lower_limit=-slam.setup_subhalo.grid_dimensions_arcsec,
+        upper_limit=slam.setup_subhalo.grid_dimensions_arcsec,
+    )
+    perturbation_model.mass.centre.centre_1 = af.UniformPrior(
+        lower_limit=-slam.setup_subhalo.grid_dimensions_arcsec,
+        upper_limit=slam.setup_subhalo.grid_dimensions_arcsec,
+    )
+    perturbation_model.mass.redshift_object = slam.redshift_lens
+    perturbation_model.mass.redshift_source = slam.redshift_source
 
     """
     We are performing sensitivity mapping to determine when a subhalo is detectable. Eery simulated dataset must 
@@ -454,7 +460,6 @@ def sensitivity_mapping(slam, mask, psf, mass_results, analysis_cls):
     In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
     1e6 MSun and 1e11 MSun.
     """
-
     def simulate_function(instance):
         """
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
@@ -514,7 +519,7 @@ def sensitivity_mapping(slam, mask, psf, mass_results, analysis_cls):
     simulated dataset. In this example it is a `SphericalNFWMCRLudlow` dark matter subhalo.
 
     - `simulate_function`: This is the function that uses the `simulation_instance` and many instances of the 
-    `pertubation_model` to simulate many datasets that are fitted with the `base_model` 
+    `perturbation_model` to simulate many datasets that are fitted with the `base_model` 
     and `base_model` + `perturbation_model`.
 
     - `analysis_class`: The wrapper `Analysis` class that passes each simulated dataset to the `Analysis` class that 

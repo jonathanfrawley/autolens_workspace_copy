@@ -6,7 +6,7 @@ pipeline.
 
 __THIS RUNNER__
 
-Using 1 source pipeline, a mass pipeline and a subhalo pipeline this runner fits `Imaging` of a strong lens system,
+Using 1 source pipeline, a mass pipeline and a subhalo pipeline this runner fits `Interferometer` of a strong lens system,
 where in the final phase of the pipeline:
 
  - The lens galaxy's light is omitted from the data and model.
@@ -16,9 +16,9 @@ where in the final phase of the pipeline:
 
 This runner uses the SLaM pipelines:
 
- `slam//no_lens_light/pipelines/source__mass_sie__source_parametric.py`.
- `slam//no_lens_light/pipelines/mass__mass_power_law__source.py`.
- `slam//no_lens_light/pipelines/subhalo__mass__subhalo_nfw__source.py`.
+ `slam/pipelines/source__mass_sie__source_parametric.py`.
+ `slam/pipelines/mass__mass_power_law__source.py`.
+ `slam/pipelines/subhalo__mass__subhalo_nfw__source.py`.
 
 Check them out for a detailed description of the analysis!
 """
@@ -30,47 +30,58 @@ Check them out for a detailed description of the analysis!
 
 from os import path
 from astropy import cosmology as cosmo
-from autolens.pipeline.phase.imaging import analysis as a
+from autolens.pipeline.phase.interferometer import analysis as a
 import autolens as al
 import autolens.plot as aplt
+import numpy as np
 
 dataset_name = "mass_sie__subhalo_nfw__source_sersic"
 pixel_scales = 0.05
 
-dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
+dataset_path = path.join("dataset", "interferometer", dataset_name)
 
 """
-Using the dataset path, load the data (image, noise-map, PSF) as an `Imaging` object from .fits files.
+Using the dataset path, load the data (image, noise-map, PSF) as an `Interferometer` object from .fits files.
 """
-imaging = al.Imaging.from_fits(
-    image_path=path.join(dataset_path, "image.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
+interferometer = al.Interferometer.from_fits(
+    visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    pixel_scales=pixel_scales,
+    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
 )
 
-mask = al.Mask2D.circular(
-    shape_native=imaging.shape_native, pixel_scales=pixel_scales, radius=3.0
+interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+interferometer_plotter.subplot_interferometer()
+
+"""
+The perform a fit, we need two masks, firstly a ‘real-space mask’ which defines the grid the image of the lensed 
+source galaxy is evaluated using.
+"""
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
 )
 
-imaging_plotter = aplt.ImagingPlotter(
-    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
-)
-imaging_plotter.subplot_imaging()
+"""
+We also need a ‘visibilities mask’ which defining which visibilities are omitted from the chi-squared evaluation.
+"""
+visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
 
 """
 __Settings__
 
-The `SettingsPhaseImaging` describe how the model is fitted to the data in the log likelihood function.
+The `SettingsPhaseInterferometer` describe how the model is fitted to the data in the log likelihood function.
 
-These settings are used and described throughout the `autolens_workspace/notebooks/imaging/modeling` example scripts, with a 
-complete description of all settings given in `autolens_workspace/notebooks/imaging/modeling/customize/settings.py`.
+These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example scripts, with a 
+complete description of all settings given in `autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
 
 The settings chosen here are applied to all phases in the pipeline.
 """
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
+settings_masked_interferometer = al.SettingsMaskedInterferometer(
+    grid_class=al.Grid2D, sub_size=2
+)
 
-settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
+settings = al.SettingsPhaseInterferometer(
+    settings_masked_interferometer=settings_masked_interferometer
+)
 
 """
 __PIPELINE SETUP__
@@ -81,16 +92,17 @@ for example if a shear was included in the mass model and the model used for the
 SLaM pipelines break the analysis down into multiple pipelines which focus on modeling a specific aspect of the strong 
 lens, first the Source, then the (lens) Light and finally the Mass. Each of these pipelines has it own setup object 
 which is equivalent to the `SetupPipeline` object, customizing the analysis in that pipeline. Each pipeline therefore
-has its own `SetupMass` and `SetupSourceParametric` object.
+has its own `SetupMass`, `SetupLightParametric` and `SetupSourceParametric` object.
 
 The `Setup` used in earlier pipelines determine the model used in later pipelines. For example, if the `Source` 
-pipeline is given an `EllipticalSersic` parametric profile, then this `LightProfile` will be used in the subsequent 
-`SLaMPipelineMass`.
+pipeline is given a `Pixelization` and `Regularization`, than this `Inversion` will be used in the subsequent `SLaMPipelineLightParametric` and 
+Mass pipelines. The assumptions regarding the lens light chosen by the `Light` object are carried forward to the 
+`Mass`  pipeline.
 
 The `Setup` again tags the path structure of every pipeline in a unique way, such than combinations of different
 SLaM pipelines can be used to fit lenses with different models. If the earlier pipelines are identical (e.g. they use
-the same `SLaMPipelineSource`. they will reuse those results before branching off to fit different models in 
-the `SLaMPipelineLightParametric` and / or `SLaMPipelineMass` pipelines. 
+the same `SLaMPipelineSource`. they will reuse those results before branching off to fit different models in the `SLaMPipelineLightParametric` 
+and / or `SLaMPipelineMass` pipelines. 
 
 __HYPER SETUP__
 
@@ -113,39 +125,22 @@ __SLaMPipelineSourceParametric__
 
 The parametric source pipeline aims to initialize a robust model for the source galaxy using `LightProfile` objects. 
 
- Source: This parametric source model is used by the SLaM Mass pipeline that follows, and thus sets the complexity of 
- the parametric source model of the overall fit. 
- 
- For this runner the `SetupSourceParametric` customizes: 
- 
- - That the bulge of the source `Galaxy` is fitted using an `EllipticalSersic`.
- - There is has no over `LightProfile` components (e.g. a disk, envelope)_.
-"""
-setup_source = al.SetupSourceParametric(
-    bulge_prior_model=al.lp.EllipticalSersic,
-    disk_prior_model=None,
-    envelope_prior_model=None,
-)
+_SLaMPipelineSourceParametric_ determines the source model used by the parametric source pipeline. A full description of all 
+options can be found ? and ?.
 
-"""
- Mass: The `MassProfile` used to model the lens galaxy's mass. This is changed in the SLaM Mass pipeline that follows.
- 
- Our experience with lens modeling has shown the `EllipticalIsothermal` profile is the simpliest model to fit that 
- provide a good fit to the majority of strong lenses.
- 
- For this runner the `SetupMassProfile` customizes:
+By default, this assumes an `EllipticalIsothermal` profile for the lens galaxy's mass. Our experience with lens 
+modeling has shown they are the simpliest models that provide a good fit to the majority of strong lenses.
 
- - That the mass of the lens `Galaxy` is fitted using an `EllipticalIsothermal`.
- - That there is not `ExternalShear` in the mass model.
- - That the mass profile centre is (0.0, 0.0) (this assumption will be relaxed in the SLaM Mass Pipeline.
+For this runner the `SLaMPipelineSourceParametric` customizes:
+
+ - The `MassProfile` fitted by the pipeline (and the following `SLaMPipelineSourceInversion`.
+ - If there is an `ExternalShear` in the mass model or not.
 """
 setup_mass = al.SetupMassTotal(
     mass_prior_model=al.mp.EllipticalIsothermal, with_shear=True, mass_centre=(0.0, 0.0)
 )
+setup_source = al.SetupSourceParametric(disk_prior_model=al.lp.EllipticalExponential)
 
-"""
-We combine the `SetupSource` and `SetupMass` above to create the SLaM parametric Source Pipeline.
-"""
 pipeline_source_parametric = al.SLaMPipelineSourceParametric(
     setup_mass=setup_mass, setup_source=setup_source
 )
@@ -185,12 +180,12 @@ For this runner the `SetupSubhalo` customizes:
 
  - If the lens galaxy mass is treated as a model (all free parameters) or instance (all fixed) during the subhalo 
    detection grid search.
- - If the parameteric source galaxy is treated as a model (all free parameters) or instance (all fixed) during the 
-   subhalo detection grid search.
+ - If the source galaxy (parametric or _Inversion) is treated as a model (all free parameters) or instance (all fixed) 
+   during the subhalo detection grid search.
  - The NxN size of the grid-search.
 """
 setup_subhalo = al.SetupSubhalo(
-    mass_is_model=True, source_is_model=False, number_of_steps=(4, 4, 2), number_of_cores=2
+    mass_is_model=True, source_is_model=True, number_of_steps=5
 )
 
 """
@@ -202,7 +197,7 @@ The `SLaM` object contains a number of methods used in the make_pipeline functio
 based on the input values. It also handles pipeline tagging and path structure.
 """
 slam = al.SLaM(
-    path_prefix=path.join("imaging", "slam", "no_lens_light", dataset_name),
+    path_prefix=path.join("slam", dataset_name),
     setup_hyper=hyper,
     pipeline_source_parametric=pipeline_source_parametric,
     pipeline_mass=pipeline_mass,
@@ -220,14 +215,18 @@ from pipelines import source__parametric
 from pipelines import mass__total
 from pipelines import subhalo
 
-source__parametric = source__parametric.make_pipeline(slam=slam, settings=settings)
-source_results = source__parametric.run(dataset=imaging, mask=mask)
+source__parametric = source__parametric.make_pipeline(
+    slam=slam, settings=settings, real_space_mask=real_space_mask
+)
+source_results = source__parametric.run(dataset=interferometer, mask=visibilities_mask)
 
 mass__total = mass__total.make_pipeline(
-    slam=slam, settings=settings, source_results=source_results
+    slam=slam,
+    settings=settings,
+    real_space_mask=real_space_mask,
+    source_results=source_results,
 )
-mass_results = mass__total.run(dataset=imaging, mask=mask)
-
+mass_results = mass__total.run(dataset=interferometer, mask=visibilities_mask)
 
 """
 __Sensitivity Mapping__
@@ -238,10 +237,10 @@ data simulated by the `simulate_function` for that model.
 This requires us to write a wrapper around the PyAutoLens `Analysis` class.
 """
 class Analysis(a.Analysis):
-    def __init__(self, masked_imaging):
+    def __init__(self, masked_interferometer):
 
         super().__init__(
-            masked_imaging=masked_imaging, settings=settings, cosmology=cosmo.Planck15
+            masked_interferometer=masked_interferometer, settings=settings, cosmology=cosmo.Planck15
         )
 
         self.hyper_galaxy_image_path_dict = mass_results.last.hyper_galaxy_image_path_dict
@@ -249,12 +248,13 @@ class Analysis(a.Analysis):
 
 subhalo = subhalo.sensitivity_mapping(
     slam=slam,
-    mask=mask,
-    psf=imaging.psf,
+    uv_wavelengths=interferometer.uv_wavelengths,
+    visibilities_mask=visibilities_mask,
+    real_space_mask=real_space_mask,
     mass_results=mass_results,
-    analysis_cls=Analysis,
+    analysis_cls=Analysis
 )
-subhalo.run(dataset=imaging, mask=mask)
+subhalo.run()
 
 """
 Finish.

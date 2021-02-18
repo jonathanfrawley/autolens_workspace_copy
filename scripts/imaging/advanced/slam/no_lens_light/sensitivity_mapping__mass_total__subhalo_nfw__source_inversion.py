@@ -17,6 +17,7 @@ where in the final phase of the pipeline:
 This runner uses the SLaM pipelines:
 
  `slam//no_lens_light/pipelines/source__mass_sie__source_parametric.py`.
+ `slam//no_lens_light/pipelines/source__mass_sie__source_inversion.py`.
  `slam//no_lens_light/pipelines/mass__mass_power_law__source.py`.
  `slam//no_lens_light/pipelines/subhalo__mass__subhalo_nfw__source.py`.
 
@@ -84,13 +85,13 @@ which is equivalent to the `SetupPipeline` object, customizing the analysis in t
 has its own `SetupMass` and `SetupSourceParametric` object.
 
 The `Setup` used in earlier pipelines determine the model used in later pipelines. For example, if the `Source` 
-pipeline is given an `EllipticalSersic` parametric profile, then this `LightProfile` will be used in the subsequent 
-`SLaMPipelineMass`.
+pipeline is given a `Pixelization` and `Regularization`, than this `Inversion` will be used in the subsequent 
+`SLaMPipelineMass` pipeline. 
 
 The `Setup` again tags the path structure of every pipeline in a unique way, such than combinations of different
 SLaM pipelines can be used to fit lenses with different models. If the earlier pipelines are identical (e.g. they use
-the same `SLaMPipelineSource`. they will reuse those results before branching off to fit different models in 
-the `SLaMPipelineLightParametric` and / or `SLaMPipelineMass` pipelines. 
+the same `SLaMPipelineSource`. they will reuse those results before branching off to fit different models in the 
+`SLaMPipelineLightParametric` and / or `SLaMPipelineMass` pipelines. 
 
 __HYPER SETUP__
 
@@ -151,6 +152,33 @@ pipeline_source_parametric = al.SLaMPipelineSourceParametric(
 )
 
 """
+__SLaMPipelineSourceInversion__
+
+The Source inversion pipeline aims to initialize a robust model for the source galaxy using an `Inversion`.
+
+_SLaMPipelineSourceInversion_ determines the `Inversion` used by the inversion source pipeline. A full description of all 
+options can be found ? and ?.
+
+By default, this again assumes `EllipticalIsothermal` profile for the lens galaxy's mass model.
+
+For this runner the `SLaMPipelineSourceInversion` customizes:
+
+ - The `Pixelization` used by the `Inversion` of this pipeline.
+ - The `Regularization` scheme used by the `Inversion` of this pipeline.
+
+The `SLaMPipelineSourceInversion` use`s the `SetupMass` of the `SLaMPipelineSourceParametric`.
+
+The `SLaMPipelineSourceInversion` determines the source model used in the `SLaMPipelineLightParametric` and `SLaMPipelineMass` pipelines, which in this
+example therefore both use an `Inversion`.
+"""
+setup_source = al.SetupSourceInversion(
+    pixelization_prior_model=al.pix.VoronoiBrightnessImage,
+    regularization_prior_model=al.reg.AdaptiveBrightness,
+)
+
+pipeline_source_inversion = al.SLaMPipelineSourceInversion(setup_source=setup_source)
+
+"""
 __SLaMPipelineMassTotal__
 
 The `SLaMPipelineMassTotal` pipeline fits the model for the lens galaxy's total mass distribution. 
@@ -175,7 +203,7 @@ pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
 __SetupSubhalo__
 
 The final pipeline fits the lens and source model including a `SphericalNFW` subhalo, using a grid-search of non-linear
-searches. 
+searchesn. 
 
 A full description of all options can be found ? and ?.
 
@@ -185,8 +213,8 @@ For this runner the `SetupSubhalo` customizes:
 
  - If the lens galaxy mass is treated as a model (all free parameters) or instance (all fixed) during the subhalo 
    detection grid search.
- - If the parameteric source galaxy is treated as a model (all free parameters) or instance (all fixed) during the 
-   subhalo detection grid search.
+ - If the source galaxy's _Inversion_ is treated as a model (`Regularization` parameters only) or an instance (all 
+   fixed) during the subhalo detection grid search.
  - The NxN size of the grid-search.
 """
 setup_subhalo = al.SetupSubhalo(
@@ -205,6 +233,7 @@ slam = al.SLaM(
     path_prefix=path.join("imaging", "slam", "no_lens_light", dataset_name),
     setup_hyper=hyper,
     pipeline_source_parametric=pipeline_source_parametric,
+    pipeline_source_inversion=pipeline_source_inversion,
     pipeline_mass=pipeline_mass,
     setup_subhalo=setup_subhalo,
 )
@@ -217,17 +246,22 @@ We import and make pipelines as per usual, albeit we'll now be doing this for mu
 We then run each pipeline, passing the results of previous pipelines to subsequent pipelines.
 """
 from pipelines import source__parametric
+from pipelines import source__inversion
 from pipelines import mass__total
 from pipelines import subhalo
 
 source__parametric = source__parametric.make_pipeline(slam=slam, settings=settings)
 source_results = source__parametric.run(dataset=imaging, mask=mask)
 
+source__inversion = source__inversion.make_pipeline(
+    slam=slam, settings=settings, source_parametric_results=source_results
+)
+source_results = source__inversion.run(dataset=imaging, mask=mask)
+
 mass__total = mass__total.make_pipeline(
     slam=slam, settings=settings, source_results=source_results
 )
 mass_results = mass__total.run(dataset=imaging, mask=mask)
-
 
 """
 __Sensitivity Mapping__
@@ -259,3 +293,4 @@ subhalo.run(dataset=imaging, mask=mask)
 """
 Finish.
 """
+

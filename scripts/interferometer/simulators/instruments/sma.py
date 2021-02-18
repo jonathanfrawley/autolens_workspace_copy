@@ -54,7 +54,7 @@ can be fitted extremely efficiently. The `autolens_workspace` includes ALMA uv_w
 much high resolution datasets (which can be performed by replacing "sma.fits" below with "alma.fits").
 """
 uv_wavelengths_path = path.join("dataset", "interferometer", "uv_wavelengths")
-uv_wavelengths = al.util.array.numpy_array_1d_from_fits(
+uv_wavelengths = al.util.array_1d.numpy_array_1d_from_fits(
     file_path=path.join(uv_wavelengths_path, "sma.fits"), hdu=0
 )
 
