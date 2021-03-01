@@ -1,12 +1,9 @@
 """
-__SLaM (Source, Light and Mass)__
+SLaM (Source, Light and Mass): Mass Total + Source Inversion
+============================================================
 
-This SLaM pipeline runner loads a strong lens dataset and analyses it using a SLaM lens modeling pipeline.
-
-__THIS RUNNER__
-
-Using two source pipelines and a mass pipeline this runner fits `Imaging` of a strong lens system, where in the final
-phase of the pipeline:
+Using two source pipelines and a mass pipeline this SLaM runner fits `Imaging` of a strong lens system, where in the
+final phase of the pipeline:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is modeled as an `EllipticalPowerLaw`.
@@ -14,9 +11,9 @@ phase of the pipeline:
 
 This uses the SLaM pipelines:
 
- `slam//no_lens_light/pipelines/source__mass_sie__source_parametric.py`.
- `slam//no_lens_light/pipelines/source__mass_sie__source_inversion.py`.
- `slam//no_lens_light/pipelines/mass__mass_power_law__source.py`.
+ `slam/no_lens_light/pipelines/source__mass_sie__source_parametric.py`.
+ `slam/no_lens_light/pipelines/source__mass_sie__source_inversion.py`.
+ `slam/no_lens_light/pipelines/mass__mass_power_law__source.py`.
 
 Check them out for a detailed description of the analysis!
 """

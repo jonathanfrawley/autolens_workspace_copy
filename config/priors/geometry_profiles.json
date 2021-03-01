@@ -9,7 +9,7 @@
                 "value": 0.05
             },
             "mean": 0.0,
-            "sigma": 0.1,
+            "sigma": 0.001,
             "gaussian_limits": {
                 "lower": "-inf",
                 "upper": "inf"
@@ -37,7 +37,7 @@
                 "value": 0.05
             },
             "mean": 0.0,
-            "sigma": 0.1,
+            "sigma": 0.001,
             "gaussian_limits": {
                 "lower": "-inf",
                 "upper": "inf"
@@ -65,7 +65,7 @@
                 "value": 0.05
             },
             "mean": 0.0,
-            "sigma": 0.1,
+            "sigma": 0.001,
             "gaussian_limits": {
                 "lower": "-inf",
                 "upper": "inf"
@@ -80,7 +80,7 @@
                 "value": 0.05
             },
             "mean": 0.0,
-            "sigma": 0.1,
+            "sigma": 0.001,
             "gaussian_limits": {
                 "lower": "-inf",
                 "upper": "inf"

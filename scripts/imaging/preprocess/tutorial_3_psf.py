@@ -1,5 +1,6 @@
 """
-__Preprocess 3: - PSF__
+Preprocess 3: PSF
+=================
 
 The Point Spread Function (PSF) describes blurring due the optics of your dataset`s telescope. It is used by PyAutoLens
 when fitting a dataset to include these effects, such that does not bias the lens model. It should be estimated from a

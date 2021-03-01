@@ -1,5 +1,6 @@
 """
-__Preprocess 6: - Info and Pickles (Optional)__
+Preprocess 6: Info and Pickles (Optional)
+=========================================
 
 Here, we include auxiliary information about our strong lens dataset that we may use during an analysis or when
 interpreting the lens modeling results.

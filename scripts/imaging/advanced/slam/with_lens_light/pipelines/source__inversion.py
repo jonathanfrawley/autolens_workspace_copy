@@ -9,7 +9,7 @@ galaxy.
 Phases 1 & 2 first use a magnification based `Pixelization` and constant `Regularization` scheme to reconstruct the
 source (as opposed to immediately using the `Pixelization` & `Regularization` input via the pipeline slam). This 
 ensures that if the input `Pixelization` or `Regularization` scheme uses hyper-images, they are initialized using
-a pixelized source-plane, which is key for lens's with multiple or irregular sources.
+a pixelized source-plane, which is key for lens`s with multiple or irregular sources.
 
 The pipeline uses 4 phases:
 
@@ -62,8 +62,6 @@ Phase 4:
 
 
 def make_pipeline(slam, settings, source_parametric_results):
-
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
 
     pipeline_name = "pipeline_source[inversion]"
 
@@ -121,7 +119,7 @@ def make_pipeline(slam, settings, source_parametric_results):
     )
 
     """
-    Phase 2: Fit the lens's mass and source galaxy using the magnification `Inversion`, where we:
+    Phase 2: Fit the lens`s mass and source galaxy using the magnification `Inversion`, where we:
 
         1) Fix the source `Inversion` parameters to the results of phase 1.
         2) Fix the lens light model to the results of the previous pipeline.
@@ -192,7 +190,7 @@ def make_pipeline(slam, settings, source_parametric_results):
     )
 
     """
-    Phase 4: Fit the lens's mass using the input pipeline `Pixelization` & `Regularization`, where we:
+    Phase 4: Fit the lens`s mass using the input pipeline `Pixelization` & `Regularization`, where we:
 
         1) Fix the source `Inversion` parameters to the results of phase 3.
         2) Fix the lens `LightProfile`'s to the results of the previous pipeline.

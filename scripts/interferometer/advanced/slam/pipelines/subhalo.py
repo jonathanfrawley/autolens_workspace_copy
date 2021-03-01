@@ -3,8 +3,9 @@ import autolens as al
 from autofit.non_linear.grid import sensitivity as s
 
 """
-This pipeline performs a subhalo analysis which determines the attempts to detect subhalos by putting
-subhalos at fixed intevals on a 2D (y,x) grid.
+These pipelines performs a subhalo analysis which attempts to detect subhalos by putting subhalos at fixed intervals on 
+a 2D (y,x) grid. There are two detection pipelines, one which assumes the subhalo is at the same redshift as the lens
+(single plane) and one where the subhalo redshift is a free parameter (multi-plane).
 
 The mass model and source are initialized using an already run `source` and `mass` pipeline.
 
@@ -20,7 +21,7 @@ Phase 1:
     Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
     Prior Passing: Lens mass (model -> previous pipeline), source light (instance or model -> previous pipeline).
 
-Phase 2 (part 1) - Lens Plane:
+Phase 2:
 
     Perform the subhalo detection analysis using a `GridSearch` of non-linear searches.
 
@@ -29,28 +30,6 @@ Phase 2 (part 1) - Lens Plane:
     Source Light: Previous source pipeilne model.
     Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
     Prior Passing: Lens mass (phase 1), source light (instance or model -> previous pipeline).
-    Notes: Priors on subhalo are tuned to give realistic masses (10^6 - 10^11).
-
-Phase 2 (part 2) - Foreground Plane:
-
-    Perform the subhalo detection analysis.
-
-    Lens Mass: Previous mass pipeline model.
-    Source Light: Previous source pipeilne model.
-    Subhalo: SphericalNFWLudlow
-    Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
-    Prior Passing: Lens mass (phase 1), source light (instance or model -> previous pipeline).
-    Notes: Priors on subhalo are tuned to give realistic masses (10^6 - 10^11).
-
-Phase 2 (part 3) - Background Plane:
-
-    Refine the best-fit detected subhalo from the previous phase, by varying also the lens mass model.
-
-    Lens Mass: Previous mass pipeline model.
-    Source Light: Previous source pipeilne model.
-    Subhalo: SphericalNFWLudlow
-    Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
-    Prior Passing: Lens mass & source light (model ->phase 1), subhalo mass (instance or model -> phase 2).
     Notes: Priors on subhalo are tuned to give realistic masses (10^6 - 10^11).
 
 Phase 3:
@@ -66,9 +45,9 @@ Refine the best-fit detected subhalo from the previous phase.
 """
 
 
-def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
-
+def make_pipeline_single_plane(
+        slam, settings, real_space_mask, mass_results, end_stochastic=False
+):
     pipeline_name = "pipeline_subhalo"
 
     """
@@ -77,7 +56,6 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
         1) Hyper-fitting settings (galaxies, sky, background noise) are used.
         2) The lens galaxy mass model includes an  `ExternalShear`.
     """
-
     path_prefix = slam.path_prefix_from(
         slam.path_prefix,
         pipeline_name,
@@ -93,9 +71,13 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
         2) Fit this source as a model if it is parametric and as an instance if it is an `Inversion`.
     """
 
-    """SLaM: Setup the lens and source passing them from the previous pipelines in the same way as described above."""
-
-    lens = slam.lens_for_subhalo_pipeline_from_result(result=mass_results.last)
+    """
+    SLaM: Setup the source passing them from the previous pipelines.
+    """
+    lens = mass_results.last.model.galaxies.lens
+    lens.hyper_galaxy = slam.setup_hyper.hyper_galaxy_lens_from_result(
+        result=mass_results.last
+    )
     source = slam.source_from_result_model_if_parametric(result=mass_results.last)
 
     phase1 = al.PhaseInterferometer(
@@ -115,7 +97,7 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
 
     class GridPhase(
         af.as_grid_search(
-            phase_class=al.PhaseImaging,
+            phase_class=al.PhaseInterferometer,
             number_of_cores=slam.setup_subhalo.number_of_cores,
             number_of_steps=slam.setup_subhalo.number_of_steps,
         )
@@ -133,11 +115,9 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
         1) The subhalo redshift is fixed to that of the lens galaxy.
         2) Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
         3) The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
-        4) The lens mass model is fitted for simultaneously with the subhalo (it can be fixed if mass_is_model=False). 
-        5) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
+        4) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
           `LightProfile` they are varied (this is customized using source_is_model).
     """
-
     subhalo = al.GalaxyModel(
         redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
@@ -156,17 +136,9 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
     subhalo.mass.redshift_source = slam.redshift_source
 
     """
-    SLaM: Setup the lens model, which uses the phase1 result and is a model or instance depending on the
-          *mass_is_model* parameter of `SetupSubhalo`.
-    """
-
-    lens = slam.lens_for_subhalo_pipeline_from_result(result=mass_results.last)
-
-    """
     SLaM: Setup the source model, which uses the the phase1 result is a model or instance depending on the 
     *source_is_model* parameter of `SetupSubhalo`.
     """
-
     source = slam.source_for_subhalo_pipeline_from_result(result=mass_results.last)
 
     phase2 = GridPhase(
@@ -177,43 +149,53 @@ def make_pipeline_single_plane(slam, settings, real_space_mask, mass_results):
             facc=0.2,
         ),
         galaxies=af.CollectionPriorModel(lens=lens, subhalo=subhalo, source=source),
-        hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
+        hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
+            result=mass_results.last
+        ),
         settings=settings,
         real_space_mask=real_space_mask,
     )
 
-    # subhalo = al.GalaxyModel(redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow)
-    #
-    # subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
-    # subhalo.mass.centre = phase2.result.model.galaxies.subhalo.mass.centre
-    #
-    # subhalo.mass.redshift_object = slam.redshift_lens
-    # subhalo.mass.redshift_source = slam.redshift_source
-    #
-    # phase3 = al.PhaseInterferometer(
-    #     name="phase[2]__subhalo_refine",
-    #     path_prefix=path_prefix,
-    #     galaxies=af.CollectionPriorModel(
-    #         lens=af.last[-1].model.galaxies.lens, source=source, subhalo=subhalo
-    #     ),
-    #     hyper_background_noise=af.last.hyper.instance.optional.hyper_background_noise,
-    #     settings=settings,
-    #     search=af.DynestyStatic(n_live_points=100),
-    # )
+    subhalo = al.GalaxyModel(
+        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+    )
+
+    subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
+    subhalo.mass.centre = phase2.result.model.galaxies.subhalo.mass.centre
+
+    subhalo.mass.redshift_object = slam.redshift_lens
+    subhalo.mass.redshift_source = slam.redshift_source
+
+    phase3 = al.PhaseInterferometer(
+        search=af.DynestyStatic(
+            name="phase[3]_subhalo[single_plane_refine]",
+            path_prefix=path_prefix,
+            n_live_points=100,
+        ),
+        galaxies=af.CollectionPriorModel(
+            lens=phase2.result.model.galaxies.lens,
+            subhalo=subhalo,
+            source=phase2.result.model.galaxies.source,
+        ),
+        hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
+        settings=settings,
+        real_space_mask=real_space_mask,
+    )
+
+    if end_stochastic:
+        phase3 = phase3.extend_with_stochastic_phase(
+            stochastic_search=af.DynestyStatic(n_live_points=100),
+            include_lens_light=slam.pipeline_mass.light_is_model,
+        )
 
     return al.PipelineDataset(
-        pipeline_name,
-        path_prefix,
-        mass_results,
-        phase1,
-        phase2,
-        #     phase3,
+        pipeline_name, path_prefix, mass_results, phase1, phase2, phase3
     )
 
 
-def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
-
+def make_pipeline_multi_plane(
+        slam, settings, real_space_mask, mass_results, end_stochastic=False
+):
     pipeline_name = "pipeline_subhalo"
 
     """
@@ -238,9 +220,13 @@ def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
         2) Fit this source as a model if it is parametric and as an instance if it is an `Inversion`.
     """
 
-    """SLaM: Setup the lens and source passing them from the previous pipelines in the same way as described above."""
-
-    lens = slam.lens_for_subhalo_pipeline_from_result(result=mass_results.last)
+    """
+    SLaM: Setup the source passing them from the previous pipelines.
+    """
+    lens = mass_results.last.model.galaxies.lens
+    lens.hyper_galaxy = slam.setup_hyper.hyper_galaxy_lens_from_result(
+        result=mass_results.last
+    )
     source = slam.source_from_result_model_if_parametric(result=mass_results.last)
 
     phase1 = al.PhaseInterferometer(
@@ -260,7 +246,7 @@ def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
 
     class GridPhase(
         af.as_grid_search(
-            phase_class=al.PhaseImaging,
+            phase_class=al.PhaseInterferometer,
             number_of_cores=slam.setup_subhalo.number_of_cores,
             number_of_steps=slam.setup_subhalo.number_of_steps,
         )
@@ -278,13 +264,13 @@ def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
         1) The subhalo redshift has a UniformPrior between Earth and the source galaxy.
         2) Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
         3) The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
-        4) The lens mass model is fitted for simultaneously with the subhalo (it can be fixed if mass_is_model=False). 
-        5) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
+        4) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
           `LightProfile` they are varied (this is customized using source_is_model).
     """
 
-    """The subhalo redshift is free to vary between 0.0 and the lens galaxy redshift."""
-
+    """
+    The subhalo redshift is free to vary between 0.0 and the lens galaxy redshift.
+    """
     subhalo_z_multi = al.GalaxyModel(
         redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
@@ -311,8 +297,7 @@ def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
         1) The subhalo redshift has a UniformPrior between the lens galaxy and source galaxy.
         2) Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
         3) The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
-        4) The lens mass model is fitted for simultaneously with the subhalo (it can be fixed if mass_is_model=False). 
-        5) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
+        4) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
           `LightProfile` they are varied (this is customized using source_is_model).
     """
 
@@ -326,44 +311,53 @@ def make_pipeline_multi_plane(slam, settings, real_space_mask, mass_results):
         galaxies=af.CollectionPriorModel(
             lens=lens, subhalo=subhalo_z_multi, source=source
         ),
-        hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
+        hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
+            result=mass_results.last
+        ),
         settings=settings,
         real_space_mask=real_space_mask,
     )
 
-    # subhalo = al.GalaxyModel(redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow)
-    #
-    # subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
-    # subhalo.mass.centre = phase2.result.model.galaxies.subhalo.mass.centre
-    # subhalo.mass.redshift_object = slam.redshift_lens
-    #
-    # subhalo.mass.redshift_source = slam.redshift_source
-    #
-    # phase3 = al.PhaseInterferometer(
-    #     name="phase[3]__subhalo_refine",
-    #     path_prefix=path_prefix,
-    #     galaxies=af.CollectionPriorModel(
-    #         lens=af.last[-1].model.galaxies.lens, source=source, subhalo=subhalo
-    #     ),
-    #     hyper_background_noise=af.last.hyper.instance.optional.hyper_background_noise,
-    #     settings=settings,
-    #     search=af.DynestyStatic(n_live_points=100),
-    # )
-    #     #     hyper_image_sky=phase1.result.instance.optional.hyper_image_sky,
-    #     #     hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
-    #     settings=settings,
-    # )
-
-    return al.PipelineDataset(
-        pipeline_name,
-        path_prefix,
-        mass_results,
-        phase1,
-        phase2,
-        #    phase3,
+    subhalo = al.GalaxyModel(
+        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
 
-def sensitivity_mapping(slam, uv_wavelengths, real_space_mask, visibilities_mask, mass_results, analysis_cls):
+    subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
+    subhalo.mass.centre = phase2.result.model.galaxies.subhalo.mass.centre
+    subhalo.mass.redshift_object = slam.redshift_lens
+
+    subhalo.mass.redshift_source = slam.redshift_source
+
+    phase3 = al.PhaseInterferometer(
+        search=af.DynestyStatic(
+            name="phase[3]_subhalo[multi_plane_refine]",
+            path_prefix=path_prefix,
+            n_live_points=100,
+        ),
+        galaxies=af.CollectionPriorModel(
+            lens=phase2.result.model.galaxies.lens,
+            subhalo=subhalo,
+            source=phase2.result.model.galaxies.source,
+        ),
+        hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
+        settings=settings,
+        real_space_mask=real_space_mask,
+    )
+
+    if end_stochastic:
+        phase3 = phase3.extend_with_stochastic_phase(
+            stochastic_search=af.DynestyStatic(n_live_points=100),
+            include_lens_light=slam.pipeline_mass.light_is_model,
+        )
+
+    return al.PipelineDataset(
+        pipeline_name, path_prefix, mass_results, phase1, phase2, phase3
+    )
+
+
+def sensitivity_mapping(
+        slam, uv_wavelengths, real_space_mask, visibilities_mask, mass_results, analysis_cls
+):
     """
     To begin, we define the `base_model` that we use to perform sensitivity mapping. This is the lens model that is f
     itted to every simulated strong lens without a subhalo, giving us the Bayesian evidence which we compare to the model
@@ -447,6 +441,7 @@ def sensitivity_mapping(slam, uv_wavelengths, real_space_mask, visibilities_mask
     In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
     1e6 MSun and 1e11 MSun.
     """
+
     def simulate_function(instance):
         """
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
@@ -479,7 +474,9 @@ def sensitivity_mapping(slam, uv_wavelengths, real_space_mask, visibilities_mask
             transformer_class=al.TransformerNUFFT,
         )
 
-        simulated_interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+        simulated_interferometer = simulator.from_tracer_and_grid(
+            tracer=tracer, grid=grid
+        )
 
         """
         The data generated by the simulate function is that which is fitted, so we should apply the mask for the analysis 
@@ -489,7 +486,7 @@ def sensitivity_mapping(slam, uv_wavelengths, real_space_mask, visibilities_mask
             interferometer=simulated_interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-                                       )
+        )
 
     """
     We next specify the search used to perform each model fit by the sensitivity mapper.

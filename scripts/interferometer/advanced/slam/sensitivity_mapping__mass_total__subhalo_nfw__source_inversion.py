@@ -1,13 +1,9 @@
 """
-__SLaM (Source, Light and Mass)__
+SLaM (Source, Light and Mass): Mass Total + Subhalo NFW + Source Inversion Sensitivity Mapping
+==============================================================================================
 
-This SLaM pipeline runner loads a strong lens dataset and analyses it using a SLaM lens modeling
-pipeline.
-
-__THIS RUNNER__
-
-Using 1 source pipeline, a mass pipeline and a subhalo pipeline this runner fits `Interferometer` of a strong lens system,
-where in the final phase of the pipeline:
+Using 1 source pipeline, a mass pipeline and a subhalo pipeline this SLaM runner fits `Interferometer` of a strong
+lens system, where in the final phase of the pipeline:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
@@ -71,8 +67,9 @@ __Settings__
 
 The `SettingsPhaseInterferometer` describe how the model is fitted to the data in the log likelihood function.
 
-These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example scripts, with a 
-complete description of all settings given in `autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
+These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example 
+scripts, with a complete description of all settings given 
+in `autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
 
 The settings chosen here are applied to all phases in the pipeline.
 """
@@ -115,9 +112,9 @@ which is equivalent to the `SetupPipeline` object, customizing the analysis in t
 has its own `SetupMass`, `SetupLightParametric` and `SetupSourceParametric` object.
 
 The `Setup` used in earlier pipelines determine the model used in later pipelines. For example, if the `Source` 
-pipeline is given a `Pixelization` and `Regularization`, than this `Inversion` will be used in the subsequent `SLaMPipelineLightParametric` and 
-Mass pipelines. The assumptions regarding the lens light chosen by the `Light` object are carried forward to the 
-`Mass`  pipeline.
+pipeline is given a `Pixelization` and `Regularization`, than this `Inversion` will be used in the 
+subsequent `SLaMPipelineLightParametric` and Mass pipelines. The assumptions regarding the lens light chosen by 
+the `Light` object are carried forward to the `Mass`  pipeline.
 
 The `Setup` again tags the path structure of every pipeline in a unique way, such than combinations of different
 SLaM pipelines can be used to fit lenses with different models. If the earlier pipelines are identical (e.g. they use
@@ -145,8 +142,8 @@ __SLaMPipelineSourceParametric__
 
 The parametric source pipeline aims to initialize a robust model for the source galaxy using `LightProfile` objects. 
 
-_SLaMPipelineSourceParametric_ determines the source model used by the parametric source pipeline. A full description of all 
-options can be found ? and ?.
+_SLaMPipelineSourceParametric_ determines the source model used by the parametric source pipeline. A full description 
+of all options can be found ? and ?.
 
 By default, this assumes an `EllipticalIsothermal` profile for the lens galaxy's mass. Our experience with lens 
 modeling has shown they are the simpliest models that provide a good fit to the majority of strong lenses.
@@ -182,8 +179,8 @@ For this runner the `SLaMPipelineSourceInversion` customizes:
 
 The `SLaMPipelineSourceInversion` use`s the `SetupMass` of the `SLaMPipelineSourceParametric`.
 
-The `SLaMPipelineSourceInversion` determines the source model used in the `SLaMPipelineLightParametric` and `SLaMPipelineMass` pipelines, which in this
-example therefore both use an `Inversion`.
+The `SLaMPipelineSourceInversion` determines the source model used in the `SLaMPipelineLightParametric` 
+and `SLaMPipelineMass` pipelines, which in this example therefore both use an `Inversion`.
 """
 setup_source = al.SetupSourceInversion(
     pixelization_prior_model=al.pix.VoronoiBrightnessImage,
@@ -225,14 +222,12 @@ The models used to represent the lens galaxy's mass and the source are those use
 
 For this runner the `SetupSubhalo` customizes:
 
- - If the lens galaxy mass is treated as a model (all free parameters) or instance (all fixed) during the subhalo 
-   detection grid search.
  - If the source galaxy (parametric or _Inversion) is treated as a model (all free parameters) or instance (all fixed) 
    during the subhalo detection grid search.
  - The NxN size of the grid-search.
 """
 setup_subhalo = al.SetupSubhalo(
-    mass_is_model=True, source_is_model=True, number_of_steps=5
+    source_is_model=True, number_of_steps=5, number_of_cores=2
 )
 
 """

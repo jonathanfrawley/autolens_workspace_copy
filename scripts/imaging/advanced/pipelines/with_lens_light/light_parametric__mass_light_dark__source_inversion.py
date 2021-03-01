@@ -1,8 +1,6 @@
 """
-__Pipelines__
-
-This pipeline runner loads a strong lens dataset and analyses it using a lens
-modeling pipeline.
+Pipelines: Light Parametric + Mass Light Dark + Source Inversion
+================================================================
 
 Using a pipeline composed of five phases this runner fits `Imaging` of a strong lens system, where in the final phase
 of the pipeline:

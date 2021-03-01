@@ -26,7 +26,8 @@ following method(s):
 
  plt.axvline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
 """
-line_plotter = aplt.Array1DPlotter()
+pass
+# line_plotter = aplt.Array1DPlotter()
 
 """
 Finish.

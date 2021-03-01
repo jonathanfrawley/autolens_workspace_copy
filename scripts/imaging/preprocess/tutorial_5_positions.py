@@ -1,5 +1,6 @@
 """
-__Preprocess 5: - Positions (Optional)__
+Preprocess 5: Positions (Optional)
+==================================
 
 In this tool we mark positions on a multiply imaged strongly lensed source corresponding to a set positions / pixels 
 which are anticipated to trace to the same location in the source-plane.

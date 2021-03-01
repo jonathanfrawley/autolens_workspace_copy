@@ -1,5 +1,6 @@
 """
-__Pipelines__
+Pipelines: Hyper
+================
 
 This pipeline runner loads a strong lens dataset and analyses it using a lens
 modeling pipeline.

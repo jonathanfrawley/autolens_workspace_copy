@@ -22,8 +22,6 @@ Phase 1:
 
 def make_pipeline(slam, settings):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
-
     pipeline_name = "pipeline_source[parametric]"
 
     """
@@ -40,7 +38,7 @@ def make_pipeline(slam, settings):
     )
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source galaxy.
+    Phase 1: Fit the lens`s `MassProfile`'s and source galaxy.
     """
 
     phase1 = al.PhaseImaging(

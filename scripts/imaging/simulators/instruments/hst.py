@@ -102,6 +102,16 @@ imaging dataset.
 imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
 """
+Output the simulated dataset to the dataset path as .fits files.
+"""
+imaging.output_to_fits(
+    image_path=path.join(dataset_path, "image.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    overwrite=True,
+)
+
+"""
 Lets plot the simulated `Imaging` dataset before we output it to fits.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)

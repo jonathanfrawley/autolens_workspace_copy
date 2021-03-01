@@ -1,12 +1,9 @@
 """
-__SLaM (Source, Light and Mass)__
+SLaM (Source, Light and Mass): Light Parametric + Mass Total + Source Parametric
+================================================================================
 
-This SLaM pipeline runner loads a strong lens dataset and analyses it using a SLaM lens modeling pipeline.
-
-__THIS RUNNER__
-
-Using two source pipelines, a light pipeline and a mass pipeline this runner fits `Imaging` of a strong lens system
-where in the final phase of the pipeline:
+Using two source pipelines, a light pipeline and a mass pipeline this SLaM runner fits `Imaging` of a strong lens
+system where in the final phase of the pipeline:
 
  - The lens galaxy's `LightProfile`'s are modeled as an `EllipticalSersic` + `EllipticalExponential`, representing
    a bulge + disk model.
@@ -17,9 +14,9 @@ where in the final phase of the pipeline:
 
 This runner uses the SLaM pipelines:
 
- `slam//with_lens_light/source__parametric.py`.
- `slam//with_lens_light/light__parametric.py`.
- `slam//with_lens_light/mass__total.py`.
+ `slam/with_lens_light/source__parametric.py`.
+ `slam/with_lens_light/light__parametric.py`.
+ `slam/with_lens_light/mass__total.py`.
 
 Check them out for a detailed description of the analysis!
 """

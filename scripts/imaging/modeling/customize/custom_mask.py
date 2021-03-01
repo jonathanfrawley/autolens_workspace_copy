@@ -1,4 +1,7 @@
 """
+Customize: Custom Mask
+======================
+
 This example demonstrates how to load and use a custom mask from your hard-disk and use this as the mask in a pipeline.
 
 The benefits of doing this are:
@@ -55,7 +58,7 @@ The example autolens_workspace dataset comes with a mask already, if you look in
 `autolens_workspace/dataset/imaging/no_lens_light/mass_sie__source_sersic` you`ll see a mask.fits file!
 """
 mask_custom = al.Mask2D.from_fits(
-    file_path=path.join(dataset_path, "mask.fits"), hdu=0, pixel_scales=pixel_scales
+    file_path=path.join(dataset_path, "mask_gui.fits"), hdu=0, pixel_scales=pixel_scales
 )
 
 """
@@ -112,3 +115,7 @@ phase = al.PhaseImaging(
 )
 
 phase.run(dataset=imaging, mask=mask_custom)
+
+"""
+Finish.
+"""

@@ -73,7 +73,7 @@ Phase 5:
 
 def make_pipeline(setup, settings):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+
 
     pipeline_name = "pipeline_light[parametric]_mass[light_dark]_source[inversion]"
 

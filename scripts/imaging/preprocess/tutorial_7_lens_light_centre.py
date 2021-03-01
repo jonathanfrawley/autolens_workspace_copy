@@ -1,5 +1,6 @@
 """
-__Preprocess 7: Lens Light Centre (Optional)__
+Preprocess 7: Lens Light Centre (Optional)
+==========================================
 
 In this tool we mark the lens light centre(s) of a strong lens(es), which can be used as fixed values for the lens
 light and mass models in a pipeline.

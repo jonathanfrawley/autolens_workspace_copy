@@ -1,5 +1,6 @@
 """
-__Example: Interferometer Source Inversion__
+Modeling: Mass Total + Source Inversion
+=======================================
 
 To fit a lens model to an interferometer dataset, we again perform lens modeling using a `NonLinearSearch`.
 However, unlike CCD `Imaging` data, we fit the lens model in Fourier space, or the `uv-plane`, which circumvents issues

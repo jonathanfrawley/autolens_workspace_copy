@@ -1,5 +1,6 @@
 """
-__Example: Modeling Positions__
+Customize: Modeling Positions
+=============================
 
 Before fitting a strong lens, we can manually specify a set of image-pixels corresponding to the multiple images of the
 source-galaxy(s). During the analysis, PyAutoLens will first check that these pixels trace within a specified

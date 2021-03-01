@@ -39,7 +39,7 @@ Phase 2:
 
 def make_pipeline(setup, settings, real_space_mask):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+
 
     pipeline_name = "pipeline_mass[total]_source[parametric]"
 

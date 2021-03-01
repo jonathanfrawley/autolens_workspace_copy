@@ -26,9 +26,7 @@ Phase 1:
 """
 
 
-def make_pipeline(slam, settings, source_results, light_results):
-
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+def make_pipeline(slam, settings, source_results, light_results, end_stochastic=False):
 
     pipeline_name = "pipeline_mass[total]"
 
@@ -37,7 +35,7 @@ def make_pipeline(slam, settings, source_results, light_results):
 
         1) Hyper-fitting settings (galaxies, sky, background noise) are used.
         2) The lens galaxy mass model includes an  `ExternalShear`.
-        3) The lens's light model is fixed or variable.
+        3) The lens`s light model is fixed or variable.
     """
 
     path_prefix = slam.path_prefix_from(
@@ -48,12 +46,8 @@ def make_pipeline(slam, settings, source_results, light_results):
         slam.mass_tag,
     )
 
-    """SLaM: Set whether shear is included in the mass model using the `ExternalShear` model of the Source pipeline."""
-
-    shear = slam.pipeline_mass.shear_from_result(result=source_results.last)
-
     """
-    Phase 1: Fit the lens galaxy's light and mass and one source galaxy, where we:
+    Phase 1: Fit the lens `Galaxy`'s light and mass and one source galaxy, where we:
 
         1) Use the source galaxy of the `source` pipeline.
         2) Use the lens galaxy light of the `light` pipeline.
@@ -65,13 +59,17 @@ def make_pipeline(slam, settings, source_results, light_results):
         result=source_results[-2], unfix_mass_centre=True
     )
 
+    """SLaM: Set whether shear is included in the mass model using the `ExternalShear` model of the Source pipeline."""
+
+    shear = slam.pipeline_mass.shear_from_result(result=source_results[-2])
+
     """SLaM: Use the source and lens light models from the previous *Source* and *Light* pipelines."""
 
     lens = slam.lens_for_mass_pipeline_from_result(
         result=light_results.last, mass=mass, shear=shear
     )
 
-    source = slam.source_from_result_model_if_parametric(result=source_results.last)
+    source = slam.source_from_result_model_if_parametric(result=source_results[-2])
 
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(
@@ -85,13 +83,19 @@ def make_pipeline(slam, settings, source_results, light_results):
             result=light_results.last
         ),
         settings=settings,
-        use_as_hyper_dataset=True,
     )
 
-    if not slam.setup_hyper.hyper_fixed_after_source:
+    if end_stochastic:
 
-        phase1 = phase1.extend_with_hyper_phase(
-            setup_hyper=slam.setup_hyper, include_hyper_image_sky=True
+        phase1 = phase1.extend_with_stochastic_phase(
+            stochastic_search=af.DynestyStatic(n_live_points=100),
+            include_lens_light=slam.pipeline_mass.light_is_model,
         )
+
+    else:
+
+        if not slam.setup_hyper.hyper_fixed_after_source:
+
+            phase1 = phase1.extend_with_hyper_phase(setup_hyper=slam.setup_hyper)
 
     return al.PipelineDataset(pipeline_name, path_prefix, light_results, phase1)

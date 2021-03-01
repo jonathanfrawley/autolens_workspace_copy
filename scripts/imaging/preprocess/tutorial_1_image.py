@@ -1,5 +1,6 @@
 """
-__Preprocess 1: Image__
+Preprocess 1: Image
+===================
 
 The image is the image of your strong lens - most likely a co-add of multiple dithered exposures.
 

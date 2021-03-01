@@ -8,7 +8,7 @@ This pipeline performs a source `Inversion` analysis which fits an image with le
 Phases 1 & 2 use a magnification based `Pixelization` and constant `Regularization` scheme to reconstruct the source
 (as opposed to immediately using the `Pixelization` & `Regularization` input via the pipeline slam). This ensures
 that if the input `Pixelization` or `Regularization` scheme use hyper-images, they are initialized using
-a pixelized source-plane, which is key for lens's with multiple or irregular sources.
+a pixelized source-plane, which is key for lens`s with multiple or irregular sources.
 
 The pipeline uses 4 phases:
 
@@ -57,8 +57,6 @@ Phase 4:
 
 
 def make_pipeline(slam, settings, source_parametric_results):
-
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
 
     pipeline_name = "pipeline_source[inversion]"
 
@@ -113,7 +111,7 @@ def make_pipeline(slam, settings, source_parametric_results):
     )
 
     """
-    Phase 2: Fit the lens's mass and source galaxy using the magnification `Inversion`, where we:
+    Phase 2: Fit the lens`s mass and source galaxy using the magnification `Inversion`, where we:
 
         1) Fix the source `Inversion` parameters to the results of phase 1.
         2) Set priors on the lens galaxy `MassProfile`'s using the results of the previous pipeline.
@@ -175,7 +173,7 @@ def make_pipeline(slam, settings, source_parametric_results):
     )
 
     """
-    Phase 4: fit the lens's mass using the input pipeline `Pixelization` & `Regularization`, where we:
+    Phase 4: fit the lens`s mass using the input pipeline `Pixelization` & `Regularization`, where we:
 
         1) Fix the source `Inversion` parameters to the results of phase 3.
         2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 2.
@@ -184,21 +182,6 @@ def make_pipeline(slam, settings, source_parametric_results):
     mass = slam.pipeline_source_parametric.setup_mass.mass_prior_model_with_updated_priors_from_result(
         result=source_parametric_results.last, unfix_mass_centre=True
     )
-
-    # setup_mass = slam.pipeline_source_parametric.setup_mass
-    #
-    # mass = setup_mass._cls_to_prior_model(cls=setup_mass.mass_prior_model.cls)
-    #
-    # mass.take_attributes(source=source_parametric_results.last.model.galaxies.lens.mass)
-    #
-    # if slam.pipeline_source_parametric.setup_mass.unfix_mass_centre and isinstance(mass.centre, tuple):
-    #
-    #     centre_tuple = mass.centre
-    #
-    #     mass.centre = setup_mass._cls_to_prior_model(cls=setup_mass.mass_prior_model.cls).centre
-    #
-    #     mass.centre.centre_0 = af.GaussianPrior(mean=centre_tuple[0], sigma=0.05)
-    #     mass.centre.centre_1 = af.GaussianPrior(mean=centre_tuple[1], sigma=0.05)
 
     phase4 = al.PhaseImaging(
         search=af.DynestyStatic(

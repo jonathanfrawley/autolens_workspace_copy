@@ -30,8 +30,6 @@ Phase 1:
 
 def make_pipeline(slam, settings, source_results):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
-
     pipeline_name = "pipeline_light[parametric]"
 
     """
@@ -47,9 +45,9 @@ def make_pipeline(slam, settings, source_results):
     )
 
     """
-    Phase 1: Fit the lens galaxy's light, where we:
+    Phase 1: Fit the lens `Galaxy`'s light, where we:
 
-        1) Fix the lens galaxy's mass and source galaxy to the results of the previous pipeline.
+        1) Fix the lens `Galaxy`'s mass and source galaxy to the results of the previous pipeline.
         2) Vary the lens galaxy hyper noise factor if hyper-galaxies noise scaling is on.
     """
 
@@ -70,7 +68,9 @@ def make_pipeline(slam, settings, source_results):
         hyper_galaxy=hyper_galaxy,
     )
 
-    """SLaM: Use the Source pipeline source as an instance (whether its parametric or an Inversion)."""
+    """
+    SLaM: Use the Source pipeline source as an instance (whether its parametric or an Inversion).
+    """
 
     source = slam.source_from_result(result=source_results.last, source_is_model=False)
 
@@ -87,8 +87,10 @@ def make_pipeline(slam, settings, source_results):
             result=source_results.last
         ),
         settings=settings,
-        use_as_hyper_dataset=True,
     )
+
+    if slam.pipeline_source_inversion is not None:
+        phase1.preload_inversion = True
 
     if not slam.setup_hyper.hyper_fixed_after_source:
 

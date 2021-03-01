@@ -1,4 +1,7 @@
 """
+Settings: Signal To Noise Limit
+===============================
+
 This example demonstrates how to use a signal-to-noise limits in the phase settings, which fits data where the
 noise-map is increased to cap the highest signal-to-noise value.
 
@@ -75,9 +78,9 @@ Next, we specify the `SettingsPhaseImaging`, which describe how the model is fit
 function. In this example, we specify:
 
  - A signal_to_noise_limit of 10.0, which increases the noise values in the noise-map such that no pixel has a S/N
-      above 10.0.
+above 10.0.
 """
-settings_masked_imaging = al.SettingsMaskedImaging(signal_to_noise_limit=10.0)
+settings_masked_imaging = al.SettingsMaskedImaging(signal_to_noise_limit=0.1)
 
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 

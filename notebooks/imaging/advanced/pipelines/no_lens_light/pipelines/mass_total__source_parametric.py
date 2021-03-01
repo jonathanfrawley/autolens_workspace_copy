@@ -39,7 +39,7 @@ Fit the `SetupMassTotal.mass_prior_model` (default=`EllipticalPowerLaw`) model, 
 
 def make_pipeline(setup, settings):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+
 
     pipeline_name = "pipeline_mass[total]_source[parametric]"
 

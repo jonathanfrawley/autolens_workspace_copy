@@ -106,12 +106,16 @@ light_centres = al.Grid2DIrregular(grid=light_centres)
 Now lets plot the image and lens light centre, so we can check that the centre overlaps the brightest pixel in the
 lens light.
 """
-aplt.Array2DPlotter(array=imaging.image, light_profile_centres=light_centres)
+visuals_2d = aplt.Visuals2D(light_profile_centres=light_centres)
+aplt.Array2DPlotter(array=imaging.image, visuals_2d=visuals_2d)
 
 """
 Now we`re happy with the lens light centre(s), lets output them to the dataset folder of the lens, so that we can 
 load them from a.json file in our pipelines!
 """
-light_centres.output_to_json(
-    file_path=path.join(dataset_path, "light_centres.json"), overwrite=True
-)
+try:
+    light_centres.output_to_json(
+        file_path=path.join(dataset_path, "light_centres.json"), overwrite=True
+    )
+except  AttributeError:
+    pass

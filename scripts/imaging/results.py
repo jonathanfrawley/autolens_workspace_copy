@@ -1,5 +1,6 @@
 """
-__Example: Results__
+Modeling: Results
+=================
 
 After fitting strong lens data a phase returns a `result` variable, which we have used sparingly throughout the
 examples scripts to plot the maximum log likelihood tracer and fits. However, this `Result` object has a lot more

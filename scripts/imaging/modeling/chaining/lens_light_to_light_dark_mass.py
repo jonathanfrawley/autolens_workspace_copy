@@ -1,5 +1,6 @@
 """
-__Example: Chaining Lens Light To Mass__
+Chaining: Chaining Lens Light To Mass
+=====================================
 
 Before reading this example, make sure you have read the `autolens_workspace/examples/moodel/chaining/api.py`
 example script, which describes phase chaining and details the API for this.

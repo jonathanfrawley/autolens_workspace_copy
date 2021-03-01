@@ -1,5 +1,6 @@
 """
-__Preprocess 8: - Scaled Dataset (Optional)__
+Preprocess 8: Scaled Dataset (Optional)
+=======================================
 
 In this tool we mark regions of the image that has signal in the proximity of the lens and source that may impact our
 model fitting. By marking these regions we will scale the image to values near zero and the noise-map to large values

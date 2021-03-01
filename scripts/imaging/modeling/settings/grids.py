@@ -1,7 +1,6 @@
-import autolens as al
-
 """
-__Settings__
+Settings: Grids
+===============
 
  - That a `Grid2DInterpolate` is used to fit create the model-image when fitting the data 
       (see `autolens_workspace/examples/grids.py` for a description of grids).
@@ -18,6 +17,8 @@ Different `SettingsPhase` are used in different example model scripts and a full
 can be found in the example script `autolens/workspace/notebooks/imaging/modeling/customize/settings.py` and the following 
 chain -> <chain>
 """
+import autolens as al
+
 settings_masked_imaging = al.SettingsMaskedImaging(
     grid_class=al.Grid2DInterpolate, pixel_scales_interp=0.1
 )

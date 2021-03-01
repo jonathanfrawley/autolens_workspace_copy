@@ -1,5 +1,6 @@
 """
-__Preprocess 2: Noise-map__
+Preprocess 2: Noise-map
+=======================
 
 The noise-map defines the uncertainty in every pixel of your strong lens image. Values are defined as the RMS standard
 deviation in every pixel (not the variances, HST WHT-map values, etc.). You MUST be certain that the noise-map is

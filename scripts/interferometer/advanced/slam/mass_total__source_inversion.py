@@ -1,12 +1,9 @@
 """
-__SLaM (Source, Light and Mass)__
+SLaM (Source, Light and Mass): Mass Total + Source Inversion
+============================================================
 
-This SLaM pipeline runner loads a strong lens dataset and analyses it using a SLaM lens modeling pipeline.
-
-__THIS RUNNER__
-
-Using two source pipelines and a mass pipeline this runner fits `Interferometer` of a strong lens system, where in the final
-phase of the pipeline:
+Using two source pipelines and a mass pipeline this SLaM runner fits `Interferometer` of a strong lens system, where
+in the final phase of the pipeline:
 
  - The lens galaxy's light is modeled parametrically as an `EllipticalSersic`.
  - The lens galaxy's total mass distribution is modeled as an `EllipticalPowerLaw`.

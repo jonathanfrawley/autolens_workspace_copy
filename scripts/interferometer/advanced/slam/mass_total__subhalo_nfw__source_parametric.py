@@ -1,13 +1,9 @@
 """
-__SLaM (Source, Light and Mass)__
+SLaM (Source, Light and Mass): Mass Total + Subhalo NFW + Source Parametric
+===========================================================================
 
-This SLaM pipeline runner loads a strong lens dataset and analyses it using a SLaM lens modeling
-pipeline.
-
-__THIS RUNNER__
-
-Using 1 source pipeline, a mass pipeline and a subhalo pipeline this runner fits `Interferometer` of a strong lens system,
-where in the final phase of the pipeline:
+Using 1 source pipeline, a mass pipeline and a subhalo pipeline this SLaM runner fits `Interferometer` of a strong
+lens system, where in the final phase of the pipeline:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
@@ -176,14 +172,12 @@ The models used to represent the lens galaxy's mass and the source are those use
 
 For this runner the `SetupSubhalo` customizes:
 
- - If the lens galaxy mass is treated as a model (all free parameters) or instance (all fixed) during the subhalo 
-   detection grid search.
  - If the source galaxy (parametric or _Inversion) is treated as a model (all free parameters) or instance (all fixed) 
    during the subhalo detection grid search.
  - The NxN size of the grid-search.
 """
 setup_subhalo = al.SetupSubhalo(
-    mass_is_model=True, source_is_model=True, number_of_steps=5
+    source_is_model=True, number_of_steps=5
 )
 
 """

@@ -1,5 +1,6 @@
 """
-__Example: Chaining Parametric To Inversion__
+Chaining: Chaining Parametric To Inversion
+==========================================
 
 Before reading this example, make sure you have read the `autolens_workspace/notebooks/interferometer/modeling/chaining/api.py`
 example script, which describes phase chaining and details the API for this.

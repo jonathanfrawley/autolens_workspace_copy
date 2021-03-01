@@ -1,5 +1,6 @@
 """
-__Example: Modeling__
+Modeling: Light Parametric + Mass Light Dark + Source Parametric
+================================================================
 
 To fit a lens model to a dataset, we must perform lens modeling, which uses a `NonLinearSearch` to fit many
 different tracers to the dataset.

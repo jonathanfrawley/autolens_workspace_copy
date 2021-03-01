@@ -1,4 +1,3 @@
-from os import path
 import autofit as af
 import autolens as al
 
@@ -21,9 +20,7 @@ Phase 1:
 """
 
 
-def make_pipeline(slam, settings, source_results):
-
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+def make_pipeline(slam, settings, source_results, end_stochastic=False):
 
     pipeline_name = "pipeline_mass[total]"
 
@@ -43,7 +40,7 @@ def make_pipeline(slam, settings, source_results):
     shear = slam.pipeline_mass.shear_from_result(result=source_results.last)
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source, where we:
+    Phase 1: Fit the lens`s `MassProfile`'s and source, where we:
 
         1) Set priors on the lens galaxy `MassProfile`'s using the `EllipticalIsothermal` and `ExternalShear` 
            of previous pipelines.
@@ -76,17 +73,18 @@ def make_pipeline(slam, settings, source_results):
             result=source_results.last
         ),
         settings=settings,
-        use_as_hyper_dataset=True,
     )
 
-    # phase1 = phase1.extend_with_stochastic_phase(
-    #     stochastic_method="gaussian",
-    #     stochastic_sigma=0.0,
-    #     stochastic_search=af.DynestyStatic(n_live_points=100),
-    # )
+    if end_stochastic:
 
-    if not slam.setup_hyper.hyper_fixed_after_source:
+        phase1 = phase1.extend_with_stochastic_phase(
+            stochastic_search=af.DynestyStatic(n_live_points=100)
+        )
 
-        phase1 = phase1.extend_with_hyper_phase(setup_hyper=slam.setup_hyper)
+    else:
+
+        if not slam.setup_hyper.hyper_fixed_after_source:
+
+            phase1 = phase1.extend_with_hyper_phase(setup_hyper=slam.setup_hyper)
 
     return al.PipelineDataset(pipeline_name, path_prefix, source_results, phase1)

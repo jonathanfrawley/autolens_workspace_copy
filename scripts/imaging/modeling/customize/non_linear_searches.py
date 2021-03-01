@@ -1,5 +1,6 @@
 """
-__Example: Non-linear Searches__
+Customize: Non-linear Searches
+==============================
 
 In the `beginner` examples all model-fits were performed using the nested sampling algorithm `Dynesty`, which is a
 very effective `NonLinearSearch` for lens modeling, but may not always be the optimal choice for your
@@ -177,3 +178,7 @@ phase = al.PhaseImaging(
 )
 
 # result = phase.run(dataset=imaging, mask=mask)
+
+"""
+Finish.
+"""

@@ -4,7 +4,10 @@ PyAutoLens Workspace
 .. |binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD
 
-|binder|
+.. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.02825/status.svg
+   :target: https://doi.org/10.21105/joss.02825
+
+|binder| |JOSS|
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |

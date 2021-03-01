@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 
 """
-This pipeline performs a parametric source analysis which fits a lens model (the lens's `LightProfile` and mass) and the
+This pipeline performs a parametric source analysis which fits a lens model (the lens`s `LightProfile` and mass) and the
 source galaxy. 
 
 This pipeline uses three phases:
@@ -10,7 +10,7 @@ This pipeline uses three phases:
 Phase 1:
 
     Fit and subtract the lens light.
-
+    
     Lens Light: EllipticalSersic + EllipticalExponential
     Lens Mass: None
     Source Light: None
@@ -21,7 +21,7 @@ Phase 1:
 Phase 2:
 
     Fit the lens mass model and source `LightProfile`, using the lens subtracted image from phase 1.
-
+    
     Lens Light: None
     Lens Mass: MassProfile (default=EllipticalIsothermal) + ExternalShear
     Source Light: EllipticalSersic
@@ -32,7 +32,7 @@ Phase 2:
 Phase 3:
 
     Refit the lens `LightProfile` with origina priors, using the mass model and sources with priors from phase 2.
-
+    
     Lens Light: EllipticalSersic + EllipticalExponential
     Lens Mass: MassProfile (default=EllipticalIsothermal) + ExternalShear
     Source Light: EllipticalSersic
@@ -43,7 +43,6 @@ Phase 3:
 
 
 def make_pipeline(slam, settings):
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
 
     pipeline_name = "pipeline_source[parametric]"
 
@@ -59,7 +58,7 @@ def make_pipeline(slam, settings):
     )
 
     """
-    Phase 1: Fit only the lens galaxy's light, where we:
+    Phase 1: Fit only the lens `Galaxy`'s light, where we:
 
         1) Use the light model determined from `SetupLightParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.).
@@ -78,10 +77,10 @@ def make_pipeline(slam, settings):
     )
 
     """
-    Phase 2: Fit the lens's `MassProfile`'s and source galaxy's `LightProfile`, where we:
+    Phase 2: Fit the lens`s `MassProfile`'s and source `Galaxy`'s `LightProfile`, where we:
 
         1) Fix the foreground lens `LightProfile` to the result of phase 1.
-        2) Set priors on the centre of the lens galaxy's total mass distribution by linking them to those inferred for
+        2) Set priors on the centre of the lens `Galaxy`'s total mass distribution by linking them to those inferred for
            the bulge of the `LightProfile` in phase 1.
         3) The source model determined from `SetupSourceParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.)
@@ -127,10 +126,10 @@ def make_pipeline(slam, settings):
 
     """
     Phase 3: Simultaneously fit the lens and source galaxies, where we:
-
-        1) Set lens's light model using original priors, as the model from phase 1 is too unreliable for prior 
+    
+        1) Set lens`s light model using original priors, as the model from phase 1 is too unreliable for prior 
            initialization.
-        1) Set lens's mass, shear and source's light using models from phases 2.
+        1) Set lens`s mass, shear and source`s light using models from phases 2.
     """
 
     lens = al.GalaxyModel(

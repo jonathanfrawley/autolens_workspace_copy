@@ -1,5 +1,6 @@
 """
-__Preprocess 4: - Mask__
+Preprocess 4: Mask
+==================
 
 The mask is used to remove regions of the image where the lens and source galaxy are not present, such as the edges 
 of the image and potentially within the lensed source's ring (if the lens light is not observed or has been subtracted).

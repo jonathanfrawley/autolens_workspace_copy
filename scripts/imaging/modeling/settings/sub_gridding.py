@@ -1,4 +1,7 @@
 """
+Settings: Sub Gridding
+======================
+
 This example demonstrates how to change the sub-gridding of the phase settings, which changes the resolution of the
 sub-grid that oversamples the `LightProfile` intensities and `MassProfile` deflection angle calculations.
 

@@ -58,7 +58,7 @@ Phase 4:
 
 def make_pipeline(slam, settings, real_space_mask, source_parametric_results):
 
-    """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
+
 
     pipeline_name = "pipeline_source[inversion]"
 

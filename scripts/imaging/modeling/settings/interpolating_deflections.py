@@ -1,4 +1,7 @@
 """
+Settings: Interpolating Deflections
+===================================
+
 This example demonstrates how to use interpolated deflection-angles interpolation in the phase settings, which
 computes the deflection angles of a `MassProfile` on a coarse lower resolution `interpolation grid` and interpolates
 these values to the image`s native sub-grid resolution.

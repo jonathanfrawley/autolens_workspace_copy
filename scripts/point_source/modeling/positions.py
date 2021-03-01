@@ -1,5 +1,6 @@
 """
-__Example: Point-Source Positions__
+Modeling: Point-Source Position
+===============================
 
 To fit a lens model to positional constraints of a strong lens, we must perform lens modeling, which uses
 a `NonLinearSearch` to fit many different sets of multiple images to the dataset.
