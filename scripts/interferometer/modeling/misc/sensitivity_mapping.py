@@ -99,10 +99,10 @@ search_base = af.DynestyStatic(
 )
 
 phase = al.PhaseInterferometer(
-    search=search_base, 
-    galaxies=base_model, 
-    settings=settings, 
-    real_space_mask=real_space_mask
+    search=search_base,
+    galaxies=base_model,
+    settings=settings,
+    real_space_mask=real_space_mask,
 )
 
 result = phase.run(dataset=interferometer, mask=visibilities_mask)
@@ -168,6 +168,8 @@ based on the value of sensitivity being computed.
 In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
 1e6 MSun and 1e13 MSun.
 """
+
+
 def simulate_function(instance):
 
     """
@@ -224,12 +226,16 @@ This requires us to write a wrapper around the PyAutoLens `Analysis` class.
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase.interferometer import analysis as a
 
+
 class Analysis(a.Analysis):
     def __init__(self, masked_interferometer):
 
         super().__init__(
-            masked_interferometer=masked_interferometer, settings=settings, cosmology=cosmo.Planck15
+            masked_interferometer=masked_interferometer,
+            settings=settings,
+            cosmology=cosmo.Planck15,
         )
+
 
 """
 We next specify the search used to perform each model fit by the sensitivity mapper.

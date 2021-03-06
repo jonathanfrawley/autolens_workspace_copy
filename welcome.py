@@ -133,7 +133,7 @@ input(
     "###########################\n\n"
     """
     PyAutoLens is now set up and you can begin exploring the workspace. We recommend new users begin by following the
-    'overview.ipynb' notebook, which gives an overview of **PyAutoLens** and the workspace.
+    'introduction.ipynb' notebook, which gives an overview of **PyAutoLens** and the workspace.
     
     Examples are provided as both Jupyter notebooks in the 'notebooks' folder and Python scripts in the 'scritps'
     folder. It is up to you how you would prefer to use PyAutoLens. With these folders, you can find the following

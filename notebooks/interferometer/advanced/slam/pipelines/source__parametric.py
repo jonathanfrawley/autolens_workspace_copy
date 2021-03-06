@@ -22,8 +22,6 @@ Phase 1:
 
 def make_pipeline(slam, settings, real_space_mask):
 
-
-
     pipeline_name = "pipeline_source[parametric]"
 
     """

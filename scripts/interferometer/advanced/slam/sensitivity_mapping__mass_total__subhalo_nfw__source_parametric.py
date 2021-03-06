@@ -231,15 +231,22 @@ data simulated by the `simulate_function` for that model.
 
 This requires us to write a wrapper around the PyAutoLens `Analysis` class.
 """
+
+
 class Analysis(a.Analysis):
     def __init__(self, masked_interferometer):
 
         super().__init__(
-            masked_interferometer=masked_interferometer, settings=settings, cosmology=cosmo.Planck15
+            masked_interferometer=masked_interferometer,
+            settings=settings,
+            cosmology=cosmo.Planck15,
         )
 
-        self.hyper_galaxy_image_path_dict = mass_results.last.hyper_galaxy_image_path_dict
+        self.hyper_galaxy_image_path_dict = (
+            mass_results.last.hyper_galaxy_image_path_dict
+        )
         self.hyper_model_image = mass_results.last.hyper_model_image
+
 
 subhalo = subhalo.sensitivity_mapping(
     slam=slam,
@@ -247,7 +254,7 @@ subhalo = subhalo.sensitivity_mapping(
     visibilities_mask=visibilities_mask,
     real_space_mask=real_space_mask,
     mass_results=mass_results,
-    analysis_cls=Analysis
+    analysis_cls=Analysis,
 )
 subhalo.run()
 

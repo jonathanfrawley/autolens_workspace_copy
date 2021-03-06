@@ -24,8 +24,6 @@ def make_pipeline(
     slam, settings, real_space_mask, source_results, end_stochastic=False
 ):
 
-
-
     pipeline_name = "pipeline_mass[total]"
 
     """
@@ -81,7 +79,7 @@ def make_pipeline(
     if end_stochastic:
 
         phase1 = phase1.extend_with_stochastic_phase(
-            stochastic_search=af.DynestyStatic(n_live_points=100),
+            stochastic_search=af.DynestyStatic(n_live_points=100)
         )
 
     else:

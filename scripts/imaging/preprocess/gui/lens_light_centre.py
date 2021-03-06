@@ -117,5 +117,5 @@ try:
     light_centres.output_to_json(
         file_path=path.join(dataset_path, "light_centres.json"), overwrite=True
     )
-except  AttributeError:
+except AttributeError:
     pass

@@ -57,8 +57,6 @@ Phase 3:
 
 def make_pipeline(setup, settings):
 
-
-
     pipeline_name = "pipeline_light[parametric]_mass[light_dark]_source[parametric]"
 
     """

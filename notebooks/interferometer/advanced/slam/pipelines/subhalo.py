@@ -46,7 +46,7 @@ Refine the best-fit detected subhalo from the previous phase.
 
 
 def make_pipeline_single_plane(
-        slam, settings, real_space_mask, mass_results, end_stochastic=False
+    slam, settings, real_space_mask, mass_results, end_stochastic=False
 ):
     pipeline_name = "pipeline_subhalo"
 
@@ -194,7 +194,7 @@ def make_pipeline_single_plane(
 
 
 def make_pipeline_multi_plane(
-        slam, settings, real_space_mask, mass_results, end_stochastic=False
+    slam, settings, real_space_mask, mass_results, end_stochastic=False
 ):
     pipeline_name = "pipeline_subhalo"
 
@@ -356,7 +356,7 @@ def make_pipeline_multi_plane(
 
 
 def sensitivity_mapping(
-        slam, uv_wavelengths, real_space_mask, visibilities_mask, mass_results, analysis_cls
+    slam, uv_wavelengths, real_space_mask, visibilities_mask, mass_results, analysis_cls
 ):
     """
     To begin, we define the `base_model` that we use to perform sensitivity mapping. This is the lens model that is f

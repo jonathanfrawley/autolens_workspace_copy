@@ -54,8 +54,6 @@ Phase 4:
 
 def make_pipeline(setup, settings, real_space_mask):
 
-
-
     pipeline_name = "pipeline_mass[total]_source[inversion]"
 
     """

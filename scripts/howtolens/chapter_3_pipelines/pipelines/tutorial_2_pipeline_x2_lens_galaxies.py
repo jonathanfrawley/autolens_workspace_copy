@@ -57,7 +57,6 @@ Phase 4:
 
 def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0):
 
-
     pipeline_name = "pipeline__x2_galaxies"
 
     """

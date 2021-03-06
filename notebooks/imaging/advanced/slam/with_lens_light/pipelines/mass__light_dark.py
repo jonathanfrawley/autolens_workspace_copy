@@ -24,6 +24,7 @@ Phase 1:
     Notes: Automatically determines if the source is a model or instance based on if it is parametric or an inversion.
 """
 
+
 def make_pipeline(slam, settings, source_results, light_results, end_stochastic=False):
 
     pipeline_name = "pipeline_mass[light_dark]"
