@@ -2,7 +2,7 @@
 SLaM (Source, Light and Mass): Light Parametric + Mass Light Dark + Source Parametric
 =====================================================================================
 
-Using a source pipeline, a light pipeline and a mass pipeline this SLaM runner fits `Imaging` of a strong lens system
+Using a source pipeline, a light pipeline and a mass pipeline this SLaM runner fits strong lens `Imaging`
 where in the final phase of the pipeline:
 
  - The lens galaxy's `LightProfile`'s are modeled as an `EllipticalSersic` + `EllipticalExponential`, representing

@@ -2,7 +2,7 @@
 Pipelines: Light Parametric + Mass Light Dark + Source Parametric
 =================================================================
 
-Using a pipeline composed of five phases this runner fits `Imaging` of a strong lens system, where in the final phase
+Using a pipeline composed of five phases this runner fits strong lens `Imaging` , where in the final phase
 of the pipeline:
 
  - The lens galaxy's light is modeled parametrically as an `EllipticalSersic`.

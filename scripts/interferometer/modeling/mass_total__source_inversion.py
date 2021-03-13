@@ -149,14 +149,12 @@ settings = al.SettingsPhaseInterferometer(
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`, which we specify below. In this example, we use the
-nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/), with:
-
- - 50 live points.
+The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the
+nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
 The script `autolens_workspace/notebooks/interferometer/modeling/customize/non_linear_searches.py` gives a description 
-of the types of non-linear searches that can be used with **PyAutoLens**. If you do not know what a `NonLinearSearch` 
-is or how it operates, I recommend you complete chapters 1 and 2 of the HowToLens lecture series.
+of the types of non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` 
+is or how it operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 
 The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
 

@@ -144,8 +144,8 @@ specify below as the nested sampling algorithm Dynesty (https://dynesty.readthed
 other examples on the workspace if you are unsure what this does!
 
 The script `autolens_workspace/notebooks/modeling/customize/non_linear_searches.py` gives a description of the types of
-non-linear searches that can be used with **PyAutoLens**. If you do not know what a `NonLinearSearch` is or how it 
-operates, I recommend you complete chapters 1 and 2 of the HowToLens lecture series.
+non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` is or how it 
+operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("misc", dataset_name),

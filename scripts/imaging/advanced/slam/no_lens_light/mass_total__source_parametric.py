@@ -2,7 +2,7 @@
 SLaM (Source, Light and Mass): Mass Total + Source Parametric
 =============================================================
 
-Using a source pipeline and a mass pipeline this SLaM runner fits `Imaging` of a strong lens system, where in the
+Using a source pipeline and a mass pipeline this SLaM runner fits strong lens `Imaging` , where in the
 final phase of the pipeline:
 
  - The lens galaxy's light is omitted from the data and model.

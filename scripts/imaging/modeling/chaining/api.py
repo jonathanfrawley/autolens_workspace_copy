@@ -109,7 +109,7 @@ __Search__
 You should be familiar with non-linear searches from other example scripts if not checkout the bginner examples
 and `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches.py`.
 
-In phase 1, we again use `Dynesty` however we set a new input parameter the `evidence_tolerance`. This is essentially
+For search 1, we again use `Dynesty` however we set a new input parameter the `evidence_tolerance`. This is essentially
 the stopping criteria of `Dynesty`, where high values means that it stops sampling earlier, at the expense of less
 robust parameter estimates and larger inferred parameter errors. Given we want phase 1 to be fast, we do not mind
 either of these things happening. 
