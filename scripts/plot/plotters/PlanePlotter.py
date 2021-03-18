@@ -45,7 +45,7 @@ source_plane = al.Plane(galaxies=[source_galaxy])
 """
 We can plot the `image_plane` by passing it and our `grid to a` PlanePlotter` and calling various `figure_*` methods.
 
-In this example script our `lens_galaxy` only had a `MassProfile` so only methods like `figure_convergence` are
+In this script our `lens_galaxy` only had a `MassProfile` so only methods like `figure_convergence` are
 available.
 """
 plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=grid)

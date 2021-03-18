@@ -7,7 +7,7 @@ light and mass models in a pipeline.
 
 The benefit of doing this is a reduction in the number of free parameters fitted for as well as the removal of
 systematic solutions which place the lens mass model unrealistically far from its true centre. The `advanced` pipelines
-are built to use this input centres in early phases, but remove it in later phases one an accurate lens model has
+are built to use this input centres in early searches, but remove it in later searches one an accurate lens model has
 been inffered.
 
 If you create a light_centre for your dataset, you must also update your runner to use them by loading them and

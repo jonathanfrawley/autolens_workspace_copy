@@ -8,9 +8,9 @@ All pipelines begin with a comment describing the pipeline and a phase-by-phase 
 In this pipeline, we fit the a strong lens using an `EllipticalSersic` `LightProfile`, `EllipticalIsothermal` 
 `MassProfile` and parametric `EllipticalSersic` source.
 
-The pipeline is three phases:
+The pipeline is three searches:
 
-Phase 1:
+Search 1:
 
     Fit and subtract the lens light model.
     
@@ -20,24 +20,24 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Fit the lens mass model and source `LightProfile`.
     
     Lens Light: EllipticalSersic
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: EllipticalSersic
-    Prior Passing: Lens Light (instance -> phase 1).
-    Notes: Uses the lens subtracted image from phase 1.
+    Prior Passing: Lens Light (instance -> search 1).
+    Notes: Uses the lens subtracted image from search 1.
 
-Phase 3:
+Search 3:
 
-    Refine the lens light and mass models and source light model using priors initialized from phases 1 and 2.
+    Refine the lens light and mass models and source light model using priors initialized from searches 1 and 2.
     
     Lens Light: EllipticalSersic
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: EllipticalSersic
-    Prior Passing: Lens light (model -> phase 1), lens mass and source light (model -> phase 2).
+    Prior Passing: Lens light (model -> search 1), lens mass and source light (model -> search 2).
     Notes: None
 """
 
@@ -54,7 +54,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     path_prefix = path.join(path_prefix, pipeline_name)
 
     """
-    Phase 1: Fit only the lens galaxy's light, where we:
+    Search 1: Fit only the lens galaxy's light, where we:
 
         1) Set priors on the lens galaxy $(y,x)$ centre such that we assume the image is centred around the lens galaxy.
 
@@ -72,14 +72,14 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 2: Fit the lens's `MassProfile`'s and source galaxy's light, where we:
+    Search 2: Fit the lens's `MassProfile`'s and source galaxy's light, where we:
 
-        1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
+        1) Fix the foreground lens light subtraction to the lens galaxy light model from search 1.
         2) Set priors on the centre of the lens galaxy's total mass distribution by chaining them to those inferred for 
-           the `LightProfile` in phase 1.
+           the `LightProfile` in search 1.
            
-    In phase 2, we fit the source-`Galaxy`'s light. Thus, we want to fix the lens light model to the model inferred
-    in phase 1, ensuring the image we fit is lens subtracted. We do this below by passing the lens light as an
+    In search 2, we fit the source-`Galaxy`'s light. Thus, we want to fix the lens light model to the model inferred
+    in search 1, ensuring the image we fit is lens subtracted. We do this below by passing the lens light as an
  `instance` object, a trick we use in nearly all pipelines!
 
     By passing an `instance`, we are telling **PyAutoLens** that we want it to pass the maximum log likelihood result of
@@ -87,7 +87,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     not free parameters fitted for by the non-linear search, thus this reduces the dimensionality of the non-linear 
     search making model-fitting faster and more reliable. 
      
-    Thus, phase2 includes the lens light model from phase 1, but it is completely fixed during the model-fit!
+    Thus, phase2 includes the lens light model from search 1, but it is completely fixed during the model-fit!
     """
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
     mass.centre_0 = phase1.result.model.galaxies.lens.bulge.centre_0
@@ -113,12 +113,12 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 3: Fit simultaneously the lens and source galaxies, where we:
+    Search 3: Fit simultaneously the lens and source galaxies, where we:
 
-        1) Set the lens's light, mass, and source's light using the results of phases 1 and 2.
+        1) Set the lens's light, mass, and source's light using the results of searches 1 and 2.
         
     As in chapter 2, we can use the `model` attribute to do this. Our `Dynesty` search now uses slower and more 
-    thorough settings than the previous phases, to ensure we robustly quantify the errors.
+    thorough settings than the previous searches, to ensure we robustly quantify the errors.
     """
     phase3 = al.PhaseImaging(
         search=af.DynestyStatic(

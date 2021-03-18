@@ -21,8 +21,8 @@ import autofit as af
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy's `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
@@ -93,9 +93,9 @@ solution, the rate of increase of the estimated Bayesian evidence slows down. Th
 mean Dynesty terminate sooner.
     
 A high `evidence_tolerance` will make the errors estimated on every parameter unreliable and its value must be kept 
-below 0.8 for reliable error estimates. However, when chaining phases, we typically *do not care* about the errors 
-in the first phase, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
-faster (we'll estimate reliable errors in the second phase when the `evidence_tolerance is 0.8 or less). 
+below 0.8 for reliable error estimates. However, when chaining searches, we typically *do not care* about the errors 
+in the first search, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
+faster (we'll estimate reliable errors in the second search when the `evidence_tolerance is 0.8 or less). 
 
 walks:
 
@@ -214,8 +214,8 @@ and do not provide high likelihood fits to the data, but takes many extra iterat
 error estimates (perhaps this is our final lens model fit before we publish the results in a paper), these extra
 iterations are acceptable. 
 
-However, we often don't care about the errors. For example, in the previous tutorial when chaining phases, the only 
-result we used from the fit performed in the first phase was the maximum log likelihood model, omitting the errors
+However, we often don't care about the errors. For example, in the previous tutorial when chaining searches, the only 
+result we used from the fit performed in the first search was the maximum log likelihood model, omitting the errors
 entirely! Its seems wasteful to use a nested sampling algorithm like Dynesty to map out the entirity of parameter
 space when we don't use this information! 
 
@@ -273,7 +273,7 @@ will often find the global maxima when PySwarms doesn`t. So, if you're not happy
 it may be shrewd to bite-the-button on run-time and use Dynesty to get your initial lens model fit.
 
 In the next chapter, when we introduce pipelines, you'll note that are our general strategy to lens modeling is to
-initialize the model-fit with Dynesty, perform intermediate phases that refine the model with PySwarms and then
+initialize the model-fit with Dynesty, perform intermediate searches that refine the model with PySwarms and then
 end with Dynesty for robust errors. Here, we choose our non-linear searches based on what result we want!
 
 __MCMC__

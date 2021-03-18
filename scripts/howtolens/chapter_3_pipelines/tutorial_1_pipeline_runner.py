@@ -3,9 +3,9 @@ Tutorial 1: Lens and Source
 ===========================
 
 As discussed in chapter 2, an effective strategy for modeling strong lenses is to break the model-fitting procedure
-down into a series of phases, chaining the results of the phases to guide the `NonLinearSearch` as to where to
+down into a series of searches, chaining the results of the searches to guide the `NonLinearSearch` as to where to
 sample parameter space. In this chapter, we'll cover `Pipeline`'s, which provide a powerful means by which to
-chain together many phases.
+chain together many searches.
 
 In chapter 2, we fitted strong lens `Imaging` which included the lens galaxy's light. we're going to fit this dataset
 again (I promise, this is the last time!). However, now we're using pipelines, we can perform a different (and
@@ -19,13 +19,13 @@ we would say that these two model components (the lens's light and source's ligh
 So, as a newly trained lens modeler, what does the lack of covariance between these parameters make you think?
 Hopefully, you're thinking, why should I bother fitting the lens and source galaxy simultaneously? Surely we can
 find the right regions of non-linear parameter space by fitting each separately first? This is what we're going to do
-in this tutorial, using a pipeline composed of a modest 3 phases:
+in this tutorial, using a pipeline composed of a modest 3 searches:
 
  1) Fit the lens galaxy's light, ignoring the source.
  2) Fit the source-`Galaxy`'s light (and therefore lens galaxy's mass), ignoring the len`s light.
  3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
-Of course, given that we do not care for the errors in phases 1 and 2, we will set up our `NonLinearSearch` to perform
+Of course, given that we do not care for the errors in searches 1 and 2, we will set up our `NonLinearSearch` to perform
 sampling as fast as possible!
 """
 #%matplotlib inline
@@ -42,8 +42,8 @@ import autolens.plot as aplt
 """
 we'll use strong lensing data, where:
 
- - The lens galaxy's `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalExponential`.
  
 This image was fitted throughout chapter 2.
@@ -79,7 +79,7 @@ these in chapter 2, and a full description of all settings can be found in the e
 
  `autolens_workspace/notebooks/modeling/customize/settings.py`.
 
-The settings chosen here are applied to all phases in the pipeline.
+The settings chosen here are applied to all searches in the pipeline.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
@@ -113,7 +113,7 @@ that out, go to the script `pipelines/tutorial_1_pipeline_lens_and_source.py`, w
 the pipeline, as well as an overview of the tools we use to write the most general pipelines possible. Once you're 
 done, come back to this pipeline runner script and we'll wrap up tutorial 1.
 
-And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into 3 simple phases. This 
+And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into 3 simple searches. This 
 approach is much faster than fitting the lens and source simultaneously from the beginning. Instead of asking you 
 questions at the end of this chapter`s tutorials, I'm gonna give a Q&A - this`ll hopefully get you thinking about how 
 to approach pipeline writing.

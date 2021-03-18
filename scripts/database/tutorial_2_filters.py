@@ -33,7 +33,7 @@ agg = af.Aggregator(directory=path.join("output", "database"), completed_only=Tr
 We can filter using strings, requiring that the string appears in the full path of the output
 results. This is useful if you fit a samples of lenses where:
 
- - Multiple results, corresponding to different pipelines, phases and model-fits are stored in the same path.
+ - Multiple results, corresponding to different pipelines, searches and model-fits are stored in the same path.
  - Different runs using different `SettingsPhase` and `SetupPipeline` are in the same path.
  - Fits using different non-linear searches, with different settings, are contained in the same path.
 

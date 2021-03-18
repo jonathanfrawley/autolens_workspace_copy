@@ -6,9 +6,9 @@ import autolens as al
 In this pipeline, we fit the a strong lens using a `EllipticalIsothermal` `MassProfile`.and a source which uses an
 inversion.
 
-The pipeline is three phases:
+The pipeline is three searches:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass model and source `LightProfile`.
     
@@ -17,22 +17,22 @@ Phase 1:
     Prior Passing: None.
     Notes: None.
 
-Phase 2:
+Search 2:
 
-    Fit the source `Inversion` using the lens `MassProfile` inferred in phase 1.
+    Fit the source `Inversion` using the lens `MassProfile` inferred in search 1.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
     Prior Passing: Lens & Mass (instance -> phase1).
     Notes: Lens mass fixed, source `Inversion` parameters vary.
 
-Phase 3:
+Search 3:
 
-    Refines the lens light and mass models using the source `Inversion` of phase 2.
+    Refines the lens light and mass models using the source `Inversion` of search 2.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
-    Prior Passing: Lens Mass (model -> phase 1), Source `Inversion` (instance -> phase 2)
+    Prior Passing: Lens Mass (model -> search 1), Source `Inversion` (instance -> search 2)
     Notes: Lens mass varies, source `Inversion` parameters fixed.
 """
 
@@ -47,12 +47,12 @@ def make_pipeline(setup, settings):
     This pipeline is tagged according to whether:
 
         1) The lens galaxy mass model includes an  `ExternalShear`.
-        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 3 & 4).
+        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in searches 3 & 4).
     """
     path_prefix = path.join(setup.path_prefix, pipeline_name)
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source galaxy.
+    Search 1: Fit the lens's `MassProfile`'s and source galaxy.
     """
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(
@@ -68,9 +68,9 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
+    Search 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the lens's `MassProfile`'s to the results of phase 1.
+        1) Fix the lens's `MassProfile`'s to the results of search 1.
     """
     source = al.GalaxyModel(
         redshift=1.0,
@@ -105,19 +105,19 @@ def make_pipeline(setup, settings):
     )
 
     """
-    We now `extend` phase 1 with an additional `hyper phase` which uses the maximum log likelihood mass model of 
-    phase 1 above to refine the `Inversion`, by fitting only the parameters of the `Pixelization` and `Regularization`
+    We now `extend` search 1 with an additional `hyper phase` which uses the maximum log likelihood mass model of 
+    search 1 above to refine the `Inversion`, by fitting only the parameters of the `Pixelization` and `Regularization`
     (in this case, the shape of the `VoronoiMagnification` and `Regularization` coefficient of the `Constant`.
 
-    The `hyper` phase results are accessible as attributes of the phase results and used in phase 3 below.
+    The `hyper` phase results are accessible as attributes of the phase results and used in search 3 below.
     """
     phase2 = phase2.extend_with_hyper_phase(setup_hyper=al.SetupHyper())
 
     """
-    Phase 3: Fit the lens's mass using the input pipeline `Pixelization` & `Regularization`, where we:
+    Search 3: Fit the lens's mass using the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the source `Inversion` parameters to the results of the extended `Inversion` phase of phase 2.
-        2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 1.
+        1) Fix the source `Inversion` parameters to the results of the extended `Inversion` phase of search 2.
+        2) Set priors on the lens galaxy `MassProfile`'s using the results of search 1.
     """
     phase3 = al.PhaseImaging(
         search=af.DynestyStatic(

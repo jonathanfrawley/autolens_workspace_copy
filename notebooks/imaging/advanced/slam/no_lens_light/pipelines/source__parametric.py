@@ -8,7 +8,7 @@ source galaxy.
 
 This pipeline uses 1 phase:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass model and source `LightProfile`.
     
@@ -38,7 +38,7 @@ def make_pipeline(slam, settings):
     )
 
     """
-    Phase 1: Fit the lens`s `MassProfile`'s and source galaxy.
+    Search 1: Fit the lens`s `MassProfile`'s and source galaxy.
     """
 
     phase1 = al.PhaseImaging(

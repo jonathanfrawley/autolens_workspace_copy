@@ -1,5 +1,5 @@
 """
-Tutorial 5: Chaining Phases
+Tutorial 5: Chaining searches
 ==========================
 
 So, we've learnt that if our parameter space is too complex, our `NonLinearSearch` might fail to find the global
@@ -14,18 +14,18 @@ analysis to a different strong lens. The less complex we make our model, the les
 much on searching parameter space for longer, we could end up with phase`s that take days, weeks or months to run.
 
 In this exercise, we're going to combine these 3 approaches so that we can fit complex and realistic lens models in a
-way that that can be generalized to many different strong lenses. To do this, we'll run 2 phases, and chain the lens
-model inferred in the first phase to the priors of the second phase`s lens model.
+way that that can be generalized to many different strong lenses. To do this, we'll run 2 searches, and chain the lens
+model inferred in the first search to the priors of the second search`s lens model.
 
-Our first phase will make the same light-traces-mass assumption we made in the previous tutorial. We saw that this
+Our first search will make the same light-traces-mass assumption we made in the previous tutorial. We saw that this
 gives a reasonable lens model. However, we'll make a couple of extra simplifying assumptions, to really try and bring
 our lens model complexity down and get the `NonLinearSearch` running fast.
 
-The model we infer above will therefore be a lot less realistic. But it doesn`t matter, because in the second phase
+The model we infer above will therefore be a lot less realistic. But it doesn`t matter, because in the second search
 we're going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
-first phase, we can use its results to tune the priors of our second phase. For example:
+first search, we can use its results to tune the priors of our second search. For example:
 
- 1) The first phase should give us a pretty good idea of the lens galaxy's light and mass profiles, for example its
+ 1) The first search should give us a pretty good idea of the lens galaxy's light and mass profiles, for example its
  intensity, effective radius and einstein radius.
 
  2) It should also give us a pretty good fit to the lensed source galaxy. This means we'll already know where in
@@ -47,8 +47,8 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
@@ -126,7 +126,7 @@ Now lets create the phase.
 """
 phase1 = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix="howtolens", name="phase_t5_chaining_phases_1", n_live_points=40
+        path_prefix="howtolens", name="phase_t5_chaining_searches_1", n_live_points=40
     ),
     settings=settings,
     galaxies=af.CollectionPriorModel(lens=lens, source=source),
@@ -137,7 +137,7 @@ Lets run the phase, noting that our liberal approach to reducing the lens model 
 11 parameters. (The results are still preloaded for you, but feel free to run it yourself, its fairly quick).
 """
 print(
-    "Dynesty has begun running - checkout the workspace/output/5_chaining_phases"
+    "Dynesty has begun running - checkout the workspace/output/5_chaining_searches"
     " folder for live output of the results, images and lens model."
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
@@ -153,7 +153,7 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase1_result.max_log_likelihoo
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those result. Lets setup 
+Now all we need to do is look at the results of search 1 and tune our priors in search 2 to those result. Lets setup 
 a custom phase that does exactly that.
 
 GaussianPriors are a nice way to do this. They tell the `NonLinearSearch` where to look, but leave open the 
@@ -166,7 +166,7 @@ lens = al.GalaxyModel(
 source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 """
-What I've done below is looked at the results of phase 1 and manually specified a prior for every parameter. If a 
+What I've done below is looked at the results of search 1 and manually specified a prior for every parameter. If a 
 parameter was fixed in the previous phase, its prior is based around the previous value. Don't worry about the sigma 
 values for now, I've chosen values that I know will ensure reasonable sampling, but we'll cover this later.
 
@@ -241,14 +241,14 @@ than we're used to, I didn't have to edit the config files to get this phase to 
 """
 phase2 = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix="howtolens", name="phase_t5_chaining_phases_2", n_live_points=40
+        path_prefix="howtolens", name="phase_t5_chaining_searches_2", n_live_points=40
     ),
     settings=settings,
     galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 print(
-    "Dynesty has begun running - checkout the workspace/output/5_chaining_phases"
+    "Dynesty has begun running - checkout the workspace/output/5_chaining_searches"
     " folder for live output of the results, images and lens model."
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
@@ -264,13 +264,13 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase2_result.max_log_likelihoo
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-Our choice to chain two phases together was a huge success. We managed to fit a complex and realistic model, but were 
+Our choice to chain two searches together was a huge success. We managed to fit a complex and realistic model, but were 
 able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We could apply 
-phase 1 to pretty much any strong lens and therefore get ourselves a decent lens model with which to tune phase 2`s 
+search 1 to pretty much any strong lens and therefore get ourselves a decent lens model with which to tune search 2`s 
 priors.
 
 You`re probably thinking though that there is one huge, giant, glaring flaw in all of this that I've not mentioned. 
-Phase 2 can`t be generalized to another lens - it`s priors are tuned to the image we fitted. If we had a lot of lenses, 
+Search 2 can`t be generalized to another lens - it`s priors are tuned to the image we fitted. If we had a lot of lenses, 
 we`d have to write a new phase2 for every single one. This isn't ideal, is it?
 
 Fortunately, we can pass priors in **PyAutoLens** without specifying the specific values, using what we call promises. 
@@ -279,7 +279,7 @@ The code below sets up phase2 with priors fully chained, but without specifying 
 phase2_pass = al.PhaseImaging(
     search=af.DynestyStatic(
         path_prefix="howtolens",
-        name="phase_t5_chaining_phases_2_pass",
+        name="phase_t5_chaining_searches_2_pass",
         n_live_points=40,
     ),
     settings=settings,
@@ -298,10 +298,10 @@ By using the following API to chain the result to the next model:
  source = phase1_result.model.galaxies.source
  
 Once the above phase is running, you should checkout its `model.info` file. The parameters do not use the default 
-priors we saw in phase 1 (which are typically broad UniformPriors). Instead, it uses GaussianPrior`s where:
+priors we saw in search 1 (which are typically broad UniformPriors). Instead, it uses GaussianPrior`s where:
 
- - The mean values are the median PDF results of every parameter in phase 1.
- - Many sigma values are the errors computed at 3.0 sigma confidence of every parameter in phase 1.
+ - The mean values are the median PDF results of every parameter in search 1.
+ - Many sigma values are the errors computed at 3.0 sigma confidence of every parameter in search 1.
  - Other sigma values are higher than the errors computed at 3.0 sigma confidence. These instead use the value 
  specified in the `width_modifier` field of the `Profile`'s entry in the `json_config` files (we will discuss
  why this is used in a moment).
@@ -309,7 +309,7 @@ priors we saw in phase 1 (which are typically broad UniformPriors). Instead, it 
 Thus, much like the manual GaussianPriors I specified above, we have set up the phase with GaussianPriors centred on
 the high likelihood regions of parameter space!
  
-The priors passed above retained the model parameterization of phase 1, including the fixed values of (0.0, 0.0) for
+The priors passed above retained the model parameterization of search 1, including the fixed values of (0.0, 0.0) for
 the centres of the light and mass profiles and the alignment between their elliptical components. However, we often 
 want to pass priors *and* change the model parameterization.
 
@@ -353,7 +353,7 @@ We now create and run the phase, using the lens `GalaxyModel` we created above.
 phase2_pass = al.PhaseImaging(
     search=af.DynestyStatic(
         path_prefix="howtolens",
-        name="phase_t5_chaining_phases_2_pass_individual",
+        name="phase_t5_chaining_searches_2_pass_individual",
         n_live_points=40,
     ),
     settings=settings,
@@ -369,7 +369,7 @@ Don't worry too much about whether you fully understand the prior passing API ye
 chapter 3 when we consider pipelines. Furthermore, in the `autolens_workspace/pipelines` directly you'll find
 numerous example pipelines that give examples of how to perform prior passing for many common lens models. 
 
-To end, lets consider how we passed priors using the `model` attribute of the phase 1 results above, as its not clear 
+To end, lets consider how we passed priors using the `model` attribute of the search 1 results above, as its not clear 
 how priors are passed. Do they use a UniformPrior or GaussianPrior? What are the limits / mean / width of 
 these priors?
 
@@ -384,7 +384,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
  1) The new parameter, in this case the einstein radius, uses a GaussianPrior. A GaussianPrior is ideal, as the 1D 
  pdf results we compute at the end of a phase are easily summarized as a Gaussian.
 
- 2) The mean of the GaussianPrior is the median PDF value of the parameter estimated in phase 1.
+ 2) The mean of the GaussianPrior is the median PDF value of the parameter estimated in search 1.
     
  This ensures that the initial sampling of the new phase's non-linear starts by searching the region of non-linear 
  parameter space that correspond to highest log likelihood solutions in the previous phase. Thus, we're setting 
@@ -404,7 +404,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
        
  Unfortunately, this doesn't always work. Lens modeling is prone to an effect called `over-fitting` where we 
  underestimate the errors on our lens model parameters. This is especially true when we take the shortcuts in 
- early phases - fast `NonLinearSearch` settings, simplified lens models, etc.
+ early searches - fast `NonLinearSearch` settings, simplified lens models, etc.
     
  Therefore, the `width_modifier` in the json config files are our fallback. If the error on a parameter is 
  suspiciously small, we instead use the value specified in the widths file. These values are chosen based on 
@@ -452,22 +452,22 @@ you should not need to change these values to get lens modeling to work proficie
 
 __EXAMPLE__
 
-Lets go through an example using a real parameter. Lets say in phase 1 we fit the lens galaxy's light with an 
+Lets go through an example using a real parameter. Lets say in search 1 we fit the lens galaxy's light with an 
 elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 ± 2.0 where the error value of 2.0 
-was computed at 3.0 sigma confidence. To pass this as a prior to phase 2, we would write:
+was computed at 3.0 sigma confidence. To pass this as a prior to search 2, we would write:
 
  lens.bulge.sersic_index = phase1.result.model.lens.bulge.sersic_index
 
-The prior on the lens galaxy's sersic `LightProfile` in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
+The prior on the lens galaxy's sersic `LightProfile` in search 2 would thus be a GaussianPrior, with mean=4.0 and 
 sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 ± 2.0 to 
 4.0 ± 1.0, the sigma of the Gaussian prior would instead be 1.0. 
 
-If the error on the Sersic index in phase 1 had been really small, lets say, 0.01, we would instead use the value of the 
+If the error on the Sersic index in search 1 had been really small, lets say, 0.01, we would instead use the value of the 
 Sersic index width in the priors config file to set sigma instead. In this case, the prior config file specifies 
-that we use an "Absolute" value of 0.8 to chain this prior. Thus, the GaussianPrior in phase 2 would have a mean=4.0 and 
+that we use an "Absolute" value of 0.8 to chain this prior. Thus, the GaussianPrior in search 2 would have a mean=4.0 and 
 sigma=0.8.
 
-If the prior config file had specified that we use an relative value of 0.8, the GaussianPrior in phase 2 would have a 
+If the prior config file had specified that we use an relative value of 0.8, the GaussianPrior in search 2 would have a 
 mean=4.0 and sigma=3.2.
 
 And with that, we're done. Chaining priors is a bit of an art form, but one that tends to work really well. Its true to 

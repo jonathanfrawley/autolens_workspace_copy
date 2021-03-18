@@ -42,8 +42,9 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Load the strong lens dataset `mass_sie__source_sersic` `from .fits files, which is the dataset we will
-use to perform lens modeling.
+__Dataset__
+
+Load the strong lens dataset `mass_sie__source_sersic` from .fits files, which we fit with the lens model.
 """
 
 dataset_name = "mass_sie__subhalo_nfw__source_sersic"

@@ -9,9 +9,9 @@ two `EllipticalIsothermal` `MassProfile`'s and a parametric `EllipticalSersic` s
 The pipeline assumes the lens galaxies are at (0.0", -1.0") and (0.0", 1.0") and is not a general pipeline
 and cannot be applied to any image of a strong lens.
 
-The pipeline is four phases:
+The pipeline is four searches:
 
-Phase 1:
+Search 1:
 
     Fit the `LightProfile` of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
     
@@ -21,35 +21,35 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Fit the `LightProfile` of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
     
     Lens Light: EllipticalSersic + EllipticalSersic
     Lens Mass: None
     Source Light: None
-    Prior Passing: Lens Light (instance -> phase 1).
-    Notes: Uses the left lens subtracted image from phase 1.
+    Prior Passing: Lens Light (instance -> search 1).
+    Notes: Uses the left lens subtracted image from search 1.
 
-Phase 3:
+Search 3:
 
     Use this lens-subtracted image to fit the source-`Galaxy`'s light. The `MassProfile`'s of the two lens galaxies
-    can use the results of phases 1 and 2 to initialize their priors.
+    can use the results of searches 1 and 2 to initialize their priors.
 
     Lens Light: EllipticalSersic + EllipticalSersic
     Lens Mass: EllipticalIsothermal + EllipticalIsothermal
     Source Light: EllipticalSersic
-    Prior Passing: Lens light (instance -> phases 1 & 2).
+    Prior Passing: Lens light (instance -> searches 1 & 2).
     Notes: None
     
-Phase 4:
+Search 4:
 
-    Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
+    Fit all relevant parameters simultaneously, using priors from searches 1, 2 and 3.
     
     Lens Light: EllipticalSersic + EllipticalSersic
     Lens Mass: EllipticalIsothermal + EllipticalIsothermal
     Source Light: EllipticalSersic
-    Prior Passing: Lens light (model -> phases 1 & 2), Lens mass & Source light (model -> phase 3).
+    Prior Passing: Lens light (model -> searches 1 & 2), Lens mass & Source light (model -> search 3).
     Notes: None
     
 """
@@ -67,7 +67,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     path_prefix = path.join(path_prefix, pipeline_name)
 
     """
-    Phase 1: Fit the left lens galaxy's light, where we:
+    Search 1: Fit the left lens galaxy's light, where we:
 
         1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
     """
@@ -90,7 +90,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 2: Fit the lens galaxy on the right, where we:
+    Search 2: Fit the lens galaxy on the right, where we:
 
         1) Fix the centres to (0.0, 1.0), the pixel we know the right `Galaxy`'s light centre peaks.
         2) Pass the left lens's light model as an instance, to improve the fitting of the right galaxy.
@@ -111,9 +111,9 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 3: Fit the source galaxy, where we: 
+    Search 3: Fit the source galaxy, where we: 
     
-        1) Perform the lens light subtraction using the models inferred in phases 1 and 2.
+        1) Perform the lens light subtraction using the models inferred in searches 1 and 2.
         2) Fix the centres of the mass profiles to (0.0, 1.0) and (0.0, -1.0).
         
     Note how when we construct the `GalaxyModel` we are using the results above to set up the light profiles, but
@@ -152,12 +152,12 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 4: Fit both lens galaxy's light and mass profiles, as well as the source-galaxy, simultaneously, where we:
+    Search 4: Fit both lens galaxy's light and mass profiles, as well as the source-galaxy, simultaneously, where we:
     
-        1) Use the results of phases 1 and 2 to initialize the lens light models.
-        2) Use the results of phase 3 to initialize the lens mass and source light models.
+        1) Use the results of searches 1 and 2 to initialize the lens light models.
+        2) Use the results of search 3 to initialize the lens mass and source light models.
 
-    Remember that in the above phases, we fixed the centres of the light and mass profiles. Thus, if we were to simply
+    Remember that in the above searches, we fixed the centres of the light and mass profiles. Thus, if we were to simply
     setup these model components using the command:
     
         bulge=phase1.result.model.galaxies.left_lens.bulge

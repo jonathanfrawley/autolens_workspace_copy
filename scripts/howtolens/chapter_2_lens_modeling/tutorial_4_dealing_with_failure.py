@@ -26,8 +26,8 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"

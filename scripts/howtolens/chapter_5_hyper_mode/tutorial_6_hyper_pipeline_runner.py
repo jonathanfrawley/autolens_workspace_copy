@@ -22,7 +22,7 @@ import autolens.plot as aplt
 we'll use strong lensing data, where:
 
  - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic``.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
@@ -52,7 +52,7 @@ these in chapter 2, and a full description of all settings can be found in the e
 
  `autolens_workspace/notebooks/modeling/customize/settings.py`.
 
-The settings chosen here are applied to all phases in the pipeline.
+The settings chosen here are applied to all searches in the pipeline.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
@@ -66,7 +66,7 @@ The setup module customizes the behaviour of a pipeline. Hyper-fitting brings wi
  - If the level of background noise is modeled throughout the pipeline (default True)
  - If the background sky is modeled throughout the pipeline (default False)
 
-Each of these features uses their own `NonLinearSearch` in extended `hyper phases`.
+Each of these features uses their own `NonLinearSearch` in extended `hyper searches`.
     
 The `SetupHyper` object controls the behaviour of these hyper-mode settings.
 """
@@ -100,7 +100,6 @@ setup = al.SetupPipeline(
 """
 Lets import the pipeline and run it.
 """
-from pipelines import tutorial_6_hyper_pipeline
 
 # pipeline_hyper = tutorial_6_hyper_pipeline.make_pipeline(setup=setup, settings=settings)
 

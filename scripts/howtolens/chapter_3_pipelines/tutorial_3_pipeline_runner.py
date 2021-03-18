@@ -27,7 +27,7 @@ import autolens.plot as aplt
 we'll use new strong lensing data, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is four `EllipticalSersic``..
 """
 dataset_name = "mass_sie__source_sersic_x4"
@@ -56,7 +56,7 @@ imaging_plotter.subplot_imaging()
 """
 Yep, that`s a pretty complex source. There are clearly more than 4 peaks of light - I wouldn't like to guess how many
 sources of light there truly is! You'll also notice I omitted the lens galaxy's light for this system. This is to 
-keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury for a real galaxy.
+keep the number of parameters down and the searches running fast, but we wouldn't get such a luxury for a real galaxy.
 
 __Settings__
 
@@ -65,7 +65,7 @@ these in chapter 2, and a full description of all settings can be found in the e
 
  `autolens_workspace/notebooks/modeling/customize/settings.py`.
 
-The settings chosen here are applied to all phases in the pipeline.
+The settings chosen here are applied to all searches in the pipeline.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 

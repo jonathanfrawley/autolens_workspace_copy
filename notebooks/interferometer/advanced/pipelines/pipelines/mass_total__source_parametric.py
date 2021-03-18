@@ -3,15 +3,15 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit `Interferometer` of a strong lens system where:
+In this pipeline, we fit `Interferometer` with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is modeled as an input total `MassProfile` (default=`EllipticalPowerLaw`).
- - The source galaxy's surface-brightness is modeled using an `Inversion`.
+ - The lens galaxy's total mass distribution is an input total `MassProfile` (default=`EllipticalPowerLaw`).
+ - The source galaxy's surface-brightness is an `Inversion`.
 .
-The pipeline is four phases:
+The pipeline is four searches:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass with an `EllipticalIsothermal` (and optional shear) and source with the parametric profiles input
     into `SetupSourceParametric` (e.g. the `bulge_prior_model`, `disk_prior_model`, etc). The default is :
@@ -25,14 +25,14 @@ Phase 1:
     Prior Passing: None.
     Notes: The parametric source model depends on inputs in SetupSourceParametric such as `align_bulge_disk_centre`.
 
-Phase 2:
+Search 2:
 
     Fit the `SetupMassTotal.mass_prior_model` (default=`EllipticalPowerLaw`) model, using priors from the  
-    `EllipticalIsothermal` mass model of phase 1 and the parametric source model with priors from phase `.
+    `EllipticalIsothermal` mass model of search 1 and the parametric source model with priors from phase `.
     
     Lens Mass: SetupMassTotal.mass_prior_model + ExternalShear
     Source Light: SetupSourceParametric.bulge_prior_model + SetupSourceParametric.disk_prior_model + others
-    Prior Passing: Lens Mass (model -> phase 1), Source `LightProfile`'s (model -> phase 1)
+    Prior Passing: Lens Mass (model -> search 1), Source `LightProfile`'s (model -> search 1)
     Notes: All parameters free and vary
 """
 
@@ -52,7 +52,7 @@ def make_pipeline(setup, settings, real_space_mask):
     path_prefix = path.join(setup.path_prefix, pipeline_name, setup.tag)
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
+    Search 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
 
         1) Use an `EllipticalIsothermal` for the lens's mass irrespective of the final mass model that is fitted by 
            the pipeline.
@@ -83,11 +83,11 @@ def make_pipeline(setup, settings, real_space_mask):
     )
 
     """
-    Phase 2: Fit the lens's `MassProfile`'s with the input `SetupMassTotal.mass_prior_model` using the parametric 
+    Search 2: Fit the lens's `MassProfile`'s with the input `SetupMassTotal.mass_prior_model` using the parametric 
     source  model of the phase above, where we:
 
-        1) Use the results of phase 1 to initialize priors on the source `LightProfile`'s (`bulge`, `disk`, etc.).
-        2) Set priors on the lens galaxy mass using the `EllipticalIsothermal` (and `ExternalShear`) of phase 1.
+        1) Use the results of search 1 to initialize priors on the source `LightProfile`'s (`bulge`, `disk`, etc.).
+        2) Set priors on the lens galaxy mass using the `EllipticalIsothermal` (and `ExternalShear`) of search 1.
     """
 
     """

@@ -4,7 +4,7 @@ Simulator: x4 Source
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is four `EllipticalSersic`s.
 
 This produces a very complex lensed source galaxy, which is used to illustrate source reconstructions on pixel-grids

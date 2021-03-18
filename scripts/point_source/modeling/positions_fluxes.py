@@ -2,13 +2,10 @@
 Modeling: Point-Source Position + Fluxes
 ========================================
 
-To fit a lens model to positional constraints of a strong lens, we must perform lens modeling, which uses
-a `NonLinearSearch` to fit many different sets of multiple images to the dataset.
+In this script, we fit a `PointSourceDataset` with a strong lens model where:
 
-In this example script, we fit the multiple-image `Positions` of a strong lens system where:
-
- - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
- - The source `Galaxy` is modeled as a `PointSource`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The source `Galaxy` is a `PointSource`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -22,6 +19,8 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__Dataset__
+
 Load the strong lens dataset `mass_sie__source_point`, which is the dataset we will use to perform lens modeling.
 
 We begin by loading an image of the dataset. Although we are performing point-source modeling and will not use this
@@ -90,44 +89,31 @@ print(positions_noise_map)
 fluxes_noise_map = al.ValuesIrregular(values=[[1.0, 2.0, 3.0, 4.0]])
 
 """
-__Phase__
-
-To perform lens modeling, we create a `PhasePointSource` object, which comprises:
-
-   - The `GalaxyModel`'s used to fit the data.
-   - The `SettingsPhase` which customize how the model is fitted to the data.
-   - The `NonLinearSearch` used to sample parameter space.
-
-Once we have create the phase, we `run` it by passing it the data and mask.
-
 __Model__
 
 We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
-example our lens mooel is:
+example we fit a lens model where:
 
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass (5 parameters).
- - A `PointSource` for the source galaxy's emission (2 parameters).
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
+ - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
-NOTE: By default, **PyAutoLens** assumes the image has been reduced such that the lens galaxy centre is at (0.0", 0.0"),
-with the priors on the lens `MassProfile` coordinates set accordingly. if for your dataset the lens is not centred at 
-(0.0", 0.0"), we recommend you reduce your data so it is (see `autolens_workspace/notebooks/preprocess`).  Alternatively, you 
-can manually override the priors (see `autolens_workspace/notebooks/modeling/customize/priors.py`).
+NOTE: 
+
+**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+
+If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
+
+ - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
+ - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
 lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = al.GalaxyModel(redshift=1.0, point=al.ps.PointSourceFlux)
+source = al.GalaxyModel(redshift=1.0, point=al.ps.PointSource)
 
-"""
-__Settings__
-
-Next, we specify the `SettingsPhaseImaging`, which describe how the model is fitted to the data in the log likelihood
-function. Below, we specify:
-
- N/A
-"""
-settings = al.SettingsPhaseImaging()
-
+model = af.CollectionPriorModel(
+    galaxies=af.CollectionPriorModel(lens=lens, source=source)
+)
 
 """
 __PositionsSolver__
@@ -148,55 +134,62 @@ positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.02)
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the
-nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/).
+The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
-The script `autolens_workspace/notebooks/modeling/customize/non_linear_searches.py` gives a description of the types of
-non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` is or how it 
-operates, checkout chapters 1 and 2 of the HowToLens lecture series.
+The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches` gives an overview of the 
+non-linear searches **PyAutoLens** supports. If you are unclear of what a non-linear search is, checkout chapter 2 of 
+the **HowToLens** lectures.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/point_source/mass_sie__source_sersic/phase_mass[sie]_source[point_flux]`.
+ `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]`.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("point_source", dataset_name),
-    name="phase_mass[sie]_source[point_flux]",
+    name="mass[sie]_source[point_flux]",
     n_live_points=50,
 )
 
 """
-__Phase__
+__Analysis__
 
-We can now combine the model, settings, search and positions_solver to create and run a phase, which fits the data with 
-the lens model.
+The `AnalysisPointSource` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
+to the `PointSourceDataset`.
 """
-phase = al.PhasePointSource(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
-    positions_solver=positions_solver,
-)
-
-"""
-We can now begin the fit by passing the positions data and noise_map to the phase, which will use 
-the search to fit the model to the data. 
-
-The fit outputs visualization on-the-fly, so checkout the path 
-`autolens_workspace/output/examples/phase_mass[sie]_source[bulge]` to see how your fit is doing!
-"""
-result = phase.run(
+analysis = al.AnalysisPointSource(
     positions=positions,
-    positions_noise_map=positions_noise_map,
+    noise_map=positions_noise_map,
     fluxes=fluxes,
     fluxes_noise_map=fluxes_noise_map,
+    solver=positions_solver,
 )
 
 """
-The phase above returned a result, which, for example, includes the lens model corresponding to the maximum
-log likelihood solution in parameter space.
+__Model-Fit__
+
+We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
+search to find which models fit the data with the highest likelihood.
+
+Checkout the folder `autolens_workspace/output/point_source/mass_sie__source_point/mass[sie]_source[point_flux]` for 
+live outputs  of the results of the fit, including on-the-fly visualization of the best fit model!
+"""
+result = search.fit(model=model, analysis=analysis)
+
+"""
+__Result__
+
+The search returns a result object, which includes: 
+
+ - The lens model corresponding to the maximum log likelihood solution in parameter space.
+ - The corresponding maximum log likelihood `Tracer` object.
 """
 print(result.max_log_likelihood_instance)
+
+tracer_plotter = aplt.TracerPlotter(
+    tracer=result.max_log_likelihood_tracer, grid=result.grid
+)
+tracer_plotter.subplot_tracer()
 
 """
 Checkout `autolens_workspace/notebooks/modeling/results.py` for a full description of the result object.

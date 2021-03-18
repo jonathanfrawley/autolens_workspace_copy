@@ -4,7 +4,7 @@ Simulator: Point Source
 
 This script simulates `Positions` data of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source `Galaxy` is a `PointSource`.
 """
 # %matplotlib inline

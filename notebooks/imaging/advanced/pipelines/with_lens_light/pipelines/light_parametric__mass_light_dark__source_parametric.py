@@ -3,17 +3,17 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit `Imaging` of a strong lens system where:
+In this pipeline, we fit `Imaging` with a strong lens model where:
 
  - The lens galaxy's light is modeled parametrically using one or more input `LightProfile`s.
- - The lens galaxy's light matter mass distribution is fitted with the `LightProfile`'s of the 
+ - The lens galaxy's light matter mass distribution is the  `LightProfile`'s of the 
       lens's light, where it is converted to a stellar mass distribution via a constant mass-to-light ratio.
- - The lens galaxy's dark matter mass distribution is modeled as a _SphericalNFW_.
+ - The lens galaxy's dark matter mass distribution is a _SphericalNFW_.
  - The source galaxy's light is modeled parametrically using one or more input `LightProfile`s. 
 
-The pipeline is three phases:
+The pipeline is three searches:
 
-Phase 1:
+Search 1:
 
     Fit and subtract the lens light with the parametric profiles input into `SetupLightParametric` (e.g. the 
     `bulge_prior_model`, `disk_prior_model`, etc). The default is :
@@ -28,7 +28,7 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Fit the lens mass with an `EllipticalIsothermal` (and optional shear) and source with the parametric profiles input
     into `SetupSourceParametric` (e.g. the `bulge_prior_model`, `disk_prior_model`, etc). The default is :
@@ -40,17 +40,17 @@ Phase 2:
     Lens Light: EllipticalSersic
     Lens Mass: EllipticalSersic + EllipticalNFWMCRLudlow + ExternalShear
     Source Light: SetupSourceParametric.bulge_prior_model + SetupSourceParametric.disk_prior_model + others
-    Prior Passing: Lens Light (instance -> phase 1).
-    Notes: Uses the lens subtracted image from phase 1.
+    Prior Passing: Lens Light (instance -> search 1).
+    Notes: Uses the lens subtracted image from search 1.
 
-Phase 3:
+Search 3:
 
-    Refine the lens light and mass models and source light model using priors initialized from phases 1 and 2.
+    Refine the lens light and mass models and source light model using priors initialized from searches 1 and 2.
     
     Lens Light: EllipticalSersic
     Lens Mass: `EllipticalSersic` + EllipticalNFWMCRLudlow + ExternalShear
     Source Light: EllipticalSersic
-    Prior Passing: Lens light (model -> phase 1), lens mass and source light (model -> phase 2).
+    Prior Passing: Lens light (model -> search 1), lens mass and source light (model -> search 2).
     Notes: None
 """
 
@@ -69,7 +69,7 @@ def make_pipeline(setup, settings):
     path_prefix = path.join(setup.path_prefix, pipeline_name, setup.tag)
 
     """
-    Phase 1: Fit only the lens galaxy's light, where we:
+    Search 1: Fit only the lens galaxy's light, where we:
 
         1) Use the light model determined from `SetupLightParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.).
@@ -89,11 +89,11 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 2: Fit the lens's `LightMassProfile` and `MassProfile` and source galaxy's light, where we:
+    Search 2: Fit the lens's `LightMassProfile` and `MassProfile` and source galaxy's light, where we:
 
-        1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
+        1) Fix the foreground lens light subtraction to the lens galaxy light model from search 1.
         2) Set priors on the centre of the lens galaxy's dark matter mass distribution by chaining them to those inferred 
-           for the `LightProfile` in phase 1.
+           for the `LightProfile` in search 1.
         3) Use a `EllipticalNFWMCRLudlow` model for the dark matter which sets its scale radius via a mass-concentration
            relation and the lens and source redshifts.
         4) Use the source model determined from `SetupSourceParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
@@ -134,9 +134,9 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 3: Fit simultaneously the lens and source galaxies, where we:
+    Search 3: Fit simultaneously the lens and source galaxies, where we:
 
-        1) Set the lens's light, mass, and source's light using the results of phases 1 and 2.
+        1) Set the lens's light, mass, and source's light using the results of searches 1 and 2.
     """
 
     bulge, disk, envelope = setup.setup_mass.light_and_mass_prior_models_with_updated_priors(

@@ -113,7 +113,7 @@ is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
 This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
 to different output folders and thus not clash with one another!
 
-The `path_prefix` specifies the path the pipeline results are written to, as it did with phases in the previous 
+The `path_prefix` specifies the path the pipeline results are written to, as it did with searches in the previous 
 chapter. The redshift of the lens and source galaxies are also input.
 """
 setup = al.SetupPipeline(
@@ -150,10 +150,10 @@ For fitting very complex lens models, for example ones which decompose its mass 
 the **SLaM** pipelines have been carefully crafted to do this in a reliable and automated way that is still efficient. 
 
 The **SLaM** pipelines also make fitting many different models to a single dataset efficient, as they reuse the results 
-of earlier phases (e.g. in the Source pipeline) to fit different models in the `Light` and `Mass` pipelines for the 
+of earlier searches (e.g. in the Source pipeline) to fit different models in the `Light` and `Mass` pipelines for the 
 lens's  light and mass.
 
-Whether you should use phases, pipelines, `slam` pipelines or write your own depends on the scope 
+Whether you should use searches, pipelines, `slam` pipelines or write your own depends on the scope 
 of your scientific analysis. I would advise you begin by adapting the scripts in `autolens/examples` to fit your
 data, and then do so using the `pipelines` or `slam` packages once things seem to be working well!
 """

@@ -42,7 +42,7 @@ What does the `optional` attribute mean? It means that the component is only pas
 hyper_image_sky is turned off (by settting hyper_image_sky to `False` in the PipelineGeneralSettings), this model
 component will not be passed. That is, it is optional.
 
-__HYPER PHASES__
+__HYPER searches__
 
 The hyper-galaxies, hyper-image_sky and hyper-background-noise all have non-linear parameters we need to fit for
 during our modeling.
@@ -51,15 +51,15 @@ How do we fit for the hyper-parameters using our `NonLinearSearch` (e.g. MultiNe
 simultaneously with the lens and source models, as this creates an unnecessarily large parameter space which we`d
 fail to fit accurately and efficiently.
 
-Instead, we `extend` phases with extra phases that specifically fit certain components of hyper-galaxy-model. You`ve
+Instead, we `extend` searches with extra searches that specifically fit certain components of hyper-galaxy-model. You`ve
 hopefully already seen the following code, which optimizes just the parameters of an `Inversion` (e.g. the
 pixelization and regularization):
 
     phase1 = phase1.extend_with_inversion_phase()
 
-Extending a phase with hyper phases is just as easy:
+Extending a phase with hyper searches is just as easy:
 
-    phase = phase.extend_with_multiple_hyper_phases(
+    phase = phase.extend_with_multiple_hyper_searches(
             search=af.DynestyStatic(),
             inversion=True,
         hyper-galaxy=True,
@@ -67,7 +67,7 @@ Extending a phase with hyper phases is just as easy:
         include_background_noise=True,
     )
 
-This extends the phase with 3 additional phases which:
+This extends the phase with 3 additional searches which:
 
     1) Fit the `Inversion` parameters using the `Pixelization` and `Regularization` scheme that were used in the main phase.
        (e.g. a brightness-based `Pixelization` and adaptive `Regularization` scheme). The best-fit lens and source
@@ -77,13 +77,13 @@ This extends the phase with 3 additional phases which:
        lens and source models from the main phase. This phase only scales the noise and the image. This is called
        the `hyper-galaxy` phase.
     
-    3) Fit all of the components above using Gaussian priors centred on the resulting values of phases 1) and 2). This 
+    3) Fit all of the components above using Gaussian priors centred on the resulting values of searches 1) and 2). This 
        is important as there is a trade-off between increasing the noise in the lens / source and changing the 
        `Pixelization` `Regularization`.hyper-galaxy-parameters. This is called the `hyper_combined` phase.
 
 Above, we used the results of the `hyper_combined` phase to setup the hyper-galaxies, hyper_image_sky, and
 hyper_background_noise. Typically, we set these components up as `instances` whose parameters are fixed during the
-main phases which fit the lens and source models.
+main searches which fit the lens and source models.
 
 PIPELINE DESCRIPTION 
 
@@ -93,7 +93,7 @@ being fitted.
 
 The pipeline is as follows:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass model and source `LightProfile`.
     
@@ -102,42 +102,42 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Fit the inversion`s `Pixelization` and `Regularization`, using a magnification
     based pixel-grid and the previous lens mass model.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
-    Prior Passing: Lens Mass (instance -> phase 1).
+    Prior Passing: Lens Mass (instance -> search 1).
     Notes: Lens mass fixed, source `Inversion` parameters vary.
 
-Phase 3:
+Search 3:
     
     Refine the lens mass model using the source `Inversion`.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
-    Prior Passing: Lens Mass (model -> previous pipeline), source `Inversion` (instance -> phase 2).
+    Prior Passing: Lens Mass (model -> previous pipeline), source `Inversion` (instance -> search 2).
     Notes: Lens mass varies, source `Inversion` parameters fixed.
 
-Phase 4:
+Search 4:
 
     Fit the inversion`s `Pixelization` and `Regularization`, using the input pixelization,
     `Regularization` and the previous lens mass model.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: setup.source.pixelization + setup.source.regularization
-    Prior Passing: Lens Mass (instance -> phase 3).
+    Prior Passing: Lens Mass (instance -> search 3).
     Notes:  Lens mass fixed, source `Inversion` parameters vary.
 
-Phase 5:
+Search 5:
     
     Refine the lens mass model using the `Inversion`.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: setup.source.pixelization + setup.source.regularization
-    Prior Passing: Lens Mass (model -> phase 3), source `Inversion` (instance -> phase 4).
+    Prior Passing: Lens Mass (model -> search 3), source `Inversion` (instance -> search 4).
     Notes: Lens mass varies, source `Inversion` parameters fixed.
 """
 
@@ -151,13 +151,13 @@ def make_pipeline(setup, settings):
 
     1) Hyper-fitting setup (galaxies, sky, background noise) are used.
     2) The lens galaxy mass model includes an `ExternalShear`.
-    3) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 4 & 5).
+    3) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in searches 4 & 5).
     """
 
     path_prefix = path.join(setup.path_prefix, pipeline_name, setup.tag)
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
+    Search 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
 
         1) Use an `EllipticalIsothermal` for the lens's mass and `EllipticalSersic`for the source's bulge, 
            irrespective of the final model that is fitted by the pipeline.
@@ -182,25 +182,25 @@ def make_pipeline(setup, settings):
         settings=settings,
     )
 
-    """Extends the phase with hyper-phases using `SetupHyper` inputs, as described at the top of this example script."""
+    """Extends the phase with hyper-searches using `SetupHyper` inputs, as described at the top of this example script."""
 
     phase1 = phase1.extend_with_hyper_phase(
         setup_hyper=setup.setup_hyper, include_hyper_image_sky=True
     )
 
     """
-    Phase 2:
+    Search 2:
 
-    Phases 2 & 3 use a magnification based `Pixelization` and constant `Regularization` scheme to reconstruct the source.
+    searches 2 & 3 use a magnification based `Pixelization` and constant `Regularization` scheme to reconstruct the source.
     The `SetupSourceInversion.pixelization_prior_model` & `SetupSourceInversion.regularization_prior_model` are not 
-    used until phases 4 & 5.
+    used until searches 4 & 5.
 
     This is because a `Pixelization` / `Regularization` that adapts to the source's surface brightness uses a previous
     model image of that source (its `hyper-image`). If the source's true morphology is irregular, or there are
-    multiple sources, the `EllipticalSersic` bulge used in phase 1 would give a poor hyper-image. In contrast, the
+    multiple sources, the `EllipticalSersic` bulge used in search 1 would give a poor hyper-image. In contrast, the
     `Inversion` below will accurately capture such a source.
 
-    In phase 2, we fit the `Pixelization` and `Regularization`, where we:
+    In search 2, we fit the `Pixelization` and `Regularization`, where we:
 
         1) Fix the lens mass model to the mass-model inferred by the previous pipeline.
         2) Use a `VoronoiMagnification` `Pixelization`.
@@ -232,10 +232,10 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 3: Refit the lens's mass and source galaxy using the magnification `Inversion`, where we:
+    Search 3: Refit the lens's mass and source galaxy using the magnification `Inversion`, where we:
 
-        1) Fix the source `Inversion` parameters to the results of phase 2.
-        2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 2.
+        1) Fix the source `Inversion` parameters to the results of search 2.
+        2) Set priors on the lens galaxy `MassProfile`'s using the results of search 2.
     """
 
     phase3 = al.PhaseImaging(
@@ -261,9 +261,9 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 4: Fit the input pipeline `Pixelization` & `Regularization`, where we:
+    Search 4: Fit the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the lens's `MassProfile`'s to the results of phase 3.
+        1) Fix the lens's `MassProfile`'s to the results of search 3.
         2) Use the `Pixelization` input into `SetupSourceInversion.pixelization_prior_model`.
         3) Use the `Regularization` input into `SetupSourceInversion.regularization_prior_model`.
     """
@@ -298,11 +298,11 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 5: Fit the lens's mass using the input pipeline `SetupSourceInversion.pixelization_prior_model` & 
+    Search 5: Fit the lens's mass using the input pipeline `SetupSourceInversion.pixelization_prior_model` & 
     `SetupSourceInversion.regularization_prior_model` where we:
 
-        1) Fix the source `Inversion` parameters to the results of phase 4.
-        2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 3.
+        1) Fix the source `Inversion` parameters to the results of search 4.
+        2) Set priors on the lens galaxy `MassProfile`'s using the results of search 3.
     """
 
     phase5 = al.PhaseImaging(

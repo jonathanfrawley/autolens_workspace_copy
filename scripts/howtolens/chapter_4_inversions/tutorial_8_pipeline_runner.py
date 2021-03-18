@@ -25,7 +25,7 @@ import autolens.plot as aplt
 we'll use strong lensing data, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is four `EllipticalSersic``..
 """
 dataset_name = "mass_sie__source_sersic_x4"
@@ -56,7 +56,7 @@ these in chapter 2, and a full description of all settings can be found in the e
 
  `autolens_workspace/notebooks/modeling/customize/settings.py`.
 
-The settings chosen here are applied to all phases in the pipeline. Note how we can use the _SettingsPixelization_
+The settings chosen here are applied to all searches in the pipeline. Note how we can use the _SettingsPixelization_
 object to determine whether the border is used during the model-fit.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(sub_size=2)
@@ -78,7 +78,7 @@ __HYPER SETUP__
 In chapter 5, we will introduce hyper-mode, which pushes lens modeling with PyAutoLens to the limit. This model uses 
 the `SetupHyper` to determine which hyper-mode features are used during the model-fit.
 
-In this tutorial's pipeline, you'll note we extend phase 2 with a `hyper` phase to refit and improve the parameters
+In this tutorial's pipeline, you'll note we extend search 2 with a `hyper` phase to refit and improve the parameters
 of the `Pixelization` and `Regularization`. This isn't using any of the advanced hyper-mode features that we'll cover
 in chapter 5, but gives us a simple way to better set up our `Inversion` and is used throughout all the PyAutoLens
 template pipelines.

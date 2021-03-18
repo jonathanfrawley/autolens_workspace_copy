@@ -9,7 +9,7 @@ The source model is chosen and mass model is initialized using the previously ru
 
 The pipeline uses one phase:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass model as a power-law, using the source model from a previous pipeline.
     Lens Mass: MassProfile (default=EllipticalPowerLaw) + ExternalShear
@@ -40,7 +40,7 @@ def make_pipeline(slam, settings, source_results, end_stochastic=False):
     shear = slam.pipeline_mass.shear_from_result(result=source_results.last)
 
     """
-    Phase 1: Fit the lens`s `MassProfile`'s and source, where we:
+    Search 1: Fit the lens`s `MassProfile`'s and source, where we:
 
         1) Set priors on the lens galaxy `MassProfile`'s using the `EllipticalIsothermal` and `ExternalShear` 
            of previous pipelines.

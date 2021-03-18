@@ -7,8 +7,8 @@ aggregator functionality in the aggregator tutorials a1 - a5.
 
 The phase fits each lens with:
  
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass.
- - An `EllipticalSersic` `LightProfile`.for the source galaxy's light.
+ - An `EllipticalIsothermal` `MassProfile` for the lens galaxy's mass.
+ - An `EllipticalSersic` `LightProfile` for the source galaxy's light.
 """
 # %matplotlib inline
 # from pyprojroot import here

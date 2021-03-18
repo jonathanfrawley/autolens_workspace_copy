@@ -13,7 +13,7 @@ strong lenses is as follows:
 
  1) An _EllipticalSersic `LightProfile` for the lens galaxy's light.
  2) A `EllipticalIsothermal` (SIE) `MassProfile` for the lens galaxy's mass.
- 3) An `EllipticalExponential` `LightProfile`.for the source-`Galaxy`'s light (to be honest, this is too simple,
+ 3) An `EllipticalExponential` `LightProfile` for the source-`Galaxy`'s light (to be honest, this is too simple,
  but lets worry about that later).
 
 This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
@@ -34,8 +34,8 @@ import autofit as af
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy's `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"

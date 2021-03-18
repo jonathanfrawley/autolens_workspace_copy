@@ -13,7 +13,7 @@ and mass profiles (e.g. the centre, einstein_radius, etc.) - only the profiles t
 we'll use the following lens model:
 
  1) A `SphericalIsothermal` Sphere (SIS) for the lens galaxy's mass.
- 2) A `SphericalExponential` `LightProfile`.for the source-`Galaxy`'s light.
+ 2) A `SphericalExponential` `LightProfile` for the source-`Galaxy`'s light.
 
 I'll let you into a secret - this is the same lens model used to simulate the `Imaging` data we're going to fit and
 we're going to infer the actual parameters I used!
@@ -146,7 +146,7 @@ settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_siz
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
 """
-To fit the galaxy models above via a `NonLinearSearch` (in this case, Dynesty) we use a `PhaseImaging` object. Phases
+To fit the galaxy models above via a `NonLinearSearch` (in this case, Dynesty) we use a `PhaseImaging` object. searches
 bring together the model, `NonLinearSearch` and data, in order to perform a model-fit and thus infer a lens model.
 
 (Just like we could give profiles descriptive names, like `light`, `bulge` and `disk`, we can do the exact same 

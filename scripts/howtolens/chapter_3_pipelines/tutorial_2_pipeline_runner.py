@@ -64,7 +64,7 @@ these in chapter 2, and a full description of all settings can be found in the e
 
  `autolens_workspace/notebooks/modeling/customize/settings.py`.
 
-The settings chosen here are applied to all phases in the pipeline.
+The settings chosen here are applied to all searches in the pipeline.
 """
 settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
@@ -82,13 +82,13 @@ So, how can we break the lens modeling up? As follows:
  1) Fit and subtract the light of each lens galaxy individually.
  2) Use these results to initialize each lens galaxy's total mass distribution.
 
-So, with this in mind, we've written a pipeline composed of 4 phases:
+So, with this in mind, we've written a pipeline composed of 4 searches:
 
  1) Fit the `LightProfile` of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
  2) Fit the `LightProfile` of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
  3) Use this lens-subtracted image to fit the source-`Galaxy`'s light. The `MassProfile`'s of the two lens 
  galaxies are fixed to (0.0", -1.0") and (0.0", 1.0").
- 4) Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
+ 4) Fit all relevant parameters simultaneously, using priors from searches 1, 2 and 3.
 
 __Pipeline Creation__
 

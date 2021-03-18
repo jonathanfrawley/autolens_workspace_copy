@@ -1,6 +1,6 @@
 You are now familiar with **PyAutoLens** and have a clear understanding of lens modeling. In this chapter, we'll
 introduce pipelines, a concept we mentioned many times in the previous chapter. Pipelines allow us to generically chain
-phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
+searches together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
 realistic lens models.
 
 In this chapter, every tutorial will come as two files, a Jupyter notebook 'pipeline_runner' and a python script which

@@ -3,15 +3,15 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit `Interferometer` of a strong lens system where:
+In this pipeline, we fit `Interferometer` with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is modeled as an input total `MassProfile` (default=`EllipticalPowerLaw`).
- - The source galaxy's surface-brightness is modeled using an `Inversion`.
+ - The lens galaxy's total mass distribution is an input total `MassProfile` (default=`EllipticalPowerLaw`).
+ - The source galaxy's surface-brightness is an `Inversion`.
 .
-The pipeline is four phases:
+The pipeline is four searches:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass with an `EllipticalIsothermal` (and optional shear) and source bulge with an `EllipticalSersic`.
     
@@ -20,9 +20,9 @@ Phase 1:
     Prior Passing: None.
     Notes: None.
 
-Phase 2:
+Search 2:
 
-    Fit the source `Inversion` using the lens `EllipticalIsothermal` (and optional shear) inferred in phase 1. The
+    Fit the source `Inversion` using the lens `EllipticalIsothermal` (and optional shear) inferred in search 1. The
     `Pixelization` uses `SetupSourceInversion.pixelization_prior_model` (default=`Rectangular`) and 
     `Regulaization` uses `SetupSourceInversion.regularization_prior_model` (default=`Constant`).
     
@@ -31,23 +31,23 @@ Phase 2:
     Prior Passing: Lens Mass (instance -> phase1).
     Notes: Lens mass fixed, source `Inversion` parameters vary.
 
-Phase 3:
+Search 3:
 
-    Refines the lens `EllipticalIsothermal` mass models using the source `Inversion` of phase 2.
+    Refines the lens `EllipticalIsothermal` mass models using the source `Inversion` of search 2.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: `Pixelization` (default=VoronoiMagnification) + `Regularization` (default=Constant)
-    Prior Passing: Lens Mass (model -> phase 1), Source `Inversion` (instance -> phase 2)
+    Prior Passing: Lens Mass (model -> search 1), Source `Inversion` (instance -> search 2)
     Notes: Lens mass varies, source `Inversion` parameters fixed.
 
-Phase 4:
+Search 4:
 
     Fit the `SetupMassTotal.mass_prior_model` (default=`EllipticalPowerLaw`) model, using priors from the  
-    `EllipticalIsothermal` mass model of phase 3 and the source `Inversion` of phase 2.
+    `EllipticalIsothermal` mass model of search 3 and the source `Inversion` of search 2.
     
     Lens Mass: SetupMassTotal.mass_prior_model + ExternalShear
     Source Light: SetupSourceInversion.pixelization_prior_model + SetupSourceInversion.regularization_prior_model
-    Prior Passing: Lens Mass (model -> phase 3), Source `Inversion` (instance -> phase 3)
+    Prior Passing: Lens Mass (model -> search 3), Source `Inversion` (instance -> search 3)
     Notes: Lens mass varies, source `Inversion` parameters fixed.
 """
 
@@ -60,13 +60,13 @@ def make_pipeline(setup, settings, real_space_mask):
     This pipeline is tagged according to whether:
 
         1) The lens galaxy mass model includes an `ExternalShear`.
-        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 3 & 4).
+        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in searches 3 & 4).
     """
 
     path_prefix = path.join(setup.path_prefix, pipeline_name, setup.tag)
 
     """
-    Phase 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
+    Search 1: Fit the lens's `MassProfile`'s and source `LightProfile`, where we:
 
         1) Use an `EllipticalIsothermal` for the lens's mass and `EllipticalSersic`for the source's bulge, 
            irrespective of the final model that is fitted by the pipeline.
@@ -92,9 +92,9 @@ def make_pipeline(setup, settings, real_space_mask):
     )
 
     """
-    Phase 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
+    Search 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the lens's `MassProfile`'s to the results of phase 1.
+        1) Fix the lens's `MassProfile`'s to the results of search 1.
         2) Use the `Pixelization` input into `SetupSourceInversion.pixelization_prior_model`.
         3) Use the `Regularization` input into `SetupSourceInversion.regularization_prior_model`.
     """
@@ -120,10 +120,10 @@ def make_pipeline(setup, settings, real_space_mask):
     )
 
     """
-    Phase 3: Refit the lens's mass (and shear) using the input pipeline `Pixelization` & `Regularization`, where we:
+    Search 3: Refit the lens's mass (and shear) using the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the source `Pixelization` and `Regularization` to the results of phase 2.
-        2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 1.
+        1) Fix the source `Pixelization` and `Regularization` to the results of search 2.
+        2) Set priors on the lens galaxy `MassProfile`'s using the results of search 1.
     """
 
     phase3 = al.PhaseInterferometer(
@@ -147,21 +147,21 @@ def make_pipeline(setup, settings, real_space_mask):
     )
 
     """
-    We also extend phase 3 with an additional `inversion_phase` which uses the best-fit mass model of phase 3 above 
+    We also extend search 3 with an additional `inversion_phase` which uses the best-fit mass model of search 3 above 
     to refine the `Inversion` used, by fitting only the `Pixelization` & `Regularization` parameters. This is 
-    equivalent to phase 2 above, but makes the code shorter and more easy to read.
+    equivalent to search 2 above, but makes the code shorter and more easy to read.
 
-    The the `inversion_phase` results are accessible as attributes of the phase results and used in phase 4 below.
+    The the `inversion_phase` results are accessible as attributes of the phase results and used in search 4 below.
     """
 
     phase3 = phase3.extend_with_hyper_phase(setup_hyper=al.SetupHyper())
 
     """
-    Phase 4: Fit the lens's `MassProfile`'s with the input `SetupMassTotal.mass_prior_model` using the source 
+    Search 4: Fit the lens's `MassProfile`'s with the input `SetupMassTotal.mass_prior_model` using the source 
     `Inversion` of phase above, where we:
 
-        1) Use the source `Pixelization` and `Regularization inferred in phase 3`s extended `inversion_phase`.
-        2) Set priors on the lens galaxy mass using the `EllipticalIsothermal` (and `ExternalShear`) of phase 3.
+        1) Use the source `Pixelization` and `Regularization inferred in search 3`s extended `inversion_phase`.
+        2) Set priors on the lens galaxy mass using the `EllipticalIsothermal` (and `ExternalShear`) of search 3.
     """
 
     """

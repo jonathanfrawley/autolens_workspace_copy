@@ -2,33 +2,11 @@
 Modeling: Mass Total + Source Inversion
 =======================================
 
-To fit a lens model to an interferometer dataset, we again perform lens modeling using a `NonLinearSearch`.
-However, unlike CCD `Imaging` data, we fit the lens model in Fourier space, or the `uv-plane`, which circumvents issues
-that arise when trying to fit CLEANED images of interferometer data.
-
-A big challenge when fitting interferometer datasets is the huge quantity of data. Very long baseline ALMA or JVLA
-observations observe in excess of *millions* of visibilities, which can make certain approaches to modeling
-interferometer data extremely slow and expensive.
-
-In this example, we fit an interferometer dataset consisting of 1 million visibilities, assuming a parametric
-`EllipticalSersic` model for the source. In the `source_parametric.py` example we used a non-uniform fast Fourier
-transform to make the lens modeling efficient. we'll be using this algorithm again, to ensure our model-fit is fast.
-
-However, when we model the source using an `Inversion`, there is a second consideration that is key to run-time and
-performance. The `Inversion` uses a linear algebra to solve for the reconstructed flux values of the source. The
-traditional approach to this linear algebra stores all the data required as matrices on your hard-disk. Unfortunately,
-when there are 1-100 million datapoints, this requires in excess of 10-1000GB of RAM and crippling the run-time!
-
-Instead, **PyAutoLens** uses the library PyLops **PyLops** (https://pylops.readthedocs.io/en/latest/) to represent
-the linear algebra calculation as a series of linear operators. These operators do not have to store the calculation
-explicitly in memory, meaning the analysis of 1 million viibilities takes < 1GB of memory overall ensuring our lens
-modeling is efficient!
-
-In this example script, we fit interferometer data of a strong lens system where:
+In this script, we fit `Interferometer` data with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
- - The source galaxy's light is modeled parametrically as an `VoronoiMagnification` `Pixelization` and `Constant`
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The source galaxy's light is a parametric `VoronoiMagnification` `Pixelization` and `Constant`
    regularization.
 """
 # %matplotlib inline
@@ -44,17 +22,14 @@ import autolens.plot as aplt
 import numpy as np
 
 """
-Load the strong lens dataset `mass_sie__source_sersic` `from .fits files.
+__Dataset__
 
-Unlike the other example scripts, we use the `Interferometer` class to load this dataset, passing it paths to the .fits
-files containing its visibilities, noise-map and uv_wavelengths.
+Load and plot the strong lens `Interferometer` dataset `mass_sie__source_sersic` from .fits files , which we will fit 
+with the lens model.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
-"""
-Using the dataset path, load the data (image, noise-map, PSF) as an `Interferometer` object from .fits files.
-"""
 interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
@@ -65,138 +40,132 @@ interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferomete
 interferometer_plotter.subplot_interferometer()
 
 """
-The perform a fit, we need two masks, firstly a ‘real-space mask’ which defines the grid the image of the lensed 
-source galaxy is evaluated using.
+__Masking__
+
+The perform an interferometer model-fit we require two masks: 
+
+ 1) A ‘real_space_mask’ which defines the grid the image of the lensed source galaxy is evaluated using.
+ 2) A ‘visibilities_mask’ defining which visibilities are omitted from the chi-squared evaluation (in this case, none).
 """
 real_space_mask = al.Mask2D.circular(
     shape_native=(200, 200), pixel_scales=0.05, radius=3.0
 )
 
-"""
-We also need a ‘visibilities mask’ which defining which visibilities are omitted from the chi-squared evaluation.
-"""
 visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
 
 """
-__Phase__
+We now create the `MaskedInterferometer` object which is used to fit the lens model.
 
-To perform lens modeling, we create a *PhaseInterferometer* object, which comprises:
+This includes a `SettingsMaskedInterferometer`, which includes the method used to Fourier transform the real-space 
+image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
+transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
+"""
+settings_masked_interferometer = al.SettingsMaskedInterferometer(
+    transformer_class=al.TransformerNUFFT
+)
 
-   - The `GalaxyModel`'s used to fit the data.
-   - The `SettingsPhase` which customize how the model is fitted to the data.
-   - The `NonLinearSearch` used to sample parameter space.
-   
-Once we have create the phase, we `run` it by passing it the data and mask.
+masked_interferometer = al.MaskedInterferometer(
+    interferometer=interferometer,
+    visibilities_mask=visibilities_mask,
+    real_space_mask=real_space_mask,
+    settings=settings_masked_interferometer,
+)
 
+"""
 __Model__
 
 We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass (5 parameters).
- - An `EllipticalSersic` `LightProfile`.for the source galaxy's light (7 parameters).
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
+ - An `EllipticalSersic` `LightProfile` for the source galaxy's light [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
+
+NOTE: 
+
+**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+
+If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
+
+ - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
+ - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = al.GalaxyModel(
-    redshift=1.0,
-    pixelization=al.pix.VoronoiMagnification,
-    regularization=al.reg.Constant,
+lens = al.GalaxyModel(
+    redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
 )
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-"""
-__Settings__
-
-Next, we specify the *SettingsMaskedInterferometer*, which describes how the model is fitted to the data in the log 
-likelihood function. Below, we specify:
- 
- - That a regular `Grid2D` is used to fit create the model-image (in real space) when fitting the data 
-   (see `autolens_workspace/examples/grids.py` for a description of grids).
-
- - The sub-grid size of this real-space grid.
-
- - The method used to Fourier transform this real-space image of the strong lens to the uv-plane, to compare directly
-   to the visiblities. In this example, we use a non-uniform fast Fourier transform.
-"""
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    grid_class=al.Grid2D, sub_size=2, transformer_class=al.TransformerNUFFT
-)
-
-"""
-We also specify the *SettingsInversion*, which describes how the `Inversion` fits the source `Pixelization` and 
-with `Regularization`. 
-
-This can perform the linear algebra calculation that performs the `Inversion` using two options: 
-
- - As matrices: this is numerically more accurate and does not approximate the `log_evidence` of the `Inversion`. For
-  datasets of < 100 0000 visibilities we recommend that you use this option. However, for > 100 000 visibilities this
-  approach requires excessive amounts of memory on your computer (> 16 GB) and thus becomes unfeasible. 
-  
- - As linear operators: this numerically less accurate and approximates the `log_evidence` of the `Inversioon`. However,
- it is the only viable options for large visibility datasets. It does not represent the linear algebra as matrices in
- memory and thus makes the analysis of > 10 million visibilities feasible.
-
-By default we use the linear operators approach.  
-"""
-settings_inversion = al.SettingsInversion(use_linear_operators=True)
-
-settings = al.SettingsPhaseInterferometer(
-    settings_masked_interferometer=settings_masked_interferometer,
-    settings_inversion=settings_inversion,
+model = af.CollectionPriorModel(
+    galaxies=af.CollectionPriorModel(lens=lens, source=source)
 )
 
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the
-nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/).
+The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
-The script `autolens_workspace/notebooks/interferometer/modeling/customize/non_linear_searches.py` gives a description 
-of the types of non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` 
-is or how it operates, checkout chapters 1 and 2 of the HowToLens lecture series.
+The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches` gives an overview of the 
+non-linear searches **PyAutoLens** supports. If you are unclear of what a non-linear search is, checkout chapter 2 of 
+the **HowToLens** lectures.
 
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
+The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/interferometer/mass_sie__source_sersic/phase_mass[sie]_source[bulge]`.
+ `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]`.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", dataset_name),
-    name="phase_mass[sie]_source[inversion]",
+    name="mass[sie]_source[inversion]",
     n_live_points=50,
 )
 
 """
-__Phase__
+__Analysis__
 
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
+The `AnalysisInterferometer` object defines the `log_likelihood_function` used by the non-linear search to fit the 
+model to the `MaskedInterferometer`dataset.
+
+For interferometer model-fits, we include a `SettingsInversion` object which describes how the linear algebra 
+calculations required to use an `Inversion` are performed. One of two different approaches can be used: 
+
+ - **Matrices:** Use a numerically more accurate matrix formalism to perform the linear algebra. For datasets 
+ of < 100 0000 visibilities this approach is computationally feasible, and if your dataset is this small we we recommend 
+ that you use this option (by setting `use_linear_operators=False`. However, larger visibility datasets these matrices 
+ require excessive amounts of memory (> 16 GB) to store, making this approach unfeasible. 
+
+ - **Linear Operators (default)**: These are slightly less accurate, but do not require excessive amounts of memory to 
+ store the linear algebra calculations. For any dataset with > 1 million visibilities this is the only viable approach 
+ to perform lens modeling efficiently.
 """
-phase = al.PhaseInterferometer(
-    search=search,
-    real_space_mask=real_space_mask,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
+settings_inversion = al.SettingsInversion(use_linear_operators=True)
+
+analysis = al.AnalysisInterferometer(
+    dataset=masked_interferometer, settings_inversion=settings_inversion
 )
 
 """
-We can now begin the fit by passing the dataset and visibilties mask to the phase, which will use the `NonLinearSearch` 
-to fit the model to the data. 
+__Model-Fit__
 
-The fit outputs visualization on-the-fly, so checkout the path 
-`autolens_workspace/output/examples/phase_mass[sie]_source[bulge]` to see how your fit is doing!
+We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
+search to find which models fit the data with the highest likelihood.
+
+Checkout the folder `autolens_workspace/output/interferometer/mass_sie__source_sersic/mass[sie]_source[inversion]` for 
+live outputs of the results of the fit, including on-the-fly visualization of the best fit model!
 """
-result = phase.run(dataset=interferometer, mask=visibilities_mask)
+result = search.fit(model=model, analysis=analysis)
+
 
 """
-The phase above returned a result, which, for example, includes the lens model corresponding to the maximum
-log likelihood solution in parameter space.
+__Result__
+
+The search returns a result object, which includes: 
+
+ - The lens model corresponding to the maximum log likelihood solution in parameter space.
+ - The corresponding maximum log likelihood `Tracer` and `FitInterferometer` objects.
 """
 print(result.max_log_likelihood_instance)
 
-"""
-It also contains instances of the maximum log likelihood Tracer and FitImaging, which can be used to visualize
-the fit.
-"""
 tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer, grid=real_space_mask.masked_grid_sub_1
 )

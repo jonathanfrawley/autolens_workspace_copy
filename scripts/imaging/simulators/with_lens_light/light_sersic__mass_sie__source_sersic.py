@@ -4,8 +4,8 @@ Simulator: Light + SIE
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's `LightProfile`'s is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light's is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic`.
 """
 # %matplotlib inline

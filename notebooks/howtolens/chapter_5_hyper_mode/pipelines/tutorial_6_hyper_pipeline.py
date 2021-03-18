@@ -4,14 +4,14 @@ import autolens as al
 
 """
 So, how does hyper-mode work in pipelines? There are a lot more things we have to do now; pass hyper-galaxy-images
-between phases, use different `Pixelization`'s and `Regularization`.chemes, and decide what parts of the noise-map we do
+between searches, use different `Pixelization`'s and `Regularization`.chemes, and decide what parts of the noise-map we do
 and don't want to scale.
 
 ##HYPER IMAGE PASSING ###
 
 So, lets start with hyper-image passing. That is, how do we pass the model images of the lens and source galaxies to
-later phases to use them as hyper-galaxy-images? Well, I've got some good news, *we no nothing*. **PyAutoLens** automatically
-passes hyper-images between phases!
+later searches to use them as hyper-galaxy-images? Well, I've got some good news, *we no nothing*. **PyAutoLens** automatically
+passes hyper-images between searches!
 
 However, **PyAutoLens** does need to know which hyper-images to pass to which galaxies. To do this, **PyAutoLens** uses
 galaxy-names. When you create a `GalaxyModel`, you name the `Galaxy`'s for example below we've called the lens galaxy
@@ -37,30 +37,30 @@ So, in the next phase (phase2), the lens galaxy must be called `lens` (again) an
 Hopefully, you`ve followed this naming convention with **PyAutoLens** up to now anyway, so this should come naturually.
 
 Why do we pass images based on galaxy names? It is because for more complex lens systems (e.g. with multiple lens and
-source galaixes) we must explicitly define how their images are chained between phases.
+source galaixes) we must explicitly define how their images are chained between searches.
 
-##HYPER PHASES ###
+##HYPER searches ###
 
 There is one more major change to hyper-pipelines. That is, how do we fit for the hyper-parameters using our
 non-linear search (e.g. Dynesty)? We don't fit for them simultaneously with the lens and source models, as this
 creates an unnecessarily large parameter space which we`d fail to fit accurately and efficiently.
 
-Instead, we `extend` phases with extra phases that specifically fit certain components of hyper-galaxy-model. You`ve
+Instead, we `extend` searches with extra searches that specifically fit certain components of hyper-galaxy-model. You`ve
 hopefully already seen the following code, which optimizes the parameters of an `Inversion` (e.g. the `Pixelization` and
 regularization):
 
 phase1 = phase1.extend_with_inversion_phase()
 
-Extending a phase with hyper phases is just as easy:
+Extending a phase with hyper searches is just as easy:
 
-phase1 = phase1.extend_with_multiple_hyper_phases(
+phase1 = phase1.extend_with_multiple_hyper_searches(
     hyper-galaxy=True,
     include_background_sky=True,
     include_background_noise=True,
     inversion=True
 )
 
-This extends the phase with 3 additional phases:
+This extends the phase with 3 additional searches:
 
 1) Fit the `Inversion` parameters using the `Pixelization` and `Regularization` scheme that were used in the main phase.
    (e.g. a brightness-based `Pixelization` and adaptive `Regularization` scheme. The best-fit lens and source
@@ -76,11 +76,11 @@ This extends the phase with 3 additional phases:
 
 In the pipeline below we use the results of the `hyper_combined` phase to setup the hyper-galaxies, hyper-image,
 _Pixelization_`s and regularizations in the next phase. Typically, we set these components up as `instances` whose
-parameters are fixed during the main phases which fit the lens and source models.
+parameters are fixed during the main searches which fit the lens and source models.
 
 ##HYPER MASKING ###
 
-In hyper-model, the mask *cannot* change between phases. This is because of hyper-galaxy-image passing. If the mask
+In hyper-model, the mask *cannot* change between searches. This is because of hyper-galaxy-image passing. If the mask
 changes and adds new pixels that were not modeled in the previous phase, these pixels wouldn't be in the
 hyper-galaxy-image. This causes some very nasty problems. Thus, the same mask must be used throughout the analysis.
 To ensure this happens, for hyper-galaxy-pipelines we require that the mask is passed to the `pipeline.run` function.
@@ -89,40 +89,40 @@ import autofit as af
 from os import path
 import autolens as al
 
-For our example hyper-pipeline,we're going to run 7 (!) phases. There isn't much new here compared to normal
-pipelines. But, the large number of phases are required to fully model the lens with hyper-mode features. An overview
+For our example hyper-pipeline,we're going to run 7 (!) searches. There isn't much new here compared to normal
+pipelines. But, the large number of searches are required to fully model the lens with hyper-mode features. An overview
 of the pipeline is as follows:
 
-Phase 1) Fit and subtract the lens galaxy's `LightProfile`.
-Phase 1 Extension) Fit the lens galaxy's hyper-galaxy and background noise.
+Search 1) Fit and subtract The lens galaxy's light.
+Search 1 Extension) Fit the lens galaxy's hyper-galaxy and background noise.
 
-Phase 2) Fit the lens galaxy mass model and source `LightProfile`, using the lens subtracted image, using the lens
-         hyper-galaxy noise-map and background noise from phase 1.
-Phase 2 Extension) Fit the lens / source hyper-galaxy and background noise.
+Search 2) Fit the lens galaxy mass model and source `LightProfile`, using the lens subtracted image, using the lens
+         hyper-galaxy noise-map and background noise from search 1.
+Search 2 Extension) Fit the lens / source hyper-galaxy and background noise.
 
-Phase 3) Fit the lens light, mass and source using priors from phases 1 & 2, using the lens hyper-galaxy
-         from phase 2.
-Phase 3 Extension) Fit the lens / source hyper-galaxy and background noise.
+Search 3) Fit the lens light, mass and source using priors from searches 1 & 2, using the lens hyper-galaxy
+         from search 2.
+Search 3 Extension) Fit the lens / source hyper-galaxy and background noise.
 
-Phase 4) Initialize an `Inversion` of the source-galaxy, using a magnification based `Pixelization` and constant
+Search 4) Initialize an `Inversion` of the source-galaxy, using a magnification based `Pixelization` and constant
          `Regularization` scheme.
-Phase 4 Extension) Fit the lens / source hyper-galaxy and background noise.
+Search 4 Extension) Fit the lens / source hyper-galaxy and background noise.
 
-Phase 5) Refine the lens light and mass models using the `Inversion` from phase 4.
-Phase 5 Extension) Fit the lens / source hyper-galaxy and background noise.
+Search 5) Refine the lens light and mass models using the `Inversion` from search 4.
+Search 5 Extension) Fit the lens / source hyper-galaxy and background noise.
 
-Phase 6) Initialize an `Inversion` of the source-galaxy, using a brightness based `Pixelization` and adaptive
+Search 6) Initialize an `Inversion` of the source-galaxy, using a brightness based `Pixelization` and adaptive
          `Regularization` scheme.
-Phase 6 Extension) Fit the lens / source hyper-galaxy, background noise and reoptimize the `Inversion`.
+Search 6 Extension) Fit the lens / source hyper-galaxy, background noise and reoptimize the `Inversion`.
 
-Phase 7) Refine the lens light and mass models using the `Inversion` from phase 6 and lens / source hyper galaxy.
+Phase 7) Refine the lens light and mass models using the `Inversion` from search 6 and lens / source hyper galaxy.
 Phase 7 Extension) Fit the lens / source hyper-galaxy, background noise and reoptimize the `Inversion`.
 
-Phew! Thats a lot of phases, so lets take a look.
+Phew! Thats a lot of searches, so lets take a look.
 
 For hyper-pipelines, we pass pipeline setup which detemine whether certain hyper-galaxy features are on or off. For
 example, if pipeline_setup.general.hyper_galaxy is False, noise-scaling via hyper-galaxies is omitted  We also pass in the
-_Pixelization_/ `Regularization`.chemes that will be used in phase 6 and 7 of the pipeline.
+_Pixelization_/ `Regularization`.chemes that will be used in search 6 and 7 of the pipeline.
 """
 
 
@@ -136,14 +136,14 @@ def make_pipeline(setup, settings):
     This pipeline is tagged according to whether:
 
         1) Hyper-fitting setup (galaxies, sky, background noise) are used.
-        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 3 & 4).
+        2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in searches 3 & 4).
     """
     path_prefix = path.join(setup.path_prefix, pipeline_name)
 
     """
-    Phase 1:
+    Search 1:
 
-    We set up and run phase 1 as per usual for pipelines, so nothing new here.
+    We set up and run search 1 as per usual for pipelines, so nothing new here.
     """
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(name="phase[1]_light[bulge]", n_live_points=30),
@@ -153,18 +153,18 @@ def make_pipeline(setup, settings):
     )
 
     """
-    This extends phase 1 with hyper-phases that fit for the hyper-galaxies, as described above. The extension below
-    adds two phases, a `hyper-galaxy` phase which fits for the lens hyper-galaxy + the background noise, and a
+    This extends search 1 with hyper-searches that fit for the hyper-galaxies, as described above. The extension below
+    adds two searches, a `hyper-galaxy` phase which fits for the lens hyper-galaxy + the background noise, and a
     `hyper_combined` phase which fits them again.
     
-    Although this might sound like unnecessary repetition, the second phase uses Gaussian priors inferred from the
-    first phase, meaning that it can search regions of parameter space that may of been unaccessible due to the
-    first phase`s uniform piors.
+    Although this might sound like unnecessary repetition, the second search uses Gaussian priors inferred from the
+    first search, meaning that it can search regions of parameter space that may of been unaccessible due to the
+    first search`s uniform piors.
     """
     phase1 = phase1.extend_with_hyper_phase(setup_hyper=setup.setup_hyper)
 
     """
-    Phase 2:
+    Search 2:
 
     This phase fits for the lens's mass model and source's `LightProfile` using the lens subtracted image from phase
     1. The lens galaxy hyper-galaxy is included, such that high chi-squared values in the central regions of the
@@ -202,17 +202,17 @@ def make_pipeline(setup, settings):
     )
 
     """
-    This extends phase 2 with hyper-phases that fit for the hyper-galaxies, as described above. This extension again
-    adds two phases, a `hyper-galaxy` phase and `hyper_combined` phase. Unlike the extension to phase 1 which only
+    This extends search 2 with hyper-searches that fit for the hyper-galaxies, as described above. This extension again
+    adds two searches, a `hyper-galaxy` phase and `hyper_combined` phase. Unlike the extension to search 1 which only
     include_2d a lens hyper-galaxy, this extension includes both the lens and source hyper-galaxy `Galaxy`'s as well as the
     background noise.
     """
     phase2 = phase2.extend_with_hyper_phase(setup_hyper=setup.setup_hyper)
 
     """
-    Phase 3:
+    Search 3:
 
-    Usual stuff in this phase - we fit the lens and source using priors from the above 2 phases.
+    Usual stuff in this phase - we fit the lens and source using priors from the above 2 searches.
 
     Although the above hyper-galaxy phase includes fitting for the source galaxy, at this early stage in the
     pipeline we make a choice not to pass the hyper-galaxy of the source. Why? Because there is a good chance
@@ -242,24 +242,24 @@ def make_pipeline(setup, settings):
         hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
     )
 
-    """The usual phase extension, which operates the same as the extension for phase 2."""
+    """The usual phase extension, which operates the same as the extension for search 2."""
     phase3 = phase3.extend_with_hyper_phase(setup_hyper=setup.setup_hyper)
 
     """
-    Phase 4:
+    Search 4:
 
     Next, we initialize a magnification based `Pixelization` and constant `Regularization` scheme. But, you're probably
     wondering, why do we bother with these at all? Why not jump straight to the brightness based `Pixelization` and
     adaptive regularization?
 
-    Well, its to do with the hyper-galaxy-images of our source. At the end of phase 3, we've only fitted the source galaxy
+    Well, its to do with the hyper-galaxy-images of our source. At the end of search 3, we've only fitted the source galaxy
     using a single `EllipticalSersic` profile. What if the source galaxy is more complex than a Sersic? Or has
     multiple components? Our fit, put simply, won't be very good! This makes for a bad hyper-galaxy-image.
 
     So, its beneficial for us to introduce an intermediate `Inversion` using a magnification based grid, that fits
     all components of the source accurately giving us a good quality hyper-galaxy image for the brightness based
     `Pixelization` and adaptive regularization. Its for this reason we've also omitted the hyper-galaxy source galaxy
-    from the phases above; if the hyper-galaxy-image were poor, so is the hyper noise-map!
+    from the searches above; if the hyper-galaxy-image were poor, so is the hyper noise-map!
     """
     phase4 = al.PhaseImaging(
         search=af.DynestyStatic(
@@ -290,9 +290,9 @@ def make_pipeline(setup, settings):
     phase4 = phase4.extend_with_hyper_phase(setup_hyper=setup.setup_hyper)
 
     """
-    Phase 5: Refine the lens light and mass models using this magnification based `Pixelization` and constant
+    Search 5: Refine the lens light and mass models using this magnification based `Pixelization` and constant
     `Regularization` scheme. If our source model was a bit dodgy because it was more complex than a single Sersic, it
-    probably means our lens model was too, so a quick refinement in phase 5 is worth the effort!
+    probably means our lens model was too, so a quick refinement in search 5 is worth the effort!
     """
     phase5 = al.PhaseImaging(
         search=af.DynestyStatic(
@@ -320,7 +320,7 @@ def make_pipeline(setup, settings):
     phase5 = phase5.extend_with_hyper_phase(setup_hyper=setup.setup_hyper)
 
     """
-    Phase 6: use our hyper-galaxy-mode features to adapt the `Pixelization` to the source's morphology
+    Search 6: use our hyper-galaxy-mode features to adapt the `Pixelization` to the source's morphology
     and the `Regularization` to its brightness! This phase works like a hyper initialization phase, whereby we fix
     the lens and source models to the best-fit of the previous phase and just optimize the hyper-galaxy-parameters.
     """

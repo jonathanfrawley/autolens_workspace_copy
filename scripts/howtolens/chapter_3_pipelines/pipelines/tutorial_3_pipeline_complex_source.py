@@ -6,9 +6,9 @@ import autolens as al
 In this pipeline, we fit the a strong lens using an `EllipticalIsothermal` `MassProfile`.and a source composed of 4 
 parametric `EllipticalSersic``..
 
-The pipeline is four phases:
+The pipeline is four searches:
 
-Phase 1:
+Search 1:
 
     Fit the `EllipticalIsothermal` mass model and the first `EllipticalSersic` light profile of the source.
 
@@ -18,34 +18,34 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Add the second `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
     Source Light: `EllipticalSersic` + EllipticalSersic
-    Prior Passing: Lens Mass (model -> phase 1), Source Light (model -> phase 1).
+    Prior Passing: Lens Mass (model -> search 1), Source Light (model -> search 1).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
-Phase 3:
+Search 3:
 
     Add the third `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
     Source Light: `EllipticalSersic` + `EllipticalSersic` + EllipticalSersic
-    Prior Passing: Lens Mass (model -> phase 2), Source Light (model -> phase 2).
+    Prior Passing: Lens Mass (model -> search 2), Source Light (model -> search 2).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
-Phase 4:
+Search 4:
 
     Add the fourth `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
     Source Light: `EllipticalSersic` + `EllipticalSersic` + `EllipticalSersic` + EllipticalSersic
-    Prior Passing: Lens Mass (model -> phase 3), Source Light (model -> phase 3).
+    Prior Passing: Lens Mass (model -> search 3), Source Light (model -> search 3).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
 """
@@ -64,7 +64,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     path_prefix = path.join(path_prefix, pipeline_name)
 
     """
-    Phase 1: Initialize the lens's mass model using a simple source.
+    Search 1: Initialize the lens's mass model using a simple source.
     
     This won't fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
     einstein radius and the other lens-mass parameters.
@@ -87,7 +87,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     """
-    Phase 1: Add a second source component, using the previous model as the initialization on the lens / source
+    Search 1: Add a second source component, using the previous model as the initialization on the lens / source
              parameters. we'll vary the parameters of the lens mass model and first source galaxy component during the 
              fit.
     """
@@ -110,7 +110,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         settings=settings,
     )
 
-    """Phase 3: Same again, but with 3 source galaxy components."""
+    """Search 3: Same again, but with 3 source galaxy components."""
     phase3 = al.PhaseImaging(
         search=af.DynestyStatic(
             name="phase[3]_mass[sie]_source_x3[bulge]",
@@ -131,7 +131,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         settings=settings,
     )
 
-    """Phase 4: And one more for luck!"""
+    """Search 4: And one more for luck!"""
     phase4 = al.PhaseImaging(
         search=af.DynestyStatic(
             name="phase[4]_mass[sie]_source_x4[bulge]",

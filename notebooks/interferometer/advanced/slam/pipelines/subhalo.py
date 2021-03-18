@@ -11,7 +11,7 @@ The mass model and source are initialized using an already run `source` and `mas
 
 The pipeline is as follows:
 
-Phase 1:
+Search 1:
 
     Refine the lens mass model using the hyper-parameters optimized in the mass pipeline. This model should be used
     as the no substructure comparison model to quantify a substructure detection`s evidence increase.
@@ -21,7 +21,7 @@ Phase 1:
     Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
     Prior Passing: Lens mass (model -> previous pipeline), source light (instance or model -> previous pipeline).
 
-Phase 2:
+Search 2:
 
     Perform the subhalo detection analysis using a `GridSearch` of non-linear searches.
 
@@ -29,10 +29,10 @@ Phase 2:
     Subhalo: SphericalNFWLudlow
     Source Light: Previous source pipeilne model.
     Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
-    Prior Passing: Lens mass (phase 1), source light (instance or model -> previous pipeline).
+    Prior Passing: Lens mass (search 1), source light (instance or model -> previous pipeline).
     Notes: Priors on subhalo are tuned to give realistic masses (10^6 - 10^11).
 
-Phase 3:
+Search 3:
 
 Refine the best-fit detected subhalo from the previous phase.
 
@@ -40,7 +40,7 @@ Refine the best-fit detected subhalo from the previous phase.
     Source Light: Previous source pipeilne model.
     Subhalo: SphericalNFWLudlow
     Previous Pipeline: no_lens_light/mass/*/lens_*__source.py
-    Prior Passing: Lens mass & source light (model -> previous pipeline), subhalo mass (model -> phase 2).
+    Prior Passing: Lens mass & source light (model -> previous pipeline), subhalo mass (model -> search 2).
     Notes: None
 """
 
@@ -91,7 +91,7 @@ def make_pipeline_single_plane(
     )
 
     """
-    This `GridPhase` is used for all 3 subhalo detection phases, specifying that the subhalo (y,x) coordinates 
+    This `GridPhase` is used for all 3 subhalo detection searches, specifying that the subhalo (y,x) coordinates 
     are fitted for on a grid of non-linear searches.
     """
 
@@ -240,7 +240,7 @@ def make_pipeline_multi_plane(
     )
 
     """
-    This `GridPhase` is used for all 3 subhalo detection phases, specifying that the subhalo (y,x) coordinates 
+    This `GridPhase` is used for all 3 subhalo detection searches, specifying that the subhalo (y,x) coordinates 
     are fitted for on a grid of non-linear searches.
     """
 

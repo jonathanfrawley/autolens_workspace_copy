@@ -19,9 +19,9 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-We we begin by loading the strong lens dataset `mass_sie__source_sersic` `from .fits files:
+We we begin by loading the strong lens dataset `mass_sie__source_sersic` from .fits files:
 
-Load the strong lens dataset `light_sersic__mass_sie__source_sersic` `from .fits files, which is the dataset 
+Load the strong lens dataset `light_sersic__mass_sie__source_sersic` from .fits files, which is the dataset 
 we will use to demosntrate fitting.
 """
 dataset_name = "mass_sie__source_sersic"

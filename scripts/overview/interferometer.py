@@ -20,7 +20,7 @@ import numpy as np
 """
 To begin, we load an interferometer dataset from fits files:
 
-Load the strong lens interferometer dataset `mass_sie__source_sersic` `from .fits files, which is the dataset 
+Load the strong lens interferometer dataset `mass_sie__source_sersic` from .fits files, which is the dataset 
 we'll use in this example.
 """
 dataset_name = "mass_sie__source_sersic"

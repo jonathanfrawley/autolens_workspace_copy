@@ -42,8 +42,9 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Load the strong lens dataset `mass_sie__source_sersic` `from .fits files, which is the dataset we will
-use to perform lens modeling.
+__Dataset__ 
+
+Load the `Imaging` data, define the `Mask2D` and plot them.
 """
 dataset_name = "mass_sie__subhalo_nfw__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -55,9 +56,6 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.05,
 )
 
-"""
-The model-fit also requires a mask defining the regions of the image we fit the lens model to the data.
-"""
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )

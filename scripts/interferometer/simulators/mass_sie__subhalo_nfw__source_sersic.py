@@ -4,7 +4,7 @@ Simulator: Subhalo
 
 This script simulates `Interferometer` data of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The subhalo`s `MassProfile` is a `SphericalNFW`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic`.
 """

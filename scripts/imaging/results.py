@@ -12,8 +12,8 @@ again to create the results.
 
 This model-fit fits the strong lens `Imaging` data with:
 
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass.
- - An `EllipticalSersic` `LightProfile`.for the source galaxy's light.
+ - An `EllipticalIsothermal` `MassProfile` for the lens galaxy's mass.
+ - An `EllipticalSersic` `LightProfile` for the source galaxy's light.
 """
 # %matplotlib inline
 # from pyprojroot import here

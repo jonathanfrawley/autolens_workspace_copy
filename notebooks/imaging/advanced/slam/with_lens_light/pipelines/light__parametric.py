@@ -14,7 +14,7 @@ can be customized using the pipeline slam.
 
 The pipeline is one phase:
 
-Phase 1:
+Search 1:
 
     Fit the lens light using a bulge + disk model, with the lens mass and source fixed to the
     result of the previous pipeline
@@ -45,7 +45,7 @@ def make_pipeline(slam, settings, source_results):
     )
 
     """
-    Phase 1: Fit the lens `Galaxy`'s light, where we:
+    Search 1: Fit the lens `Galaxy`'s light, where we:
 
         1) Fix the lens `Galaxy`'s mass and source galaxy to the results of the previous pipeline.
         2) Vary the lens galaxy hyper noise factor if hyper-galaxies noise scaling is on.

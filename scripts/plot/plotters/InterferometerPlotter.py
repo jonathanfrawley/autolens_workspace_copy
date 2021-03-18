@@ -38,7 +38,7 @@ interferometer_plotter.figures(
     v_wavelengths=True,
     uv_wavelengths=True,
     amplitudes_vs_uv_distances=True,
-    phases_vs_uv_distances=True,
+    searches_vs_uv_distances=True,
 )
 
 """

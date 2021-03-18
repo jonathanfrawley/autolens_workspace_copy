@@ -4,7 +4,7 @@ Tutorial 9: Need For Speed
 
 We can now model strong lenses. We can balance complexity and realism to ensure that we infer a good lens model. And
 we can do this to make the analysis run faster. However, we always need to be wary of run-time. If we don't craft our
-phases carefully, we could spend days, or longer, modeling just one image. In this exercise, we'll get thinking about
+searches carefully, we could spend days, or longer, modeling just one image. In this exercise, we'll get thinking about
 what determines the length of time a **PyAutoLens** analysis takes, and how one might speed it up.
 
 __Searching Non-linear Parameter Space__
@@ -54,7 +54,7 @@ the image, converting it from say a 0.03" image to a 0.06" image. We lose inform
 could trim our PSF to a smaller size, at the risk of modeling our telescope optics worse.
 
 If you want the best, most perfect lens model possible, aggressively masking and cutting the data in this way is a
-bad idea. However, if your analysis is composed of multiple phases, and in the early phases you just want a reasonable
+bad idea. However, if your analysis is composed of multiple searches, and in the early searches you just want a reasonable
 lens model which fits the data reasonably well, why bother fitting all the image data? You can do that in the last
 phase, right?
 
@@ -71,7 +71,7 @@ you might write a pipeline to perform the following analyses:
  lens galaxy's light and then discard it in every phase afterwards?
 
  2) There are 2 lens galaxies responsible for lensing the background source. That means, there are twice as many
- lens galaxy parameters. Can you setup phases that fit each galaxy individiually, before fitting them jointly?
+ lens galaxy parameters. Can you setup searches that fit each galaxy individiually, before fitting them jointly?
 
  3) The source galaxy is really complex. Infact, in your strong lens image you count 12 distinct multiple images,
  meaning that there are at least three distinct source's of light in the source plane. This is a potentially very

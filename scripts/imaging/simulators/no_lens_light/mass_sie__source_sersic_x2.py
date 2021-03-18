@@ -4,7 +4,7 @@ Simulator: x2 Source
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is two `EllipticalSersic`s.
 """
 # %matplotlib inline

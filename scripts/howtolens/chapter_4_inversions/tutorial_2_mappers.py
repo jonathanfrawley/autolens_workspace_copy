@@ -20,7 +20,7 @@ import autolens.plot as aplt
 we'll use new strong lensing data, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic`.
 """
 dataset_name = "mass_sie__source_sersic"

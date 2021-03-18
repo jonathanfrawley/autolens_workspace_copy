@@ -11,7 +11,7 @@ is initialized using results from these pipelines.
 
 The pipeline is one phase:
 
-Phase 1:
+Search 1:
 
     Fit the lens mass model _MassProfile (default=`EllipticalPowerLaw`), using the lens light and source model from a 
     previous pipeline.
@@ -47,7 +47,7 @@ def make_pipeline(slam, settings, source_results, light_results, end_stochastic=
     )
 
     """
-    Phase 1: Fit the lens `Galaxy`'s light and mass and one source galaxy, where we:
+    Search 1: Fit the lens `Galaxy`'s light and mass and one source galaxy, where we:
 
         1) Use the source galaxy of the `source` pipeline.
         2) Use the lens galaxy light of the `light` pipeline.

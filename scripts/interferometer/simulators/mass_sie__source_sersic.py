@@ -4,7 +4,7 @@ Simulator: SIE
 
 This script simulates `Interferometer` data of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's `LightProfile` is an `EllipticalSersic`.
 """
 # %matplotlib inline

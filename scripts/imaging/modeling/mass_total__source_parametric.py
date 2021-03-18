@@ -2,14 +2,11 @@
 Modeling: Mass Total + Source Parametric
 ========================================
 
-To fit a lens model to a dataset, we must perform lens modeling, which uses a `NonLinearSearch` to fit many
-different tracers to the dataset.
-
-In this example script, we fit `Imaging` of a strong lens system where:
+In this script, we fit `Imaging` with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
- - The source galaxy's light is modeled parametrically as an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The source galaxy's light is a parametric `EllipticalSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -23,10 +20,9 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Load the strong lens dataset `mass_sie__source_sersic` `from .fits files, which is the dataset we will
-use to perform lens modeling.
+__Dataset__
 
-This is the same dataset we fitted in the `autolens/intro/fitting.py` example.
+Load and plot the strong lens dataset `mass_sie__source_sersic` via .fits files, which we will fit with the lens model.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -38,12 +34,20 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot_imaging()
+
 """
-The model-fit also requires a mask defining the regions of the image we fit the lens model to the data.
+__Masking__
+
+The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data, which we define
+and use to set up the `MaskedImaging` object that the lens model fits.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
+
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -51,104 +55,86 @@ imaging_plotter = aplt.ImagingPlotter(
 imaging_plotter.subplot_imaging()
 
 """
-__Phase__
-
-To perform lens modeling, we create a `PhaseImaging` object, which comprises:
-
-   - The `GalaxyModel`'s used to fit the data.
-   - The `SettingsPhase` which customize how the model is fitted to the data.
-   - The `NonLinearSearch` used to sample parameter space.
-   
-Once we have create the phase, we `run` it by passing it the data and mask.
-
 __Model__
 
 We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
-example our lens mooel is:
+example we fit a lens model where:
 
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass (5 parameters).
- - An `EllipticalSersic` `LightProfile`.for the source galaxy's light (7 parameters).
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
+ 
+ - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
-NOTE: By default, **PyAutoLens** assumes the image has been reduced such that the lens galaxy centre is at (0.0", 0.0"),
-with the priors on the lens `MassProfile` coordinates set accordingly. if for your dataset the lens is not centred at 
-(0.0", 0.0"), we recommend you reduce your data so it is (see `autolens_workspace/notebooks/preprocess`).  Alternatively, you 
-can manually override the priors (see `autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
+NOTE: 
+
+**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+
+If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
+
+ - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
+ - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
+lens = al.GalaxyModel(
+    redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+)
 source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-"""
-__Settings__
-
-Next, we specify the `SettingsPhaseImaging`, which describe how the model is fitted to the data in the log likelihood
-function. Below, we specify:
- 
- - That a regular `Grid2D` is used to fit create the model-image when fitting the data 
-      (see `autolens_workspace/examples/grids.py` for a description of grids).
- - The sub-grid size of this grid.
-
-Different `SettingsPhase` are used in different example model scripts and a full description of all `SettingsPhase` 
-can be found in the example script `autolens/workspace/notebooks/imaging/modeling/customize/settings.py` and the following 
-chain -> <chain>
-"""
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
-
-settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
+model = af.CollectionPriorModel(
+    galaxies=af.CollectionPriorModel(lens=lens, source=source)
+)
 
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the
-nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/).
+The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
-The script `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches.py` gives a description of the types of
-non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` is or how it 
-operates, checkout chapters 1 and 2 of the HowToLens lecture series.
+The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches` gives an overview of the 
+non-linear searches **PyAutoLens** supports. If you are unclear of what a non-linear search is, checkout chapter 2 of 
+the **HowToLens** lectures.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/imaging/mass_sie__source_sersic/phase_mass[sie]_source[bulge]`.
+ `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]`.
 """
 search = af.DynestyStatic(
+    name="mass[sie]_source[bulge]",
     path_prefix=path.join("imaging", dataset_name),
-    name="phase_mass[sie]_source[bulge]",
     n_live_points=50,
 )
 
 """
-__Phase__
+__Analysis__
 
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
+The `AnalysisImaging` object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
+the `MaskedImaging`dataset.
 """
-phase = al.PhaseImaging(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
-)
+analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 """
-We can now begin the fit by passing the dataset and mask to the phase, which will use the `NonLinearSearch` to fit
-the model to the data. 
+__Model-Fit__
 
-The fit outputs visualization on-the-fly, so checkout the path 
-`autolens_workspace/output/examples/phase_mass[sie]_source[bulge]` to see how your fit is doing!
+We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
+search to find which models fit the data with the highest likelihood.
+
+Checkout the folder `autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]` for live outputs 
+of the results of the fit, including on-the-fly visualization of the best fit model!
 """
-result = phase.run(dataset=imaging, mask=mask)
+result = search.fit(model=model, analysis=analysis)
 
 """
-The phase above returned a result, which, for example, includes the lens model corresponding to the maximum
-log likelihood solution in parameter space.
+__Result__
+
+The search returns a result object, which includes: 
+
+ - The lens model corresponding to the maximum log likelihood solution in parameter space.
+ - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
 """
 print(result.max_log_likelihood_instance)
 
-"""
-It also contains instances of the maximum log likelihood Tracer and FitImaging, which can be used to visualize
-the fit.
-"""
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=mask.masked_grid_sub_1
+    tracer=result.max_log_likelihood_tracer, grid=result.grid
 )
 tracer_plotter.subplot_tracer()
 

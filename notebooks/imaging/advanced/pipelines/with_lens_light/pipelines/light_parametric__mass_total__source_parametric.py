@@ -3,15 +3,15 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit `Imaging` of a strong lens system where:
+In this pipeline, we fit `Imaging` with a strong lens model where:
 
  - The lens galaxy's light is modeled parametrically using one or more input `LightProfile`s.
- - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
  - The source galaxy's light is modeled parametrically using one or more input `LightProfile`s.
 
-The pipeline is three phases:
+The pipeline is three searches:
 
-Phase 1:
+Search 1:
 
     Fit and subtract the lens light with the parametric profiles input into `SetupLightParametric` (e.g. the 
     `bulge_prior_model`, `disk_prior_model`, etc). The default is :
@@ -26,7 +26,7 @@ Phase 1:
     Prior Passing: None
     Notes: None
 
-Phase 2:
+Search 2:
 
     Fit the lens mass with an `EllipticalIsothermal` (and optional shear) and source with the parametric profiles input
     into `SetupSourceParametric` (e.g. the `bulge_prior_model`, `disk_prior_model`, etc). The default is :
@@ -35,22 +35,22 @@ Phase 2:
     - `SetupSourceParametric.disk_prior_model=EllipticalExponential`
     - `SetupSourceParametric.align_bulge_disk_centre=True` (meaning the two profiles above have aligned centre.
     
-    Lens Light: Parametric model of phase 1.
+    Lens Light: Parametric model of search 1.
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: SetupSourceParametric.bulge_prior_model + SetupSourceParametric.disk_prior_model + others
-    Prior Passing: Lens Light (instance -> phase 1).
-    Notes: Uses the lens subtracted image from phase 1.
+    Prior Passing: Lens Light (instance -> search 1).
+    Notes: Uses the lens subtracted image from search 1.
 
-Phase 3:
+Search 3:
 
     Fit the `SetupMassTotal.mass_prior_model` (default=`EllipticalPowerLaw`) model, using priors from the  
-    `EllipticalIsothermal` mass model of phase 1 and the parametric lens light and source model with priors from 
-    phases 1 & 2.
+    `EllipticalIsothermal` mass model of search 1 and the parametric lens light and source model with priors from 
+    searches 1 & 2.
     
     Lens Light: SetupLightParametric.bulge_prior_model + SetupLightParametric.disk_prior_model + others
     Lens Mass: SetupMassTotal.mass_prior_model + ExternalShear
     Source Light: SetupSourceParametric.bulge_prior_model + SetupSourceParametric.disk_prior_model + others
-    Prior Passing: Lens light (model -> phase 1), lens mass and source light (model -> phase 2).
+    Prior Passing: Lens light (model -> search 1), lens mass and source light (model -> search 2).
     Notes: None
 """
 
@@ -69,7 +69,7 @@ def make_pipeline(setup, settings):
     path_prefix = path.join(setup.path_prefix, pipeline_name, setup.tag)
 
     """
-    Phase 1: Fit only the lens galaxy's light, where we:
+    Search 1: Fit only the lens galaxy's light, where we:
 
         1) Use the light model determined from `SetupLightParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.).
@@ -89,9 +89,9 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 2: Fit the lens's `MassProfile`'s and source galaxy's light, where we:
+    Search 2: Fit the lens's `MassProfile`'s and source galaxy's light, where we:
 
-        1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
+        1) Fix the foreground lens light subtraction to the lens galaxy light model from search 1.
         2) Use the source model determined from `SetupSourceParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.)
     """
@@ -120,9 +120,9 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 3: Fit simultaneously the lens and source galaxies, where we:
+    Search 3: Fit simultaneously the lens and source galaxies, where we:
 
-        1) Set the lens's light, mass, and source's light using the results of phases 1 and 2.
+        1) Set the lens's light, mass, and source's light using the results of searches 1 and 2.
     """
 
     mass = setup.setup_mass.mass_prior_model_with_updated_priors_from_result(

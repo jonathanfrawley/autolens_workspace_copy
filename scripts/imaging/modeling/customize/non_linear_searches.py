@@ -2,15 +2,12 @@
 Customize: Non-linear Searches
 ==============================
 
-In the `beginner` examples all model-fits were performed using the nested sampling algorithm `Dynesty`, which is a
-very effective `NonLinearSearch` for lens modeling, but may not always be the optimal choice for your
-problem. In this example we fit strong lens data using a variety of non-linear searches.
+All example model-fits are performed using the nested sampling algorithm `Dynesty`, which we have found to be the most
+effective non-linear search for performing lens modeling.
 
-In this example script, we fit `Imaging` of a strong lens system where:
+However, **PyAutoLens** supports a range of non-linear searches which are described here, which you may wish to
+experiment with to see if they can outperform Dynesty for your lens modeling problem.
 
- - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is modeled as an `EllipticalIsothermal`.
- - The source galaxy's light is modeled parametrically as an `EllipticalSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -24,19 +21,17 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-As per usual, load the `Imaging` data, create the `Mask2D` and plot them. In this strong lensing dataset:
+__Dataset + Masking__
 
- - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+Load and plot the strong lens dataset `mass_sie__source_sersic` via .fits files, which we will fit with the lens model.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
 
 imaging = al.Imaging.from_fits(
     image_path=path.join(dataset_path, "image.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
     pixel_scales=0.1,
 )
 
@@ -44,140 +39,74 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-imaging_plotter = aplt.ImagingPlotter(
-    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
-)
-imaging_plotter.subplot_imaging()
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 """
-__Model__
+__Model + Analysis__ 
 
-We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
-example our lens mooel is:
-
- - An `EllipticalIsothermal` `MassProfile`.for the lens galaxy's mass (5 parameters).
- - An `EllipticalSersic` `LightProfile`.for the source galaxy's light (6 parameters).
-
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The code below performs the normal steps to set up a model and analysis class. We omit comments of this code as you 
+should be familiar with it and it is not specific to this example!
 """
 lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
 source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-"""
-__Settings__
-
-Next, we specify the `SettingsPhaseImaging`, which in this example simmply use the default values used in the beginner
-examples.
-"""
-settings_masked_imaging = al.SettingsMaskedImaging()
-
-settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
-
-"""
-__Searches__
-
-Below we use the following non-linear searches:
-
-    1) Nested Sampler.
-    2) Optimize.
-    3) MCMC
-
-__Nested Sampling__
-
-To begin, lets again use the nested sampling method `Dynesty` that we have used in all examples up to now. We've seen 
-that the method is very effective, always locating a solution that fits the lens data well.
-
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
-
- `/autolens_workspace/output/imaging/modeling/customize/mass_sie__source_sersic/phase__nested_sampling/
-    settings__grid_sub_2/dynesty__`.
-"""
-search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "customize", dataset_name),
-    name="phase_non_linear_searches",
-    n_live_points=50,
+model = af.CollectionPriorModel(
+    galaxies=af.CollectionPriorModel(lens=lens, source=source)
 )
 
-"""
-__Phase__
-
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
-"""
-phase = al.PhaseImaging(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
-)
-
-result = phase.run(dataset=imaging, mask=mask)
+analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 """
-__Optimizer__
+__Search: Emcee (MCMC)__
 
-Now, lets use a fast `NonLinearSearch` technique called an `optimizer`, which only seeks to maximize the log 
-likelihood of the fit and does not attempt to infer the errors on the model parameters. Optimizers are useful when we
-want to find a lens model that fits the data well, but do not care about the full posterior of parameter space (e.g.
-the errors). 
+Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is very popular in Astrophysics.
 
-we'll use the `particle swarm optimizer algorithm *PySwarms* (https://pyswarms.readthedocs.io/en/latest/index.html) 
-using:
-
- - 30 particles to sample parameter space.
- - 100 iterations per particle, giving a total of 3000 iterations.
-    
-Performing the model-fit in 3000 iterations is significantly faster than the `Dynesty` fits perforomed in other 
-example scripts, that often require > 20000 - 50000 iterations.
-"""
-search = af.PySwarmsLocal(
-    path_prefix=path.join("imaging", "customize", dataset_name),
-    name="phase__non_linear_searches",
-    n_particles=50,
-    iters=5000,
-)
-
-"""
-__Phase__
-
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
-
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
-
- `/autolens_workspace/output/imaging/modeling/customize`.
-"""
-phase = al.PhaseImaging(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
-)
-
-result = phase.run(dataset=imaging, mask=mask)
-
-"""
-__MCMC__
+An MCMC algorithm only seeks to map out the posterior of parameter space, unlike a nested sampling algorithm like 
+Dynesty, which also aims to estimate the Bayesian evidence if the model. Therefore, in principle, an MCMC approach like
+Emcee should be faster than Dynesty. However, in our experience this is not the case for lens model, if you can
+demonstrate that Emcee is please let us know on the PyAutoLens Github!
 """
 search = af.Emcee(
-    path_prefix=path.join("imaging", "customize", dataset_name),
-    name="phase_non_linear_searches",
+    path_prefix=path.join("imaging", "customize", "non_linear_searches"),
+    name="emcee",
     nwalkers=50,
     nsteps=1000,
 )
 
+search.fit(model=model, analysis=analysis)
+
 """
-__Phase__
+__Search: PySwarms (Optimizer)__
 
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
+PySwarms (https://pyswarms.readthedocs.io/en/latest/index.html) is a particle swarm optimizer, which supports both
+local optimization (e.g. finding a local maximum in the likelihood given the starting point) and global optimization
+(e.g. finding the global maxima).
 
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
+An `optimizer` seeks to only maximize the log likelihood of the fit and does not attempt to infer the errors on the 
+model parameters. Optimizers are therefore useful when we want to find a lens model that fits the data well, but do 
+not care about the full posterior of parameter space (e.g. the errors). 
 
- `/autolens_workspace/output/imaging/modeling/customize`.
+However, much like our attempts with MCMC metohds like Emcee, we have found Optimizers to be inaccurate when performing
+lens modeling. Again, if you can demonstrate PySwarms working better than Dynbesty, please contact us on the PyAutoLens
+GitHub to know how you managed it!
 """
-phase = al.PhaseImaging(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
+search = af.PySwarmsGlobal(
+    path_prefix=path.join("imaging", "customize", "non_linear_searches"),
+    name="pyswarms_global",
+    n_particles=50,
+    iters=5000,
 )
 
-# result = phase.run(dataset=imaging, mask=mask)
+search.fit(model=model, analysis=analysis)
+
+search = af.PySwarmsLocal(
+    path_prefix=path.join("imaging", "customize", "non_linear_searches"),
+    name="pyswarms_local",
+    n_particles=50,
+    iters=5000,
+)
+
+search.fit(model=model, analysis=analysis)
 
 """
 Finish.
