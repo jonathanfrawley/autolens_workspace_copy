@@ -29,7 +29,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 """
 We now pass the mass profile and grid to a `MassProfilePlotter` and call various `figure_*` methods to 
-plot different attributes.
+plot different attributes in 1D and 2D.
 """
 mass_profile_plotter = aplt.MassProfilePlotter(mass_profile=mass, grid=grid)
 mass_profile_plotter.figures(
@@ -39,6 +39,7 @@ mass_profile_plotter.figures(
     deflections_x=True,
     magnification=True,
 )
+mass_profile_plotter.figures_1d(convergence=True, potential=True)
 
 """
 A `MassProfile` and its `Grid2D` contains the following attributes which can be plotted automatically via 
