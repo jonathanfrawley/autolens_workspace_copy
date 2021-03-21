@@ -9,8 +9,8 @@ which customize the model and analysis in that pipeline.
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
 uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS PIPELINE.
 
-Using a SOURCE PARAMETRIC PIPELINE and a MASS PIPELINE this SLaM script fits `Imaging` of a strong lens system, where
-in the final model:
+Using a SOURCE PARAMETRIC PIPELINE, MASS PIPELINE and SUBHALO PIPELINE this SLaM script fits `Imaging` of a strong lens
+system, where in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
@@ -32,7 +32,7 @@ Check them out for a full description of the analysis!
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
-from .pipelines import source__parametric, mass__total, subhalo
+import slam
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -108,7 +108,7 @@ light, which in this example:
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-source_results = source__parametric.source_parametric__no_lens_light(
+source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
@@ -127,15 +127,16 @@ The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens m
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
+ - Uses the `EllipticalSersic` model representing a bulge for the source's light.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_results)
+analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_parametric_results)
 
-mass_results = mass__total.mass__total__no_lens_light(
+mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
-    source_results=source_results,
+    source_results=source_parametric_results,
     mass=af.PriorModel(al.mp.EllipticalPowerLaw),
 )
 
@@ -148,16 +149,16 @@ The SUBHALO PIPELINE (no lens light, single plane detection) consists of the fol
  subhalo. This uses the same model as fitted in the MASS PIPELINE. 
  2) Performs a grid-search of non-linear searches to attempt to detect a dark matter subhalo. 
  3) If there is a successful detection a final search is performed to refine its parameters.
+ 
+For this runner the SUBHALO PIPELINE customizes:
 
-For this runner the `SetupSubhalo` customizes:
-
- - If the parameteric source galaxy is treated as a model (all free parameters) or instance (all fixed) during the 
-   subhalo detection grid search.
- - The NxN size of the grid-search.
+ - The [number_of_steps x number_of_steps] size of the grid-search, as well as the dimensions it spans in arc-seconds.
+ - The `number_of_cores` used for the gridsearch, where `number_of_cores > 1` performs the model-fits in paralle using
+ the Python multiprocessing module.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_results)
+analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_parametric_results)
 
-subhalo_results = subhalo.subhalo__detection_single_plane__no_lens_light(
+subhalo_results = slam.subhalo.no_lens_light__detection_single_plane(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,

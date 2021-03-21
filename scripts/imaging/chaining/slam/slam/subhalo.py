@@ -1,12 +1,12 @@
 import autofit as af
 import autolens as al
 from autofit.non_linear.grid import sensitivity as s
-from . import slam_util, extensions
+from . import slam_util
 
 from typing import Union, Tuple
 
 
-def subhalo__detection_single_plane__no_lens_light(
+def no_lens_light__detection_single_plane(
     path_prefix: str,
     analysis: al.AnalysisImaging,
     setup_hyper: al.SetupHyper,
@@ -200,7 +200,7 @@ def subhalo__detection_single_plane__no_lens_light(
     return af.ResultsCollection([result_1, grid_search_result, result_3])
 
 
-def subhalo__detection_multi_plane__no_lens_light(
+def no_lens_light__detection_multi_plane(
     slam, settings, mass_results, end_stochastic=False
 ):
     pipeline_name = "pipeline_subhalo"
@@ -355,7 +355,7 @@ def subhalo__detection_multi_plane__no_lens_light(
     )
 
 
-def subhalo__sensitivity_mapping__no_lens_light(
+def no_lens_light__sensitivity_mapping(
     slam, mask, psf, mass_results, analysis_cls
 ):
     """
@@ -526,7 +526,7 @@ def subhalo__sensitivity_mapping__no_lens_light(
     )
 
 
-def subhalo__detection_single_plane__with_lens_light(
+def with_lens_light__detection_single_plane(
     slam, settings, mass_results, end_stochastic=False
 ):
 
@@ -682,7 +682,7 @@ def subhalo__detection_single_plane__with_lens_light(
     )
 
 
-def subhalo__detection_multi_plane__with_lens_light(
+def with_lens_light__detection_multi_plane(
     slam, settings, mass_results, end_stochastic=False
 ):
 
@@ -839,7 +839,7 @@ def subhalo__detection_multi_plane__with_lens_light(
     )
 
 
-def subhalo__sensitivity_mapping__with_lens_light(
+def with_lens_light__sensitivity_mapping(
     slam, mask, psf, mass_results, analysis_cls
 ):
     """

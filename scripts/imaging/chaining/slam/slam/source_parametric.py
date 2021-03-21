@@ -3,7 +3,7 @@ import autolens as al
 from . import extensions
 
 
-def source_parametric__no_lens_light(
+def no_lens_light(
     path_prefix: str,
     analysis,
     setup_hyper: al.SetupHyper,
@@ -106,7 +106,7 @@ def source_parametric__no_lens_light(
     return af.ResultsCollection([result_1])
 
 
-def source__parametric__with_lens_light(slam, settings):
+def with_lens_light(slam, settings):
 
     pipeline_name = "pipeline_source[parametric]"
 

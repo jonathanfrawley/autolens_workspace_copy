@@ -3,7 +3,7 @@ import autofit as af
 import autolens as al
 
 
-def light__parametric__with_lens_light(slam, settings, source_results):
+def with_lens_light(slam, settings, source_results):
 
     pipeline_name = "pipeline_light[parametric]"
 

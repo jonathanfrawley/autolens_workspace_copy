@@ -3,7 +3,7 @@ import autolens as al
 from . import slam_util, extensions
 
 
-def mass__total__no_lens_light(
+def no_lens_light(
     path_prefix: str,
     analysis: al.AnalysisImaging,
     setup_hyper: al.SetupHyper,
@@ -94,7 +94,7 @@ def mass__total__no_lens_light(
     return af.ResultsCollection([result_1])
 
 
-def mass__total__with_lens_light(
+def with_lens_light(
     slam, settings, source_results, light_results, end_stochastic=False
 ):
 

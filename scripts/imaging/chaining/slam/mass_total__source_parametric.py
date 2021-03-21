@@ -30,10 +30,10 @@ Check them out for a full description of the analysis!
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
-from .pipelines import source__parametric, mass__total
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+import slam
 
 """
 __Dataset + Masking__ 
@@ -106,7 +106,7 @@ light, which in this example:
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-source_results = source__parametric.source_parametric__no_lens_light(
+source_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
@@ -126,11 +126,12 @@ The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens m
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
+ - Uses the `EllipticalSersic` model representing a bulge for the source's light.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_results)
 
-mass_results = mass__total.mass__total__no_lens_light(
+mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,

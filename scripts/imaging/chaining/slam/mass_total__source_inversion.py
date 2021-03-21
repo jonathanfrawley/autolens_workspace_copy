@@ -31,7 +31,7 @@ Check them out for a detailed description of the analysis!
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
-from .pipelines import source__parametric, source__inversion, mass__total
+import slam
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -107,7 +107,7 @@ light, which in this example:
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-source_parametric_results = source__parametric.source_parametric__no_lens_light(
+source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
     setup_hyper=setup_hyper,
     analysis=analysis,
@@ -123,16 +123,18 @@ source_parametric_results = source__parametric.source_parametric__no_lens_light(
 __SOURCE INVERSION PIPELINE (no lens light)__
 
 The SOURCE INVERSION PIPELINE (no lens light) uses four searches to initialize a robust model for the `Inversion` that
-fits the source galaxy's light. It begins by fitting a `VoronoiMagnification` pixelization with `Constant` regularization,
-to set up the model and hyper images, and then:
+reconstructs the source galaxy's light. It begins by fitting a `VoronoiMagnification` pixelization with `Constant` 
+regularization, to set up the model and hyper images, and then:
 
  - Uses a `VoronoiBrightnessImage` pixelization.
  - Uses an `AdaptiveBrightness` regularization.
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
+ SOURCE INVERSION PIPELINE.
 
-Settings:
+In this example we use the following optional settings:
 
- - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove 
- unphysical solutions from the `Inversion` model-fitting.
+ - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to 
+ remove unphysical solutions from the `Inversion` model-fitting.
 """
 positions = al.Grid2DIrregular.from_json(
     file_path=path.join(dataset_path, "positions.json")
@@ -148,7 +150,7 @@ analysis = al.AnalysisImaging(
     settings_lens=settings_lens,
 )
 
-source_inversion_results = source__inversion.source__inversion__no_lens_light(
+source_inversion_results = slam.source_inversion.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
@@ -161,15 +163,18 @@ source_inversion_results = source__inversion.source__inversion__no_lens_light(
 __MASS TOTAL PIPELINE (no lens light)__
 
 The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens mass model to a high level of accuracy, 
-using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
+using the lens mass model and source model of the SOURCE INVERSION PIPELINE to initialize the model priors. In this 
+example it:
 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
+ - Uses an `Inversion` for the source's light.
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINES through to the MASS 
+ PIPELINE.
  
-Settings:
+In this example we use the following optional settings:
 
- - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove 
- unphysical solutions from the `Inversion` model-fitting.
+ - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to 
+ remove unphysical solutions from the `Inversion` model-fitting.
 """
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
@@ -177,7 +182,7 @@ analysis = al.AnalysisImaging(
     settings_lens=settings_lens,
 )
 
-mass_results = mass__total.mass__total__no_lens_light(
+mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,

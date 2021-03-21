@@ -1,10 +1,9 @@
-from os import path
 import autofit as af
 import autolens as al
 from . import slam_util, extensions
 
 
-def source__inversion__no_lens_light(
+def no_lens_light(
     path_prefix: str,
     analysis,
     setup_hyper: al.SetupHyper,
@@ -226,7 +225,7 @@ def source__inversion__no_lens_light(
     return af.ResultsCollection([result_1, result_2, result_3, result_4])
 
 
-def source__inversion__with_lens_light(slam, settings, source_parametric_results):
+def with_lens_light(slam, settings, source_parametric_results):
 
     pipeline_name = "pipeline_source[inversion]"
 
