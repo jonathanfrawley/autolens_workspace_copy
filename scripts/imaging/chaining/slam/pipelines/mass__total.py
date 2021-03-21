@@ -1,18 +1,18 @@
 import autofit as af
 import autolens as al
-from . import slam_util
+from . import slam_util, extensions
 
 
 def mass__total__no_lens_light(
     path_prefix: str,
-    analysis,
+    analysis: al.AnalysisImaging,
     setup_hyper: al.SetupHyper,
-    source_results,
+    source_results: af.ResultsCollection,
     mass: af.PriorModel(al.mp.MassProfile) = af.PriorModel(al.mp.EllipticalIsothermal),
     mass_centre: (float, float) = None,
-    end_stochastic=False,
 ):
     """
+    The SLaM MASS TOTAL PIPELINE for fitting imaging data without a lens light component.
 
     Parameters
     ----------
@@ -22,13 +22,13 @@ def mass__total__no_lens_light(
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     setup_hyper : SetupHyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
+    source_parametric_results : af.ResultCollection
+        The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE which ran before this pipeline.
     mass : af.PriorModel(mp.MassProfile)
-        The `MassProfile` fitted by this pipeline.
+        The `MassProfile` used to fit the lens galaxy mass in this pipeline.
     mass_centre : (float, float)
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
-    end_stochastic : bool
-        If True, the pipeline ends with a stochastic phase for reliable error estimation.
     """
 
     """
@@ -44,22 +44,22 @@ def mass__total__no_lens_light(
     of the SOURCE PIPELINE
     """
     mass = slam_util.mass__from_result(
-        mass=mass, result=source_results[-1], unfix_mass_centre=True
+        mass=mass, result=source_results.last, unfix_mass_centre=True
     )
 
     if mass_centre is not None:
         mass.centre = mass_centre
 
     source = slam_util.source__from_result_model_if_parametric(
-        result=source_results[-1], setup_hyper=setup_hyper
+        result=source_results.last, setup_hyper=setup_hyper
     )
 
     model = af.CollectionPriorModel(
         galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
-                redshift=source_results[-1].instance.galaxies.lens.redshift,
+                redshift=source_results.last.instance.galaxies.lens.redshift,
                 mass=mass,
-                shear=source_results[-1].model.galaxies.lens.shear,
+                shear=source_results.last.model.galaxies.lens.shear,
             ),
             source=source,
         )
@@ -76,41 +76,22 @@ def mass__total__no_lens_light(
     """
     __Hyper Extension__
 
-    The above search is extended with a hyper-search if the SetupHyper has one or more of the following inputs:
-
-    This hyper-search runs if:
+    The above search may be extended with a hyper-search, if the SetupHyper has one or more of the following inputs:
 
      - The source is using an `Inversion`.
      - One or more `HyperGalaxy`'s are included.
      - The background sky is included via `hyper_image_sky input`.
      - The background noise is included via the `hyper_background_noise`.
-     
-    __Stochastic Extension__
-    
-    If `end_stochastic=True`, the pipeline ends with a stochastic phase.
     """
-    if end_stochastic:
 
-        result_1 = al.util.model.stochastic_fit(
-            setup_hyper=setup_hyper, result=result_1, search=search, analysis=analysis
-        )
+    result_1 = extensions.hyper_fit(
+        setup_hyper=setup_hyper,
+        result=result_1,
+        analysis=analysis,
+        include_hyper_image_sky=True,
+    )
 
-    else:
-
-        if not setup_hyper.hyper_fixed_after_source:
-
-            result_1 = al.util.model.hyper_fit(
-                setup_hyper=setup_hyper,
-                result=result_1,
-                search=search,
-                analysis=analysis,
-                include_hyper_image_sky=True,
-            )
-
-    results = af.ResultsCollection()
-    results.add(search.paths.name, result_1)
-
-    return results
+    return af.ResultsCollection([result_1])
 
 
 def mass__total__with_lens_light(
@@ -155,7 +136,7 @@ def mass__total__with_lens_light(
     """SLaM: Use the source and lens light models from the previous *Source* and *Light* pipelines."""
 
     lens = slam.lens_for_mass_pipeline_from_result(
-        result=light_results[-1], mass=mass, shear=shear
+        result=light_results.last, mass=mass, shear=shear
     )
 
     source = slam.source_from_result_model_if_parametric(result=source_results[-2])
@@ -166,10 +147,10 @@ def mass__total__with_lens_light(
         ),
         galaxies=af.CollectionPriorModel(lens=lens, source=source),
         hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
-            result=light_results[-1], as_model=True
+            result=light_results.last, as_model=True
         ),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
-            result=light_results[-1]
+            result=light_results.last
         ),
         settings=settings,
     )

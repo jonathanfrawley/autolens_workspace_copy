@@ -79,20 +79,6 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__Positions__
-
-We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove unphysical
-solutions from the `Inversion` model-fitting.
-"""
-positions = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "positions.json")
-)
-
-settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
-)
-
-"""
 __HYPER SETUP__
 
 The `SetupHyper` determines which hyper-mode features are used during the model-fit as is used identically to the
@@ -119,10 +105,12 @@ light, which in this example:
  - Uses an `EllipticalIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
  - Fixes the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS PIPELINE).
 """
+analysis = al.AnalysisImaging(dataset=masked_imaging)
+
 source_parametric_results = source__parametric.source_parametric__no_lens_light(
     path_prefix=path_prefix,
-    analysis=al.AnalysisImaging(dataset=masked_imaging),
     setup_hyper=setup_hyper,
+    analysis=analysis,
     mass=af.PriorModel(al.mp.EllipticalIsothermal),
     shear=af.PriorModel(al.mp.ExternalShear),
     source_bulge=af.PriorModel(al.lp.EllipticalSersic),
@@ -140,10 +128,29 @@ to set up the model and hyper images, and then:
 
  - Uses a `VoronoiBrightnessImage` pixelization.
  - Uses an `AdaptiveBrightness` regularization.
+
+Settings:
+
+ - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove 
+ unphysical solutions from the `Inversion` model-fitting.
 """
+positions = al.Grid2DIrregular.from_json(
+    file_path=path.join(dataset_path, "positions.json")
+)
+
+settings_lens = al.SettingsLens(
+    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
+)
+
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging,
+    results=source_parametric_results,
+    settings_lens=settings_lens,
+)
+
 source_inversion_results = source__inversion.source__inversion__no_lens_light(
     path_prefix=path_prefix,
-    analysis=al.AnalysisImaging(dataset=masked_imaging, results=source_parametric_results, settings_lens=settings_lens),
+    analysis=analysis,
     setup_hyper=setup_hyper,
     source_parametric_results=source_parametric_results,
     pixelization=al.pix.VoronoiBrightnessImage,
@@ -158,12 +165,21 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
+ 
+Settings:
+
+ - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove 
+ unphysical solutions from the `Inversion` model-fitting.
 """
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging,
+    results=source_inversion_results,
+    settings_lens=settings_lens,
+)
+
 mass_results = mass__total.mass__total__no_lens_light(
     path_prefix=path_prefix,
-    analysis=al.AnalysisImaging(
-        dataset=masked_imaging, results=source_inversion_results
-    ),
+    analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,
     mass=af.PriorModel(al.mp.EllipticalPowerLaw),
@@ -172,4 +188,3 @@ mass_results = mass__total.mass__total__no_lens_light(
 """
 Finish.
 """
-22

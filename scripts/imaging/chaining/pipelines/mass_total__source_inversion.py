@@ -185,7 +185,9 @@ settings_lens = al.SettingsLens(
     auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, results=result_2, settings_lens=settings_lens)
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging, results=result_2, settings_lens=settings_lens
+)
 
 result_3 = search.fit(model=model, analysis=analysis)
 

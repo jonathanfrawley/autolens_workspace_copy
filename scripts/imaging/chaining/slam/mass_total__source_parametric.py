@@ -104,9 +104,11 @@ light, which in this example:
  - Uses an `EllipticalIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
  - Fixes the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS PIPELINE).
 """
+analysis = al.AnalysisImaging(dataset=masked_imaging)
+
 source_results = source__parametric.source_parametric__no_lens_light(
     path_prefix=path_prefix,
-    analysis=al.AnalysisImaging(dataset=masked_imaging),
+    analysis=analysis,
     setup_hyper=setup_hyper,
     mass=af.PriorModel(al.mp.EllipticalIsothermal),
     shear=af.PriorModel(al.mp.ExternalShear),
@@ -126,9 +128,11 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
 """
+analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_results)
+
 mass_results = mass__total.mass__total__no_lens_light(
     path_prefix=path_prefix,
-    analysis=al.AnalysisImaging(dataset=masked_imaging, results=source_results),
+    analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_results,
     mass=af.PriorModel(al.mp.EllipticalPowerLaw),

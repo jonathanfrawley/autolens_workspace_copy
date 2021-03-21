@@ -1,14 +1,14 @@
 from os import path
 import autofit as af
 import autolens as al
-from . import slam_util
+from . import slam_util, extensions
 
 
 def source__inversion__no_lens_light(
     path_prefix: str,
     analysis,
     setup_hyper: al.SetupHyper,
-    source_parametric_results,
+    source_parametric_results: af.ResultsCollection,
     pixelization: af.PriorModel(al.pix.Pixelization) = af.PriorModel(
         al.pix.VoronoiBrightnessImage
     ),
@@ -17,7 +17,7 @@ def source__inversion__no_lens_light(
     ),
 ):
     """
-    The SlaM SOURCE INVERSION PIPELINE for fitting imaging data without a lens light component.
+    The S:aM SOURCE INVERSION PIPELINE for fitting imaging data without a lens light component.
 
     Parameters
     ----------
@@ -27,6 +27,8 @@ def source__inversion__no_lens_light(
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     setup_hyper : SetupHyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
+    source_parametric_results : af.ResultCollection
+        The results of the SLaM SOURCE PARAMETRIC PIPELINE which ran before this pipeline.
     pixelization : af.PriorModel(pix.Pixelization)
         The pixelization used by the `Inversion` which fits the source light.
     regularization : af.PriorModel(reg.Regularization)
@@ -214,21 +216,14 @@ def source__inversion__no_lens_light(
      - The background sky is included via `hyper_image_sky input`.
      - The background noise is included via the `hyper_background_noise`.
     """
-    result_4 = al.util.model.hyper_fit(
+    result_4 = extensions.hyper_fit(
         setup_hyper=setup_hyper,
         result=result_4,
-        search=search,
         analysis=analysis,
         include_hyper_image_sky=True,
     )
 
-    results = af.ResultsCollection()
-    results.add(search.paths.name, result_1)
-    results.add(search.paths.name, result_2)
-    results.add(search.paths.name, result_3)
-    results.add(search.paths.name, result_4)
-
-    return results
+    return af.ResultsCollection([result_1, result_2, result_3, result_4])
 
 
 def source__inversion__with_lens_light(slam, settings, source_parametric_results):

@@ -1,161 +1,203 @@
 import autofit as af
 import autolens as al
 from autofit.non_linear.grid import sensitivity as s
+from . import slam_util, extensions
+
+from typing import Union, Tuple
 
 
 def subhalo__detection_single_plane__no_lens_light(
-    slam, settings, mass_results, end_stochastic=False
+    path_prefix: str,
+    analysis: al.AnalysisImaging,
+    setup_hyper: al.SetupHyper,
+    mass_results: af.ResultsCollection,
+    subhalo_mass: af.PriorModel(al.mp.MassProfile) = af.PriorModel(
+        al.mp.SphericalNFWMCRLudlow
+    ),
+    grid_dimension_arcsec: float = 3.0,
+    number_of_steps: Union[Tuple[int], int] = 5,
+    number_of_cores: int = 1,
 ):
-    pipeline_name = "pipeline_subhalo"
+    """
+    The SLaM SUBHALO PIPELINE for fitting imaging data without a lens light component.
+
+    Parameters
+    ----------
+    path_prefix : str or None
+        The prefix of folders between the output path and the search folders.
+    analysis : al.AnalysisImaging
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    mass_results : af.ResultCollection
+        The results of the SLaM MASS PIPELINE which ran before this pipeline.
+    subhalo : af.PriorModel(mp.MassProfile)
+        The `MassProfile` used to fit the subhalo in this pipeline.
+    grid_dimension_arcsec : float
+        the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
+        all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
+    number_of_steps : int
+        The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
+    number_of_cores : int
+        The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
+        performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    source_is_model : bool
+        If `True`, the source is included as a model in the fit (for both `LightProfile` or `Inversion` sources).
+        If `False` its parameters are fixed to those inferred in a previous pipeline.
+    """
 
     """
-    This pipeline is tagged according to whether:
+    __Model + Search + Analysis + Model-Fit (Search 1)__
 
-        1) Hyper-fitting settings (galaxies, sky, background noise) are used.
-        2) The lens galaxy mass model includes an  `ExternalShear`.
+    In search 1 of the SUBHALO PIPELINE we fit a lens model where:
+
+     - The lens galaxy is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
+     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     priors initialized from MASS PIPELINE].
+
+    This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 
+    of the MASS PIPELINE. This model will be used to perform Bayesian model comparison with models that include a 
+    subhalo, to determine if a subhalo is detected.
     """
 
-    path_prefix = slam.path_prefix_from(
-        slam.path_prefix,
-        pipeline_name,
-        slam.source_tag,
-        slam.mass_tag,
-        slam.setup_subhalo.tag,
+    source = slam_util.source__from_result_model_if_parametric(
+        result=mass_results.last, setup_hyper=setup_hyper
     )
 
-    """
-    Phase1 : Refit the lens`s `MassProfile`'s and source, where we:
-
-        1) Use the source galaxy model of the `source` pipeline.
-        2) Fit this source as a model if it is parametric and as an instance if it is an `Inversion`.
-    """
-
-    """
-    SLaM: Setup the source passing them from the previous pipelines.
-    """
-
-    source = slam.source_from_result_model_if_parametric(result=mass_results.last)
-
-    phase1 = al.PhaseImaging(
-        search=af.DynestyStatic(name="phase[1]_mass[total_refine]", n_live_points=100),
+    model = af.CollectionPriorModel(
         galaxies=af.CollectionPriorModel(
-            lens=mass_results.last.model.galaxies.lens, source=source
+            lens=mass_results.last.model.galaxies.lens,
+            source=source,
         ),
-        hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
+        hyper_image_sky=setup_hyper.hyper_image_sky_from_result(
             result=mass_results.last, as_model=True
         ),
-        hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
+        hyper_background_noise=setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
-        settings=settings,
     )
 
-    """
-    This `GridPhase` is used for all 3 subhalo detection phases, specifying that the subhalo (y,x) coordinates 
-    are fitted for on a grid of non-linear searches.
-    """
+    search = af.DynestyStatic(
+        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", n_live_points=100
+    )
 
-    class GridPhase(
-        af.as_grid_search(
-            phase_class=al.PhaseImaging,
-            number_of_cores=slam.setup_subhalo.number_of_cores,
-            number_of_steps=slam.setup_subhalo.number_of_steps,
-        )
-    ):
-        @property
-        def grid_priors(self):
-            return [
-                self.model.galaxies.subhalo.mass.centre_0,
-                self.model.galaxies.subhalo.mass.centre_1,
-            ]
+    result_1 = search.fit(model=model, analysis=analysis)
 
     """
-    Phase Lens Plane: attempt to detect subhalos, by performing a NxN grid search of non-linear searches, where:
+    __Model + Search + Analysis + Model-Fit (Search 2)__
 
-        1) The subhalo redshift is fixed to that of the lens galaxy.
-        2) Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
-        3) The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
-        5) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
-          `LightProfile` they are varied (this is customized using source_is_model).
+    In search 2 of the SUBHALO PIPELINE we perform a [number_of_steps x number_of_steps] grid search of non-linear
+    searches where:
+
+     - The lens galaxy is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
+     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     priors initialized from MASS PIPELINE].
+     - The subhalo redshift is fixed to that of the lens galaxy.
+     - Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
+     - The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
+
+    This search aims to detect a dark matter subhalo.
     """
 
     subhalo = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+        redshift=result_1.instance.galaxies.lens.redshift, mass=subhalo_mass
     )
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre_0 = af.UniformPrior(
-        lower_limit=-slam.setup_subhalo.grid_dimensions_arcsec,
-        upper_limit=slam.setup_subhalo.grid_dimensions_arcsec,
+        lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
     subhalo.mass.centre_1 = af.UniformPrior(
-        lower_limit=-slam.setup_subhalo.grid_dimensions_arcsec,
-        upper_limit=slam.setup_subhalo.grid_dimensions_arcsec,
+        lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
 
-    subhalo.mass.redshift_object = slam.redshift_lens
-    subhalo.mass.redshift_source = slam.redshift_source
+    subhalo.mass.redshift_object = result_1.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_source = result_1.instance.galaxies.source.redshift
 
-    """
-    SLaM: Setup the source model, which uses the the phase1 result is a model or instance depending on the 
-    *source_is_model* parameter of `SetupSubhalo`.
-    """
+    source = slam_util.source__from_result_model_if_parametric(
+        result=mass_results.last, setup_hyper=setup_hyper
+    )
 
-    source = slam.source_for_subhalo_pipeline_from_result(result=mass_results.last)
-
-    phase2 = GridPhase(
-        search=af.DynestyStatic(
-            name="phase[2]_mass[total]_source_subhalo[search_lens_plane]",
-            n_live_points=50,
-            walks=5,
-            facc=0.2,
-        ),
+    model = af.CollectionPriorModel(
         galaxies=af.CollectionPriorModel(
-            lens=mass_results.last.model.galaxies.lens, subhalo=subhalo, source=source
+           lens=mass_results.last.model.galaxies.lens,
+            subhalo=subhalo,
+            source=source,
         ),
-        hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
+        hyper_image_sky=setup_hyper.hyper_image_sky_from_result(
             result=mass_results.last, as_model=True
         ),
-        hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
+        hyper_background_noise=setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
-        settings=settings,
     )
+
+    search = af.DynestyStatic(
+        name="subhalo[2]_mass[total]_source_subhalo[search_lens_plane]",
+        n_live_points=50,
+        walks=5,
+        facc=0.2,
+    )
+
+    subhalo_grid_search = af.SearchGridSearch(
+        search=search, number_of_steps=number_of_steps, number_of_cores=number_of_cores
+    )
+
+    grid_search_result = subhalo_grid_search.fit(
+        model=model,
+        analysis=analysis,
+        grid_priors=[
+            model.galaxies.subhalo.mass.centre_0,
+            model.galaxies.subhalo.mass.centre_1,
+        ],
+    )
+
+    """
+    __Model + Search + Analysis + Model-Fit (Search 3)__
+
+    In search 3 of the SUBHALO PIPELINE we refit the lens and source models above but now including a subhalo, where 
+    the subhalo model is initalized from the highest evidence model of the subhalo grid search.
+
+     - The lens galaxy is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
+     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     priors initialized from MASS PIPELINE].
+     - The subhalo redshift is fixed to that of the lens galaxy.
+     - Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
+     - The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
+
+    This search aims to refine the parameter estimates and errors of a dark matter subhalo detected in the grid search
+    above.
+    """
 
     subhalo = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+        redshift=result_1.instance.galaxies.lens.redshift, mass=subhalo_mass
     )
 
-    subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
-    subhalo.mass.centre = phase2.result.model.galaxies.subhalo.mass.centre
+    subhalo.mass.mass_at_200 = (
+        grid_search_result.model.galaxies.subhalo.mass.mass_at_200
+    )
+    subhalo.mass.centre = grid_search_result.model.galaxies.subhalo.mass.centre
 
-    subhalo.mass.redshift_object = slam.redshift_lens
-    subhalo.mass.redshift_source = slam.redshift_source
+    subhalo.mass.redshift_object = grid_search_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_source = grid_search_result.instance.galaxies.source.redshift
 
-    phase3 = al.PhaseImaging(
-        search=af.DynestyStatic(
-            name="phase[3]_subhalo[single_plane_refine]",
-            path_prefix=path_prefix,
-            n_live_points=100,
-        ),
+    model = af.CollectionPriorModel(
         galaxies=af.CollectionPriorModel(
-            lens=phase2.result.model.galaxies.lens,
+            lens=grid_search_result.model.galaxies.lens,
             subhalo=subhalo,
-            source=phase2.result.model.galaxies.source,
+            source=grid_search_result.model.galaxies.source,
         ),
-        hyper_image_sky=phase2.result.instance.optional.hyper_image_sky,
-        hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
-        settings=settings,
+        hyper_image_sky=grid_search_result.instance.optional.hyper_image_sky,
+        hyper_background_noise=grid_search_result.instance.optional.hyper_background_noise,
     )
 
-    if end_stochastic:
-        phase3 = phase3.extend_with_stochastic_phase(
-            stochastic_search=af.DynestyStatic(n_live_points=100)
-        )
-
-    return al.PipelineDataset(
-        pipeline_name, path_prefix, mass_results, phase1, phase2, phase3
+    search = af.DynestyStatic(
+        name="subhalo[3]_subhalo[single_plane_refine]",
+        path_prefix=path_prefix,
+        n_live_points=100,
     )
+
+    result_3 = search.fit(model=model, analysis=analysis)
+
+    return af.ResultsCollection([result_1, grid_search_result, result_3])
 
 
 def subhalo__detection_multi_plane__no_lens_light(

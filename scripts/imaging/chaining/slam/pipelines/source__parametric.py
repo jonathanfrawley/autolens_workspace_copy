@@ -1,5 +1,6 @@
 import autofit as af
 import autolens as al
+from . import extensions
 
 
 def source_parametric__no_lens_light(
@@ -95,18 +96,14 @@ def source_parametric__no_lens_light(
      - The background sky is included via `hyper_image_sky`.
      - The background noise is included via the `hyper_background_noise`.
     """
-    result_1 = al.util.model.hyper_fit(
+    result_1 = extensions.hyper_fit(
         setup_hyper=setup_hyper,
         result=result_1,
-        search=search,
         analysis=analysis,
         include_hyper_image_sky=True,
     )
 
-    results = af.ResultsCollection()
-    results.add(search.paths.name, result_1)
-
-    return results
+    return af.ResultsCollection([result_1])
 
 
 def source__parametric__with_lens_light(slam, settings):
