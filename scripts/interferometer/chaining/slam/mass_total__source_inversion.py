@@ -2,18 +2,25 @@
 SLaM (Source, Light and Mass): Mass Total + Source Inversion
 ============================================================
 
-Using two source pipelines and a mass pipeline this SLaM runner fits `Interferometer` of a strong lens system, where
-in the final model:
+SLaM pipelines break the analysis down into multiple pipelines which focus on modeling a specific aspect of the strong
+lens, first the Source, then the (lens) Light and finally the Mass. Each of these pipelines has it own inputs which
+which customize the model and analysis in that pipeline.
 
- - The lens galaxy's light is modeled parametrically as an `EllipticalSersic`.
+The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
+uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
+
+Using a SOURCE PARAMETRIC PIPELINE, SOURCE INVERSION PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Interferometer` 
+of a strong lens system, where in the final model:
+
+ - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `EllipticalPowerLaw`.
  - The source galaxy is an `Inversion`.
 
 This uses the SLaM pipelines:
 
- `slam/pipelines/source__mass_sie__source_parametric.py`.
- `slam/pipelines/source__mass_sie__source_inversion.py`.
- `slam/pipelines/mass__mass_power_law__source.py`.
+ `source_parametric/no_lens_light`
+ `source__inversion/source_inversion__no_lens_light`
+ `mass_total/no_lens_light`
 
 Check them out for a detailed description of the analysis!
 """
@@ -23,19 +30,22 @@ Check them out for a detailed description of the analysis!
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import os
+import sys
 from os import path
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
-import numpy as np
+
+sys.path.insert(0,os.getcwd())
+import slam
 
 """
-__Dataset__ 
+__Dataset + Masking__ 
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
 dataset_name = "mass_sie__source_sersic"
-pixel_scales = 0.1
-
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
 interferometer = al.Interferometer.from_fits(
@@ -50,93 +60,42 @@ real_space_mask = al.Mask2D.circular(
 
 visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
 
+settings_masked_interferometer = al.SettingsMaskedInterferometer(
+    transformer_class=al.TransformerNUFFT
+)
+
+masked_interferometer = al.MaskedInterferometer(
+    interferometer=interferometer,
+    visibilities_mask=visibilities_mask,
+    real_space_mask=real_space_mask,
+    settings=settings_masked_interferometer,
+)
+
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
 
 """
-__Settings__
+__Paths__
 
-The `SettingsPhaseInterferometer` describe how the model is fitted to the data in the log likelihood function.
-
-These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example scripts, with a 
-complete description of all settings given in `autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
-
-The settings chosen here are applied to all phases in the pipeline.
+The path the results of all chained searches are output:
 """
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    grid_class=al.Grid2D, sub_size=2, transformer_class=al.TransformerNUFFT
-)
+path_prefix = path.join("interferometer", "slam", "mass_total__source_inversion")
 
 """
-We also specify the *SettingsInversion*, which describes how the `Inversion` fits the source `Pixelization` and 
-with `Regularization`. 
+__Redshifts__
 
-This can perform the linear algebra calculation that performs the `Inversion` using two options: 
-
- - As matrices: this is numerically more accurate and does not approximate the `log_evidence` of the `Inversion`. For
-  datasets of < 100 0000 visibilities we recommend that you use this option. However, for > 100 000 visibilities this
-  approach requires excessive amounts of memory on your computer (> 16 GB) and thus becomes unfeasible. 
-
- - As linear operators: this numerically less accurate and approximates the `log_evidence` of the `Inversioon`. However,
- it is the only viable options for large visibility datasets. It does not represent the linear algebra as matrices in
- memory and thus makes the analysis of > 10 million visibilities feasible.
-
-By default we use the linear operators approach.  
+The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
+from arc-seconds to kiloparsecs, masses to solar masses, etc.).
 """
-settings_inversion = al.SettingsInversion(use_linear_operators=True)
+redshift_lens = 0.5
+redshift_source = 1.0
 
 """
-`Inversion`'s may infer unphysical solution where the source reconstruction is a demagnified reconstruction of the 
-lensed source (see **HowToLens** chapter 4). 
-
-To prevent this, auto-positioning is used, which uses the lens mass model of earlier phases to automatically set 
-positions and a threshold that resample inaccurate mass models (see `notebooks/interferometer/modeling/positions.py`).
-
-The `auto_positions_factor` is a factor that the threshold of the inferred positions using the previous mass model are 
-multiplied by to set the threshold in the next phase. The *auto_positions_minimum_threshold* is the minimum value this
-threshold can go to, even after multiplication.
-"""
-settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.8
-)
-
-settings = al.SettingsPhaseInterferometer(
-    settings_masked_interferometer=settings_masked_interferometer,
-    settings_inversion=settings_inversion,
-    settings_lens=settings_lens,
-)
-
-"""
-__PIPELINE SETUP__
-
-Pipelines use the `SetupPipeline` object to customize the analysis performed by the pipeline,
-for example if a shear was included in the mass model and the model used for the source galaxy.
-
-SLaM pipelines break the analysis down into multiple pipelines which focus on modeling a specific aspect of the strong 
-lens, first the Source, then the (lens) Light and finally the Mass. Each of these pipelines has it own setup object 
-which is equivalent to the `SetupPipeline` object, customizing the analysis in that pipeline. Each pipeline therefore
-has its own `SetupMass`, `SetupLightParametric` and `SetupSourceParametric` object.
-
-The `Setup` used in earlier pipelines determine the model used in later pipelines. For example, if the `Source` 
-pipeline is given a `Pixelization` and `Regularization`, than this `Inversion` will be used in the subsequent 
-`SLaMPipelineLightParametric` and  Mass pipelines. The assumptions regarding the lens light chosen by the `Light` 
-object are carried forward to the  `Mass`  pipeline.
-
-The `Setup` again tags the path structure of every pipeline in a unique way, such than combinations of different
-SLaM pipelines can be used to fit lenses with different models. If the earlier pipelines are identical (e.g. they use
-the same `SLaMPipelineSource`. they will reuse those results before branching off to fit different models in the 
-`SLaMPipelineLightParametric` and / or `SLaMPipelineMass` pipelines. 
-
 __HYPER SETUP__
 
-The `SetupHyper` determines which hyper-mode features are used during the model-fit as is used identically to the
-hyper pipeline examples.
-
-The `SetupHyper` object has a new input available, `hyper_fixed_after_source`, which fixes the hyper-parameters to
-the values computed by the hyper-phase at the end of the Source pipeline. By fixing the hyper-parameter values in the
-_SLaMPipelineLight_ and `SLaMPipelineMass` pipelines, model comparison can be performed in a consistent fashion.
+The `SetupHyper` determines which hyper-mode features are used during the model-fit.
 """
-hyper = al.SetupHyper(
+setup_hyper = al.SetupHyper(
     hyper_galaxies_lens=False,
     hyper_galaxies_source=False,
     hyper_image_sky=None,
@@ -144,125 +103,111 @@ hyper = al.SetupHyper(
 )
 
 """
-__SLaMPipelineSourceParametric__
+__SOURCE PARAMETRIC PIPELINE (no lens light)__
 
-The parametric source pipeline aims to initialize a robust model for the source galaxy using `LightProfile` objects. 
+The SOURCE PARAMETRIC PIPELINE (no lens light) uses one search to initialize a robust model for the source galaxy's 
+light, which in this example:
 
-_SLaMPipelineSourceParametric_ determines the source model used by the parametric source pipeline. A full description 
-of all options can be found ? and ?.
-
-By default, this assumes an `EllipticalIsothermal` profile for the lens galaxy's mass. Our experience with lens 
-modeling has shown they are the simpliest models that provide a good fit to the majority of strong lenses.
-
-For this runner the `SLaMPipelineSourceParametric` customizes:
-
- - The `MassProfile` fitted by the pipeline (and the following `SLaMPipelineSourceInversion`.
- - If there is an `ExternalShear` in the mass model.
+ - Uses a parametric `EllipticalSersic` bulge for the source's light (omitting a disk / envelope).
+ - Uses an `EllipticalIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
+ 
+We use the following optional settings:
+ 
+ - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
+ PIPELINE).
 """
-setup_mass = al.SetupMassTotal(
-    mass_prior_model=al.mp.EllipticalIsothermal, with_shear=True, mass_centre=(0.0, 0.0)
-)
-setup_source = al.SetupSourceParametric()
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
 
-pipeline_source_parametric = al.SLaMPipelineSourceParametric(
-    setup_mass=setup_mass, setup_source=setup_source
-)
-
-"""
-__SLaMPipelineSourceInversion__
-
-The Source inversion pipeline aims to initialize a robust model for the source galaxy using an `Inversion`.
-
-_SLaMPipelineSourceInversion_ determines the `Inversion` used by the inversion source pipeline. A full description 
-of all options can be found ? and ?.
-
-By default, this again assumes `EllipticalIsothermal` profile for the lens galaxy's mass model.
-
-For this runner the `SLaMPipelineSourceInversion` customizes:
-
- - The `Pixelization` used by the `Inversion` of this pipeline.
- - The `Regularization` scheme used by the `Inversion` of this pipeline.
-
-The `SLaMPipelineSourceInversion` use`s the `SetupMass` of the `SLaMPipelineSourceParametric`.
-
-The `SLaMPipelineSourceInversion` determines the source model used in the `SLaMPipelineLightParametric` and 
-`SLaMPipelineMass` pipelines, which in this example therefore both use an `Inversion`.
-"""
-setup_source = al.SetupSourceInversion(
-    pixelization_prior_model=al.pix.VoronoiBrightnessImage,
-    regularization_prior_model=al.reg.AdaptiveBrightness,
-)
-
-pipeline_source_inversion = al.SLaMPipelineSourceInversion(setup_source=setup_source)
-
-"""
-__SLaMPipelineMass__
-
-The `SLaMPipelineMass` pipeline fits the model for the lens galaxy's total mass distribution. 
-
-A full description of all options can be found ? and ?.
-
-The model used to represent the lens galaxy's mass is input into `SLaMPipelineMassTotal` and this runner uses the 
-default of an `EllipticalPowerLaw` in this example.
-
-For this runner the `SLaMPipelineMass` customizes:
-
- - The `MassProfile` fitted by the pipeline.
- - If there is an `ExternalShear` in the mass model.
-"""
-setup_mass = al.SetupMassTotal(
-    mass_prior_model=al.mp.EllipticalPowerLaw, with_shear=True
-)
-
-pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
-
-"""
-__SLaM__
-
-We combine all of the above `SLaM` pipelines into a `SLaM` object.
-
-The `SLaM` object contains a number of methods used in the make_pipeline functions which are used to compose the model 
-based on the input values. It also handles pipeline tagging and path structure.
-"""
-slam = al.SLaM(
-    path_prefix=path.join("fits/slam", dataset_name),
-    setup_hyper=hyper,
-    pipeline_source_parametric=pipeline_source_parametric,
-    pipeline_source_inversion=pipeline_source_inversion,
-    pipeline_mass=pipeline_mass,
+source_parametric_results = slam.source_parametric.no_lens_light(
+    path_prefix=path_prefix,
+    setup_hyper=setup_hyper,
+    analysis=analysis,
+    mass=af.Model(al.mp.EllipticalIsothermal),
+    shear=af.Model(al.mp.ExternalShear),
+    source_bulge=af.Model(al.lp.EllipticalSersic),
+    mass_centre=(0.0, 0.0),
+    redshift_lens=0.5,
+    redshift_source=1.0,
 )
 
 """
-__PIPELINE CREATION__
+__SOURCE INVERSION PIPELINE (no lens light)__
 
-We import and make pipelines as per usual, albeit we'll now be doing this for multiple pipelines!
+The SOURCE INVERSION PIPELINE (no lens light) uses four searches to initialize a robust model for the `Inversion` that
+reconstructs the source galaxy's light. It begins by fitting a `VoronoiMagnification` pixelization with `Constant` 
+regularization, to set up the model and hyper images, and then:
 
-We then run each pipeline, passing the results of previous pipelines to subsequent pipelines.
+ - Uses a `VoronoiBrightnessImage` pixelization.
+ - Uses an `AdaptiveBrightness` regularization.
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
+ SOURCE INVERSION PIPELINE.
+
+We use the following optional settings:
+
+ - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
-import source__parametric
-import source__inversion
-import mass__total
-
-source__parametric = source__parametric.make_pipeline(
-    slam=slam, settings=settings, real_space_mask=real_space_mask
+settings_lens = al.SettingsLens(
+    positions_threshold=source_parametric_results.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
-source_results = source__parametric.run(dataset=interferometer, mask=visibilities_mask)
 
-source__inversion = source__inversion.make_pipeline(
-    slam=slam,
-    settings=settings,
-    real_space_mask=real_space_mask,
-    source_parametric_results=source_results,
+analysis = al.AnalysisInterferometer(
+    dataset=masked_interferometer,
+    positions=source_parametric_results.last.image_plane_multiple_image_positions,
+    settings_lens=settings_lens,
 )
-source_results = source__inversion.run(dataset=interferometer, mask=visibilities_mask)
 
-mass__total = mass__total.make_pipeline(
-    slam=slam,
-    settings=settings,
-    real_space_mask=real_space_mask,
-    source_results=source_results,
+source_inversion_results = slam.source_inversion.no_lens_light(
+    path_prefix=path_prefix,
+    analysis=analysis,
+    setup_hyper=setup_hyper,
+    source_parametric_results=source_parametric_results,
+    pixelization=al.pix.VoronoiBrightnessImage,
+    regularization=al.reg.AdaptiveBrightness,
 )
-mass_results = mass__total.run(dataset=interferometer, mask=visibilities_mask)
+
+"""
+__MASS TOTAL PIPELINE (no lens light)__
+
+The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens mass model to a high level of accuracy, 
+using the lens mass model and source model of the SOURCE INVERSION PIPELINE to initialize the model priors. In this 
+example it:
+
+ - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
+ - Uses an `Inversion` for the source's light [priors fixed from SOURCE INVERSION PIPELINE].
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINES through to the MASS 
+ PIPELINE.
+ 
+We use the following optional settings:
+
+ - Hyper: We may be using hyper features and therefore pass the result of the SOURCE INVERSION PIPELINE to use as the
+ hyper dataset if required.
+
+ - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
+"""
+settings_lens = al.SettingsLens(
+    positions_threshold=source_inversion_results.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
+)
+
+analysis = al.AnalysisInterferometer(
+    dataset=masked_interferometer,
+    hyper_result=source_inversion_results.last,
+    positions=source_inversion_results.last.image_plane_multiple_image_positions,
+    settings_lens=settings_lens,
+)
+
+mass_results = slam.mass_total.no_lens_light(
+    path_prefix=path_prefix,
+    analysis=analysis,
+    setup_hyper=setup_hyper,
+    source_results=source_inversion_results,
+    mass=af.Model(al.mp.EllipticalPowerLaw),
+)
 
 """
 Finish.

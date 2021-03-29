@@ -2,7 +2,7 @@
 Database 4: Data Fitting
 ========================
 
-In this tutorial, we use the aggregator to load models and data from a `NonLinearSearch` and use them to reperform
+In this tutorial, we use the aggregator to load models and data from a non-linear search and use them to reperform
 fits to the data.
 
 It is here the use of generators is absolutely essential. We are going to manipulating datasets which use a lot of
@@ -25,13 +25,13 @@ Below, we set up the aggregator as we did in the previous tutorial.
 agg = af.Aggregator(directory=path.join("output", "database"))
 
 """
-Again, we create a list of the Samples of each phase.
+Again, we create a list of the Samples of each search.
 """
 agg_filter = agg.filter(agg.directory.contains("phase_runner"))
 
 """
 We can also use the aggregator to load the dataset of every lens our `Phase` fitted. This generator returns the 
-dataset as the `Imaging` objects we passed to the phase when we ran them.
+dataset as the `Imaging` objects we passed to the search when we ran them.
 """
 dataset_gen = agg_filter.values("dataset")
 
@@ -45,7 +45,7 @@ for dataset in agg_filter.values("dataset"):
     imaging_plotter.subplot_imaging()
 
 """
-The name of the dataset we assigned when we ran the phase is also available, which helps us to label the lenses 
+The name of the dataset we assigned when we ran the search is also available, which helps us to label the lenses 
 on plots.
 """
 print("Dataset Names:")
@@ -107,11 +107,11 @@ for fit in fit_gen:
     fit_imaging_plotter.subplot_fit_imaging()
 
 """
-There`s a problem though, the MaskedImaging object is made with a custom phase input. For example, it receive a 
+There`s a problem though, the MaskedImaging object is made with a custom search input. For example, it receive a 
 `grid_class` defining which grid it uses to fit the data. This isn't included in the generator above. Thats bad!
 
 The output has a meta_dataset attribute containing all the information on how the MaskedImaging was created for the
-actualy phase.
+actualy search.
 """
 
 

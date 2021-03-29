@@ -10,7 +10,6 @@ new concepts:
 2) That by specifying redshifts and a cosmology, our results are converted to physical unit_label of
 kiloparsecs (kpc).
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

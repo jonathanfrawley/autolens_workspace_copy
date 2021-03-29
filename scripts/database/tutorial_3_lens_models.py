@@ -55,7 +55,7 @@ print("Total Tracers = ", len(ml_tracers))
 
 """
 Now lets plot their convergences, using a grid of 100 x 100 pixels (noting that this isn't` necessarily the grid used
-to fit the data in the phase itself).
+to fit the data in the search itself).
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
@@ -237,11 +237,11 @@ plt.errorbar(
 plt.show()
 
 """
-In the phase_runner, we used the pickle_files input to phase.run() to pass a .pickle file from the dataset folder to 
+In the phase_runner, we used the pickle_files input to search.run() to pass a .pickle file from the dataset folder to 
 the `Aggregator` pickles folder. 
 
 Our strong lens dataset was created via a simulator script, so we passed the `Tracer` used to simulate the strong
-lens, which was written as a .pickle file called `true_tracer.pickle` to the phase to make it accessible in the 
+lens, which was written as a .pickle file called `true_tracer.pickle` to the search to make it accessible in the 
 _Aggregator_. This will allow us to directly compare the inferred lens model to the `truth`. 
 
 You should checkout `autolens_workspace/advanced/aggregator/phase_runner.py` to see how this was performed.

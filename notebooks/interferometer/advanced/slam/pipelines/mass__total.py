@@ -64,8 +64,10 @@ def make_pipeline(
 
     phase1 = al.PhaseInterferometer(
         search=af.DynestyStatic(name="phase[1]_mass[total]_source", n_live_points=100),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(redshift=slam.redshift_lens, mass=mass, shear=shear),
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy, redshift=slam.redshift_lens, mass=mass, shear=shear
+            ),
             source=source,
         ),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(

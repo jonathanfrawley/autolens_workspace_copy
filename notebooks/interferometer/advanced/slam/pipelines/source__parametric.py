@@ -45,13 +45,15 @@ def make_pipeline(slam, settings, real_space_mask):
         search=af.DynestyStatic(
             name="phase[1]_mass[total]_source[parametric]", n_live_points=200, walks=10
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 mass=slam.pipeline_source_parametric.setup_mass.mass_prior_model,
                 shear=slam.pipeline_source_parametric.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 bulge=slam.pipeline_source_parametric.setup_source.bulge_prior_model,
                 disk=slam.pipeline_source_parametric.setup_source.disk_prior_model,

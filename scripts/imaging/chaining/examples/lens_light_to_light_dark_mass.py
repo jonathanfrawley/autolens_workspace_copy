@@ -86,14 +86,14 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalSersic)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalSersic)
 
 bulge.centre = disk.centre
 
-lens = al.GalaxyModel(redshift=0.5, bulge=bulge, disk=disk)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
 
-model = af.CollectionPriorModel(galaxies=af.CollectionPriorModel(lens=lens))
+model = af.Collection(galaxies=af.Collection(lens=lens))
 
 
 """
@@ -135,18 +135,18 @@ all parameters in the `EllipticalSersic` and `EllipticalSersic` light models tha
 as parameters in the ``EllipticalSersic` and `EllipticalSersic` light and mass models and passes their priors 
 (in this case, the `centre`, `elliptical_comps`, `intensity`, `effective_radius` and `sersic_index`).
 """
-bulge = af.PriorModel(al.lmp.EllipticalSersic)
+bulge = af.Model(al.lmp.EllipticalSersic)
 bulge.take_attributes(source=result_1.model)
 
-disk = af.PriorModel(al.lmp.EllipticalSersic)
+disk = af.Model(al.lmp.EllipticalSersic)
 disk.take_attributes(source=result_1.model)
 
-lens = al.GalaxyModel(
-    redshift=0.5, bulge=bulge, disk=disk, dark=af.PriorModel(al.mp.EllipticalNFW)
+lens = af.Model(
+    al.Galaxy, redshift=0.5, bulge=bulge, disk=disk, dark=af.Model(al.mp.EllipticalNFW)
 )
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(galaxies=af.CollectionPriorModel(lens=lens))
+model = af.Collection(galaxies=af.Collection(lens=lens))
 
 """
 __Search + Analysis + Model-Fit (Search 2)__
@@ -173,7 +173,7 @@ use an initial fit of the lens galaxy's light to better constrained our lens mas
 
 __Pipelines__
 
-Advanced search chaining uses `pipelines` that chain together multiple searches to perform very complex lens modeling 
+Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling 
 in a robust and efficient way. 
 
 The following example pipelines exploit our ability to model separately the lens's light and its stellar mass to

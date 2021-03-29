@@ -16,7 +16,7 @@ The two searches break down as follows:
 __Why Chain?__
 
 There are a number of benefits of chaining a parametric source model and `Inversion`, as opposed to fitting the
-`Inversion` in one phase:
+`Inversion` in one search:
 
  - Parametric sources are computationally faster to fit. Therefore, even though the `EllipticalSersic` has more
  parameters for the search to fit than an `Inversion`, the model-fit is faster overall.
@@ -89,12 +89,10 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=13.
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search + Analysis + Model Fit (Search 1)__
@@ -127,19 +125,18 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 The priors of the majority of the `EllipticalIsothermal` and `ExternalShear` initialized using the results of search 1.
 
-The term `model` below tells PyAutoLens to pass the source model as model-components that are to be fitted for by the 
+The term `model` below passes the source model as model-components that are to be fitted for by the 
 non-linear search. We pass the `lens` as a `model`, so that we can use the mass model inferred by search 1. The source
 does not use any priors from the result of search 1.
 """
 lens = result_1.model.galaxies.lens
-source = al.GalaxyModel(
+source = af.Model(
+    al.Galaxy,
     redshift=1.0,
     pixelization=al.pix.VoronoiMagnification,
     regularization=al.reg.Constant,
 )
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 __Analysis + Positions__
 
@@ -159,9 +156,7 @@ This threshold is multiplied by the `auto_positions_factor` to ensure it is not 
 plausible mass models). If, after this multiplication, the threshold is below the `auto_positions_minimum_threshold`, 
 it is rounded up to this minimum value.
 """
-settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
-)
+settings_lens = al.SettingsLens(positions_threshold=0.2)
 
 analysis = al.AnalysisInterferometer(
     dataset=masked_interferometer, settings_lens=settings_lens
@@ -192,7 +187,7 @@ of the lensed image.
 
 __Pipelines__
 
-Advanced search chaining uses `pipelines` that chain together multiple searches to perform very complex lens modeling 
+Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling 
 in a robust and efficient way. 
 
 The following example pipelines fits an inversion, using the same approach demonstrated in this script of first fitting 

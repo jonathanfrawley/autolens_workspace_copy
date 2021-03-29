@@ -75,9 +75,32 @@ positions_noise_map = positions.values_from_value(value=image.pixel_scale)
 print(positions_noise_map)
 
 """
+__PointSourceDataset__
+
+We next create a `PointSourceDataset` which contains the positions and their noise-map. 
+
+It also names the the dataset. This `name` pairs the dataset to the `PointSource` in the model below. Specifically, 
+because we name the dataset `point_0`, there must be a corresponding `PointSource` in the model below with the name 
+`point_0` for the model-fit to be possible.
+
+In this example, where there is just one source, named pairing appears uncessary. However, point-source datasets may
+have many source galaxies in them, and name pairing ensures every point source in the model is compared against its
+point source dataset.
+"""
+point_source_dataset = al.PointSourceDataset(
+    name="point_0", positions=positions, positions_noise_map=positions_noise_map
+)
+
+"""
+We now create the `PointSourceDict`, which is a dictionary of every `PointSourceDataset`. Again, because we only have 
+one dataset the use of this class seems unecessary, but it is important for model-fits containing many point sources.
+"""
+point_source_dict = al.PointSourceDict(point_source_dataset_list=[point_source_dataset])
+
+"""
 __Model__
 
-We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
+We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a lens model where:
 
  - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
@@ -85,21 +108,13 @@ example we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
-NOTE: 
-
-**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
-
-If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
-
- - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
- - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
+NOTE: The name of the `PointSoruce` model in the source galaxy is `point_0`, which is paired to the name of the
+`PointSourceDataset`.
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = al.GalaxyModel(redshift=1.0, point=al.ps.PointSource)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.PointSource)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __PositionsSolver__
@@ -120,7 +135,7 @@ positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.02)
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+The lens model is fitted to the data using a non-linear search. In this example, we use the nested sampling algorithm 
 Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
 The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches` gives an overview of the 
@@ -144,7 +159,7 @@ The `AnalysisPointSource` object defines the `log_likelihood_function` used by t
 to the `PointSourceDataset`.
 """
 analysis = al.AnalysisPointSource(
-    positions=positions, noise_map=positions_noise_map, solver=positions_solver
+    point_source_dict=point_source_dict, solver=positions_solver
 )
 
 """
@@ -169,7 +184,7 @@ The search returns a result object, which includes:
 print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grid
+    tracer=result.max_log_likelihood_tracer, grid=positions_solver.grid
 )
 tracer_plotter.subplot_tracer()
 

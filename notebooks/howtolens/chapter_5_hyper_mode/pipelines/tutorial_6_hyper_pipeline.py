@@ -14,21 +14,22 @@ later searches to use them as hyper-galaxy-images? Well, I've got some good news
 passes hyper-images between searches!
 
 However, **PyAutoLens** does need to know which hyper-images to pass to which galaxies. To do this, **PyAutoLens** uses
-galaxy-names. When you create a `GalaxyModel`, you name the `Galaxy`'s for example below we've called the lens galaxy
+galaxy-names. When you create a `Model`, you name the `Galaxy`'s for example below we've called the lens galaxy
 `lens` and the source galaxy `source`:
 
 phase1 = al.PhaseImaging(
     name="phase[1]",
     
-    galaxies=af.CollectionPriorModel(
-NAME --> lens=al.GalaxyModel(
+    galaxies=af.Collection(
+NAME --> lens=af.Model(
+    al.Galaxy, 
             redshift=0.5,
             bulge=al.lp.EllipticalSersic,
             mass=al.mp.EllipticalIsothermal,
         )
     ),
-      galaxies=af.CollectionPriorModel(
-NAME --> source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+      galaxies=af.Collection(
+NAME --> source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
     ),
 )
 
@@ -147,8 +148,8 @@ def make_pipeline(setup, settings):
     """
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(name="phase[1]_light[bulge]", n_live_points=30),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)
+        galaxies=af.Collection(
+            lens=af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllipticalSersic)
         ),
     )
 
@@ -170,10 +171,10 @@ def make_pipeline(setup, settings):
     1. The lens galaxy hyper-galaxy is included, such that high chi-squared values in the central regions of the
     image due to a poor lens light subtraction are reduced by noise scaling and do not impact the fit.
 
-    You can also setup individual model components and customize their priors using a `PriorModel` instead of setting
-    up the entire GalaxyModel.
+    You can also setup individual model components and customize their priors using a `Model` instead of setting
+    up the entire Model.
     """
-    mass = af.PriorModel(al.mp.EllipticalIsothermal)
+    mass = af.Model(al.mp.EllipticalIsothermal)
     mass.centre = phase1.result.model_absolute(a=0.1).galaxies.lens.bulge.centre
 
     """
@@ -187,15 +188,16 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[2]_mass_[sie]_source[bulge]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
                 mass=mass,
                 shear=al.mp.ExternalShear,
                 hyper_galaxy=phase1.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
         ),
         hyper_image_sky=phase1.result.hyper.instance.optional.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
@@ -226,16 +228,17 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[3]_light[bulge]_mass[sie]_source[exp]", n_live_points=100
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase1.result.model.galaxies.lens.bulge,
                 mass=phase2.result.model.galaxies.lens.mass,
                 shear=phase2.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase2.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, bulge=phase2.result.model.galaxies.source.bulge
+            source=af.Model(
+                al.Galaxy, redshift=1.0, bulge=phase2.result.model.galaxies.source.bulge
             ),
         ),
         hyper_image_sky=phase2.result.hyper.instance.optional.hyper_image_sky,
@@ -265,15 +268,17 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[4]_source[inversion_initialize_magnification]", n_live_points=20
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase3.result.instance.galaxies.lens.bulge,
                 mass=phase3.result.instance.galaxies.lens.mass,
                 shear=phase3.result.instance.galaxies.lens.shear,
                 hyper_galaxy=phase3.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
                 regularization=al.reg.Constant,
@@ -299,15 +304,17 @@ def make_pipeline(setup, settings):
             name="phase[5]_light[bulge]_mass[sie]_source[inversion_magnification]",
             n_live_points=100,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase3.result.model.galaxies.lens.bulge,
                 mass=phase3.result.model.galaxies.lens.mass,
                 shear=phase3.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase4.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=1.0,
                 pixelization=phase4.result.instance.galaxies.source.pixelization,
                 regularization=phase4.result.instance.galaxies.source.regularization,
@@ -328,15 +335,17 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[6]_source[inversion_initialize]", n_live_points=20
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase5.result.instance.galaxies.lens.bulge,
                 mass=phase5.result.instance.galaxies.lens.mass,
                 shear=phase5.result.instance.galaxies.lens.shear,
                 hyper_galaxy=phase5.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=1.0,
                 pixelization=phase5.result.model.galaxies.source.pixelization,  # <- This is our brightness based `Pixelization`.rovided it was input into the pipeline.
                 regularization=phase5.result.model.galaxies.source.regularization,  # <- And this our adaptive regularization.
@@ -361,15 +370,17 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[7]_light[bulge]_mass[sie]_source[inversion]", n_live_points=100
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=0.5,
                 bulge=phase5.model.galaxies.lens.bulge,
                 mass=phase5.model.galaxies.lens.mass,
                 shear=phase5.model.galaxies.lens.shear,
                 hyper_galaxy=phase6.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=1.0,
                 pixelization=phase6.result.instance.galaxies.source.pixelization,
                 regularization=phase6.result.instance.galaxies.source.regularization,

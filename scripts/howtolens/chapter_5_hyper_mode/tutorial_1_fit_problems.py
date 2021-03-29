@@ -44,7 +44,6 @@ with different sources whose `LightProfile`'s become gradually more compact. For
 source-plane resolution and a regularization_coefficient that maximize the Bayesian log evidence. Thus, these are the
 `best` source reconstructions we can hope to achieve when adapting to the magnification.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -305,7 +304,7 @@ fit_imaging_plotter.subplot_fit_imaging()
 
 """
 So, whats the problem? Look closely at the `chi-squared image`. Here, you'll note that a small subset of our data 
-have extremely large chi-squared values. This means our `NonLinearSearch` (which is trying minimize chi-squared) is 
+have extremely large chi-squared values. This means our non-linear search (which is trying minimize chi-squared) is 
 going to seek solutions which primarily only reduce these chi-squared values. For the image above a small subset of 
 the data (e.g. < 5% of pixels) contributes to the majority of the log likelihood (e.g. > 95% of the overall chi-squared). 
 This is *not* what we want, as instead of using the entire surface brightness profile of the lensed source galaxy to 

@@ -17,7 +17,6 @@ In this chapter, you`ve learnt how create and fit strong lenses with **PyAutoLen
 In this summary, we'll consider how flexible the tools **PyAutoLens** gives you are to study every aspect of a strong lens
 system. Lets get a `fit` to a strong lens, by setting up an image, mask, tracer, etc.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -13,7 +13,7 @@ number of deflection angle evaluations from 100000`s to 1000`s, giving a potenti
 resolution of the interpolation grid. This could lead to inaccurate and biased mass models.
 
 The interpolation grid is defined in terms of a pixel scale and it is automatically matched to the mask used in that
-phase. A higher resolution grid (i.e. lower pixel scale) will give more precise deflection angles, at the expense
+search. A higher resolution grid (i.e. lower pixel scale) will give more precise deflection angles, at the expense
 of longer calculation times. In this example we will use an interpolation pixel scale of 0.05", which balances run-time
 and precision.
 
@@ -82,16 +82,14 @@ __Model + Search + Analysis__
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
 """
-bulge = af.PriorModel(al.lmp.EllipticalSersic)
-dark = af.PriorModel(al.mp.EllipticalNFW)
+bulge = af.Model(al.lmp.EllipticalSersic)
+dark = af.Model(al.mp.EllipticalNFW)
 bulge.centre = dark.centre
 
-lens = al.GalaxyModel(redshift=0.5, bulge=bulge, dark=dark)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "settings"),

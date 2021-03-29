@@ -77,14 +77,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[1]_mass[sie]_source[bulge]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=al.mp.EllipticalIsothermal,
                 shear=setup.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
-                redshift=setup.redshift_source, bulge=al.lp.EllipticalSersic
+            source=af.Model(
+                al.Galaxy, redshift=setup.redshift_source, bulge=al.lp.EllipticalSersic
             ),
         ),
         settings=settings,
@@ -102,13 +103,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[2]_mass[sie]_source[inversion_initialization]", n_live_points=20
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase1.result.instance.galaxies.lens.mass,
                 shear=phase1.result.instance.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=setup.setup_source.pixelization_prior_model,
                 regularization=setup.setup_source.regularization_prior_model,
@@ -128,13 +131,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[3]_mass[sie]_source[inversion]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase1.result.model.galaxies.lens.mass,
                 shear=phase1.result.model.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=phase2.result.instance.galaxies.source.pixelization,
                 regularization=phase2.result.instance.galaxies.source.regularization,
@@ -172,13 +177,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[4]_mass[total]_source[inversion]", n_live_points=100
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=mass,
                 shear=phase3.result.model.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=phase3.result.hyper.instance.galaxies.source.pixelization,
                 regularization=phase3.result.hyper.instance.galaxies.source.regularization,

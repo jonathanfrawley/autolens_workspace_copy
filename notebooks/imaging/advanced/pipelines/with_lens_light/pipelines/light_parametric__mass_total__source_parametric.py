@@ -77,8 +77,9 @@ def make_pipeline(setup, settings):
 
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(name="phase[1]_light[parametric]", n_live_points=50),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 bulge=setup.setup_light.bulge_prior_model,
                 disk=setup.setup_light.disk_prior_model,
@@ -100,8 +101,9 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[2]_light[fixed]_mass[sie]_source[parametric]", n_live_points=60
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
                 disk=phase1.result.instance.galaxies.lens.disk,
@@ -109,7 +111,8 @@ def make_pipeline(setup, settings):
                 mass=al.mp.EllipticalIsothermal,
                 shear=setup.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 bulge=setup.setup_source.bulge_prior_model,
                 disk=setup.setup_source.disk_prior_model,
@@ -134,8 +137,9 @@ def make_pipeline(setup, settings):
             name="phase[3]_light[parametric]_mass[total]_source[parametric]",
             n_live_points=100,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 bulge=phase1.result.model.galaxies.lens.bulge,
                 disk=phase1.result.model.galaxies.lens.disk,
@@ -143,7 +147,8 @@ def make_pipeline(setup, settings):
                 mass=mass,
                 shear=phase2.result.model.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 bulge=phase2.result.model.galaxies.source.bulge,
                 disk=phase2.result.model.galaxies.source.disk,

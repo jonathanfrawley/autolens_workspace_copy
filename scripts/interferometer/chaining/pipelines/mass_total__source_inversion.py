@@ -2,12 +2,11 @@
 Pipelines: Mass Total + Source Inversion
 ========================================
 
-By chaining together three searches this script fits `Interferometer` data of a strong lens system, where in
-the final phase of the pipeline:
+By chaining together three searches this script fits strong lens `Interferometer`, where in the final model:
 .
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `EllipticalPowerLaw`.
- - The source galaxy is modeled using an `Inversion`.
+ - The source galaxy is an `Inversion`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -15,13 +14,14 @@ the final phase of the pipeline:
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from os import path
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
-import numpy as np
 
 """
-__Dataset__ 
+__Dataset + Masking__ 
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
@@ -37,129 +37,226 @@ interferometer = al.Interferometer.from_fits(
 real_space_mask = al.Mask2D.circular(
     shape_native=(200, 200), pixel_scales=0.05, radius=3.0
 )
+
 visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
+
+settings_masked_interferometer = al.SettingsMaskedInterferometer(
+    transformer_class=al.TransformerNUFFT
+)
+
+masked_interferometer = al.MaskedInterferometer(
+    interferometer=interferometer,
+    visibilities_mask=visibilities_mask,
+    real_space_mask=real_space_mask,
+    settings=settings_masked_interferometer,
+)
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
 
+
 """
-__Settings__
+__Paths__
 
-The `SettingsPhaseInterferometer` describe how the model is fitted to the data in the log likelihood function.
-
-These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example 
-scripts, with a  complete description of all settings given in 
-`autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
-
-The settings chosen here are applied to all phases in the pipeline.
+The path the results of all chained searches are output:
 """
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    grid_class=al.Grid2D, sub_size=2, transformer_class=al.TransformerNUFFT
+path_prefix = path.join("interferometer", "chaining", "mass_total__source_inversion")
+
+"""
+__Redshifts__
+
+The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
+from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+"""
+redshift_lens = 0.5
+redshift_source = 1.0
+
+"""
+__Model + Search + Analysis + Model-Fit (Search 1)__
+
+In search 1 we fit a lens model where:
+
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
+ 
+ - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
+"""
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=al.mp.EllipticalIsothermal,
+            shear=al.mp.ExternalShear,
+        ),
+        source=af.Model(
+            al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic
+        ),
+    )
+)
+
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[1]_mass[sie]_source[parametric]",
+    n_live_points=50,
+)
+
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+
+result_1 = search.fit(model=model, analysis=analysis)
+
+"""
+__Model + Search + Analysis + Model-Fit (Search 2)__
+
+We use the results of search 1 to create the lens model fitted in search 2, where:
+
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [Parameters fixed to 
+ results of search 1].
+ 
+ - The source-galaxy's light uses a `VoronoiMagnification` pixelization [2 parameters].
+ 
+ - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
+
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+of the regularization scheme, before using these models to refit the lens mass model.
+"""
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=result_1.instance.galaxies.lens.mass,
+            shear=result_1.instance.galaxies.lens.shear,
+        ),
+        source=af.Model(
+            al.Galaxy,
+            redshift=redshift_source,
+            pixelization=al.pix.VoronoiMagnification,
+            regularization=al.pix.Rectangular,
+        ),
+    )
+)
+
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[2]_mass[sie]_source[inversion_initialization]",
+    n_live_points=20,
+)
+
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+
+result_2 = search.fit(model=model, analysis=analysis)
+
+"""
+__Model + Search (Search 3)__
+
+We use the results of searches 1 and 2 to create the lens model fitted in search 3, where:
+
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters: priors 
+ initialized from search 1].
+ 
+ - The source-galaxy's light uses a `VoronoiMagnification` pixelization [parameters fixed to results of search 2].
+ 
+ - This pixelization is regularized using a `Constant` scheme [parameters fixed to results of search 2]. 
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
+
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+of the regularization scheme, before using these models to refit the lens mass model.
+"""
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=result_1.model.galaxies.lens.mass,
+            shear=result_1.model.galaxies.lens.shear,
+        ),
+        source=af.Model(
+            al.Galaxy,
+            redshift=redshift_source,
+            pixelization=result_2.instance.galaxies.source.pixelization,
+            regularization=result_2.instance.galaxies.source.regularization,
+        ),
+    )
+)
+
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[3]_mass[sie]_source[inversion]",
+    n_live_points=50,
 )
 
 """
-We also specify the *SettingsInversion*, which describes how the `Inversion` fits the source `Pixelization` and 
-with `Regularization`. 
+__Positions + Analysis + Model-Fit (Search 3)__
 
-This can perform the linear algebra calculation that performs the `Inversion` using two options: 
-
- - As matrices: this is numerically more accurate and does not approximate the `log_evidence` of the `Inversion`. For
-  datasets of < 100 0000 visibilities we recommend that you use this option. However, for > 100 000 visibilities this
-  approach requires excessive amounts of memory on your computer (> 16 GB) and thus becomes unfeasible. 
-
- - As linear operators: this numerically less accurate and approximates the `log_evidence` of the `Inversioon`. However,
- it is the only viable options for large visibility datasets. It does not represent the linear algebra as matrices in
- memory and thus makes the analysis of > 10 million visibilities feasible.
-
-By default we use the linear operators approach.  
-"""
-settings_inversion = al.SettingsInversion(use_linear_operators=True)
-
-"""
-`Inversion`'s may infer unphysical solution where the source reconstruction is a demagnified reconstruction of the 
-lensed source (see **HowToLens** chapter 4). 
-
-To prevent this, auto-positioning is used, which uses the lens mass model of earlier phases to automatically set 
-positions and a threshold that resample inaccurate mass models (see `notebooks/interferometer/modeling/positions.py`).
-
-The `auto_positions_factor` is a factor that the threshold of the inferred positions using the previous mass model are 
-multiplied by to set the threshold in the next phase. The *auto_positions_minimum_threshold* is the minimum value this
-threshold can go to, even after multiplication.
+We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.8
+    positions_threshold=result_2.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
 
-settings = al.SettingsPhaseInterferometer(
-    settings_masked_interferometer=settings_masked_interferometer,
-    settings_inversion=settings_inversion,
+analysis = al.AnalysisInterferometer(
+    dataset=masked_interferometer,
+    positions=result_2.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
 
-"""
-__Pipeline_Setup__:
-
-Pipelines use `Setup` objects to customize how different aspects of the model are fitted. 
-
-First, we create a `SetupMassTotal`, which customizes:
-
- - The `MassProfile` used to fit the lens's total mass distribution.
- - If there is an `ExternalShear` in the mass model or not.
-"""
-setup_mass = al.SetupMassTotal(with_shear=True)
+result_3 = search.fit(model=model, analysis=analysis)
 
 """
-Next, we create a `SetupSourceInversion` which customizes:
+__Model + Search + Analysis + Model-Fit (Search 4)__
 
- - The `Pixelization` used by the `Inversion` in search 3 onwards in the pipeline.
- - The `Regularization` scheme used by the `Inversion` in search 3 onwards in the pipeline.
-"""
-setup_source = al.SetupSourceInversion(
-    pixelization_prior_model=al.pix.VoronoiMagnification,
-    regularization_prior_model=al.reg.Constant,
-)
+We use the results of searches 2 and 4 to create the lens model fitted in search 4, where:
 
-"""
-_Pipeline Tagging_
-
-The `Setup` objects are input into a `SetupPipeline` object, which is passed into the pipeline and used to customize
-the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
-is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
-
-This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
-to different output folders and thus not clash with one another!
-
-The `path_prefix` below specifies the path the pipeline results are written to, which is:
-
- `autolens_workspace/output/pipelines/dataset_type/dataset_name` 
- `autolens_workspace/output/pipelines/interferometer/mass_sie__source_sersic`
+ - The lens galaxy's total mass distribution is an `EllipticalPowerLaw` and `ExternalShear` [8 parameters: priors 
+ initialized from search 3].
  
-The redshift of the lens and source galaxies are also input (see `notebooks/interferometer/modeling/customize/redshift.py`) for a 
-description of what inputting redshifts into **PyAutoLens** does.
+ - The source-galaxy's light uses a `VoronoiMagnification` pixelization [parameters fixed to results of search 2].
+ 
+ - This pixelization is regularized using a `Constant` scheme [parameters fixed to results of search 2]. 
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
+
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+of the regularization scheme, before using these models to refit the lens mass model.
 """
-setup = al.SetupPipeline(
-    path_prefix=path.join("pipelines", dataset_name),
-    redshift_lens=0.5,
-    redshift_source=1.0,
-    setup_mass=setup_mass,
-    setup_source=setup_source,
+mass = af.Model(al.mp.EllipticalPowerLaw)
+mass.take_attributes(result_3.model.galaxies.lens.mass)
+
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=mass,
+            shear=result_3.model.galaxies.lens.shear,
+        ),
+        source=af.Model(
+            al.Galaxy,
+            redshift=redshift_source,
+            pixelization=result_2.instance.galaxies.source.pixelization,
+            regularization=result_2.instance.galaxies.source.regularization,
+        ),
+    )
 )
 
-"""
-__Pipeline Creation__
-
-To create a pipeline we import it from the pipelines folder and run its `make_pipeline` function, inputting the 
-`Setup` and `SettingsPhase` above.
-"""
-from pipelines import mass_total__source_inversion
-
-pipeline = mass_total__source_inversion.make_pipeline(
-    setup=setup, settings=settings, real_space_mask=real_space_mask
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[4]_mass[total]_source[inversion]",
+    n_live_points=100,
 )
 
-"""
-__Pipeline Run__
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer, settings_lens=settings_lens)
 
-Running a pipeline is the same as running a phase, we simply pass it our lens dataset and mask to its run function.
+result_4 = search.fit(model=model, analysis=analysis)
+
 """
-pipeline.run(dataset=interferometer, mask=visibilities_mask)
+Finish.
+"""

@@ -5,7 +5,6 @@ Tutorial 1: Grids
 In this example, we'll create `Grid2D`'s of Cartesian $(y,x)$ coordinates, representing the arc-second coordinate `Grid2D`
 of an observed data-set (e.g. imaging).
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -2,8 +2,8 @@
 Tutorial 2: Parameter Space and Priors
 ======================================
 
-In the previous example, we used a `NonLinearSearch` to infer the best-fit lens model of imaging-imaging of a strong
-lens. In this example, we'll get a deeper intuition of how a `NonLinearSearch` works.
+In the previous example, we used a non-linear search to infer the best-fit lens model of imaging-imaging of a strong
+lens. In this example, we'll get a deeper intuition of how a non-linear search works.
 
 First, I want to develop the idea of a `parameter space`. Lets think of a function, like the simple function below:
 
@@ -39,7 +39,7 @@ Lets inspect the results of the last tutorial's non-linear search. we're going t
 density functions` or `PDF's for short. These represent where the highest log likelihood regions of parameter space were
 found for each parameter.
 
-Navigate to the image folder in `autolens_workspace/output/howtolens/phase_t1_non_linear_search`
+Navigate to the image folder in `autolens_workspace/output/howtolens/tutorial_1_non_linear_search`
 and open the `pdf_triangle.png` figure. The Gaussian shaped lines running down the diagonal of this triangle represent
 1D estimates of the highest log likelihood regions that were found in parameter space for each parameter.
 
@@ -53,7 +53,7 @@ So, how does **PyAutoLens** know where to look in parameter space? A parameter, 
 principle take any value between negative and positive infinity. **PyAutoLens** must of told it to only search regions of
 parameter space with `reasonable` values (i.e. Einstein radii of around 1"-3").
 
-These are our `priors` - which define where we tell the `NonLinearSearch` to search parameter space. These tutorials
+These are our `priors` - which define where we tell the non-linear search to search parameter space. These tutorials
 use two types of prior:
 
 UniformPrior:
@@ -86,7 +86,6 @@ and inspecting config files like light_profiles.json. The convention is as follo
 }
 
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -101,8 +100,8 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's total mass distribution is a *SphericalIsothermal*.
- - The source galaxy's `LightProfile` is a *SphericalExponential*.
+ - The lens galaxy's total mass distribution is a `SphericalIsothermal`.
+ - The source galaxy's `LightProfile` is a `SphericalExponential`.
 """
 dataset_name = "mass_sis__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -121,6 +120,8 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
 )
@@ -129,18 +130,18 @@ imaging_plotter.subplot_imaging()
 """
 To change the priors on specific parameters, we create our galaxy models and then, simply, customize their priors.
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphericalExponential)
 
 """
-To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors chain our `GalaxyModel` to the 
+To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors chain our `Model` to the 
 non-linear search. Thus, it tells **PyAutoLens** where to search non-linear parameter space.
 
 These two lines change the centre of the lens galaxy's total mass distribution to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 
 _Galaxy_`s light.
 
-The word `mass` corresponds to the word we used when setting up the `GalaxyModel` above.
+The word `mass` corresponds to the word we used when setting up the `Model` above.
 """
 lens.mass.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 lens.mass.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
@@ -157,32 +158,27 @@ We can also customize the source galaxy, lets say we believe it is compact and l
 source.bulge.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
 
 """
-Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
-regular `Grid2D`.
+We again combine our model components into a `Collection`, which will use the objects with these updated priors.
 """
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
-
-settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-We can now create this custom phase like we did a hyper phase before. If you look at the `model.info` file in the 
-output of the non-linear search, you'll see that the priors have indeed been changed.
+We can now fit this custom model with a search like we did before. If you look at the `model.info` file in the output 
+of the non-linear search, you'll see that the priors have indeed been changed.
 """
-phase = al.PhaseImaging(
-    search=af.DynestyStatic(
-        path_prefix="howtolens", name="phase_t2_custom_priors", n_live_points=40
-    ),
-    settings=settings,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
+search = af.DynestyStatic(
+    path_prefix="howtolens", name="tutorial_2_custom_priors", n_live_points=40
 )
 
+analysis = al.AnalysisImaging(dataset=masked_imaging)
+
+result = search.fit(model=model, analysis=analysis)
+
 print(
-    "Dynesty has begun running - checkout the autolens_workspace/output/2_custom_priors"
+    "Dynesty has begun running - checkout the autolens_workspace/output/tutorial_2_parameter_space_and_priors"
     " folder for live output of the results, images and lens model."
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
-
-result = phase.run(dataset=imaging, mask=mask)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()

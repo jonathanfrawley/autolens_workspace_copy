@@ -75,14 +75,14 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalExponential)
 
 bulge.centre = disk.centre
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(redshift=0.5, bulge=bulge, disk=disk)
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
     )
 )
 
@@ -108,15 +108,20 @@ In search 2 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-model = af.CollectionPriorModel(
-    lens=al.GalaxyModel(
-        redshift=redshift_lens,
-        bulge=result_1.instance.galaxies.lens.bulge,
-        disk=result_1.instance.galaxies.lens.disk,
-        mass=al.mp.EllipticalIsothermal,
-        shear=al.mp.ExternalShear,
-    ),
-    source=al.GalaxyModel(redshift=redshift_source, bulge=al.lp.EllipticalSersic),
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=result_1.instance.galaxies.lens.bulge,
+            disk=result_1.instance.galaxies.lens.disk,
+            mass=al.mp.EllipticalIsothermal,
+            shear=al.mp.ExternalShear,
+        ),
+        source=af.Model(
+            al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic
+        ),
+    )
 )
 
 search = af.DynestyStatic(
@@ -150,22 +155,27 @@ NOTES:
  mass model and source light. However, the lens light model may not be particularly accurate, so we opt not to use
  the result of search 1 to initialize the priors.
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalExponential)
 
 bulge.centre = disk.centre
 
-model = af.CollectionPriorModel(
-    lens=al.GalaxyModel(
-        redshift=redshift_lens,
-        bulge=bulge,
-        disk=disk,
-        mass=result_2.model.galaxies.lens.mass,
-        shear=result_2.model.galaxies.lens.shear,
-    ),
-    source=al.GalaxyModel(
-        redshift=redshift_source, bulge=result_2.model.galaxies.source.bulge
-    ),
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=bulge,
+            disk=disk,
+            mass=result_2.model.galaxies.lens.mass,
+            shear=result_2.model.galaxies.lens.shear,
+        ),
+        source=af.Model(
+            al.Galaxy,
+            redshift=redshift_source,
+            bulge=result_2.model.galaxies.source.bulge,
+        ),
+    )
 )
 
 search = af.DynestyStatic(
@@ -197,19 +207,21 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 NOTES:
 
- - This phase allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+ - This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
  of the regularization scheme, before using these models to refit the lens mass model.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.instance.galaxies.lens.bulge,
             disk=result_3.instance.galaxies.lens.disk,
             mass=result_3.instance.galaxies.lens.mass,
             shear=result_3.instance.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=al.pix.VoronoiMagnification,
             regularization=al.reg.Constant,
@@ -244,19 +256,21 @@ We use the results of searches 3 and 4 to create the lens model fitted in search
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 """
-mass = af.PriorModel(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllipticalPowerLaw)
 mass.take_attributes(result_3.model.galaxies.lens.mass)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.model.galaxies.lens.bulge,
             disk=result_3.model.galaxies.lens.disk,
             mass=mass,
             shear=result_3.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=result_4.instance.galaxies.source.pixelization,
             regularization=result_4.instance.galaxies.source.regularization,
@@ -267,20 +281,26 @@ model = af.CollectionPriorModel(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[5]_light[parametric]_mass[total]_source[inversion]",
-    n_live_points=20,
+    n_live_points=50,
 )
 
 """
 __Positions + Analysis + Model-Fit (Search 5)__
 
-We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove unphysical
-solutions from the `Inversion` model-fitting.
+We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
+    positions_threshold=result_4.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, settings_lens=settings_lens)
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging,
+    positions=result_4.image_plane_multiple_image_positions,
+    settings_lens=settings_lens,
+)
 
 result_5 = search.fit(model=model, analysis=analysis)
 

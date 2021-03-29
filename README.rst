@@ -2,7 +2,7 @@ PyAutoLens Workspace
 ====================
 
 .. |binder| image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD
+   :target: https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD
 
 .. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.02825/status.svg
    :target: https://doi.org/10.21105/joss.02825

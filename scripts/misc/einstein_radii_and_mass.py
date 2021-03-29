@@ -69,9 +69,9 @@ in solar masses.
 critical_surface_density = al.util.cosmology.critical_surface_density_between_redshifts_from(
     redshift_0=0.5, redshift_1=1.0, cosmology=cosmo.Planck15
 )
-einstein_mass_kpc = einstein_mass * critical_surface_density
-print("Einstein Mass (kpc) = ", einstein_mass_kpc)
-print("Einstein Mass (kpc) = ", "{:.4e}".format(einstein_mass_kpc))
+einstein_mass_solar_mass = einstein_mass * critical_surface_density
+print("Einstein Mass (solMass) = ", einstein_mass_solar_mass)
+print("Einstein Mass (solMass) = ", "{:.4e}".format(einstein_mass_solar_mass))
 
 """
 We can also use the above methods on `Galaxy` objects, which may contain multiple `MassProfile`'s.
@@ -122,6 +122,8 @@ critical_surface_density = al.util.cosmology.critical_surface_density_between_re
     redshift_1=source_plane_galaxy.redshift,
     cosmology=cosmo.Planck15,
 )
-einstein_mass_kpc = einstein_mass * critical_surface_density
-print("Einstein Mass via Tracer (kpc) = ", einstein_mass_kpc)
-print("Einstein Mass via Tracer (kpc) = ", "{:.4e}".format(einstein_mass_kpc))
+einstein_mass_solar_mass = einstein_mass * critical_surface_density
+print("Einstein Mass via Tracer (solMass) = ", einstein_mass_solar_mass)
+print(
+    "Einstein Mass via Tracer (solMass) = ", "{:.4e}".format(einstein_mass_solar_mass)
+)

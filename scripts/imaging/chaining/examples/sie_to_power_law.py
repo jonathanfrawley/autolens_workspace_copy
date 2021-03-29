@@ -87,14 +87,12 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-lens = al.GalaxyModel(
-    redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+lens = af.Model(
+    al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
 )
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search + Analysis + Model-Fit (Search 1)__
@@ -123,9 +121,8 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
  
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=15.
 
-The term `model` below tells PyAutoLens to pass the source model as model-components that are to be fitted for by the 
-non-linear search. Because the source model does not change we can pass its priors by simply using the`model` attribute
-of the result:
+The term `model` below passes the source model as model-components that are to be fitted for by the  non-linear search. 
+Because the source model does not change we can pass its priors by simply using the`model` attribute of the result:
 """
 source = result_1.model.galaxies.source
 
@@ -143,15 +140,13 @@ and `einstein_radius`).
 This leaves the `slope` parameter of the `EllipticalPowerLaw` with its default `UniformPrior` which has a 
 `lower_limit=1.5` and `upper_limit=3.0`.
 """
-mass = af.PriorModel(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllipticalPowerLaw)
 mass.take_attributes(result_1.model.galaxies.lens.mass)
 shear = result_1.model.galaxies.lens.shear
 
-lens = al.GalaxyModel(redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search + Analysis + Model-Fit (Search 2)__
@@ -180,7 +175,7 @@ and efficient model-fit.
 
 __Pipelines__
 
-Advanced search chaining uses `pipelines` that chain together multiple searches to perform very complex lens modeling 
+Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling 
 in a robust and efficient way. 
 
 The following example pipelines fits a power-law, using the same approach demonstrated in this script of first 

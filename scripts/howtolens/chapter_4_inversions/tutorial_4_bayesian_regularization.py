@@ -9,7 +9,6 @@ Everything sounds pretty good, doesn`t it? You`re probably thinking, why are the
 `Inversion`s now, don't ruin it! Well, there is a problem - which I hid from you in the last tutorial, which we'll
 cover now.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

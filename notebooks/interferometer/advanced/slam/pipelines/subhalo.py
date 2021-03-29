@@ -82,7 +82,7 @@ def make_pipeline_single_plane(
 
     phase1 = al.PhaseInterferometer(
         search=af.DynestyStatic(name="phase[1]_mass[total_refine]", n_live_points=100),
-        galaxies=af.CollectionPriorModel(lens=lens, source=source),
+        galaxies=af.Collection(lens=lens, source=source),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
@@ -118,8 +118,8 @@ def make_pipeline_single_plane(
         4) For an `Inversion`, the source parameters are fixed to the best-fit values of the previous pipeline, for a 
           `LightProfile` they are varied (this is customized using source_is_model).
     """
-    subhalo = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+    subhalo = af.Model(
+        al.Galaxy, redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
@@ -148,7 +148,7 @@ def make_pipeline_single_plane(
             walks=5,
             facc=0.2,
         ),
-        galaxies=af.CollectionPriorModel(lens=lens, subhalo=subhalo, source=source),
+        galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
@@ -156,8 +156,8 @@ def make_pipeline_single_plane(
         real_space_mask=real_space_mask,
     )
 
-    subhalo = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+    subhalo = af.Model(
+        al.Galaxy, redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
 
     subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
@@ -172,7 +172,7 @@ def make_pipeline_single_plane(
             path_prefix=path_prefix,
             n_live_points=100,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             lens=phase2.result.model.galaxies.lens,
             subhalo=subhalo,
             source=phase2.result.model.galaxies.source,
@@ -231,7 +231,7 @@ def make_pipeline_multi_plane(
 
     phase1 = al.PhaseInterferometer(
         search=af.DynestyStatic(name="phase[1]_mass[total_refine]", n_live_points=100),
-        galaxies=af.CollectionPriorModel(lens=lens, source=source),
+        galaxies=af.Collection(lens=lens, source=source),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
@@ -271,8 +271,8 @@ def make_pipeline_multi_plane(
     """
     The subhalo redshift is free to vary between 0.0 and the lens galaxy redshift.
     """
-    subhalo_z_multi = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+    subhalo_z_multi = af.Model(
+        al.Galaxy, redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
 
     subhalo_z_multi.mass.mass_at_200 = af.LogUniformPrior(
@@ -308,9 +308,7 @@ def make_pipeline_multi_plane(
             walks=5,
             facc=0.2,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=lens, subhalo=subhalo_z_multi, source=source
-        ),
+        galaxies=af.Collection(lens=lens, subhalo=subhalo_z_multi, source=source),
         hyper_background_noise=slam.setup_hyper.hyper_background_noise_from_result(
             result=mass_results.last
         ),
@@ -318,8 +316,8 @@ def make_pipeline_multi_plane(
         real_space_mask=real_space_mask,
     )
 
-    subhalo = al.GalaxyModel(
-        redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
+    subhalo = af.Model(
+        al.Galaxy, redshift=slam.redshift_lens, mass=al.mp.SphericalNFWMCRLudlow
     )
 
     subhalo.mass.mass_at_200 = phase2.result.model.galaxies.subhalo.mass.mass_at_200
@@ -334,7 +332,7 @@ def make_pipeline_multi_plane(
             path_prefix=path_prefix,
             n_live_points=100,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             lens=phase2.result.model.galaxies.lens,
             subhalo=subhalo,
             source=phase2.result.model.galaxies.source,
@@ -386,7 +384,7 @@ def sensitivity_mapping(
     """
     We now define the `perturbation_model`, which is the model component whose parameters we iterate over to perform 
     sensitivity mapping. In this case, this model is a `SphericalNFWMCRLudlow` model and we will iterate over its
-    `centre` and `mass_at_200`. We set it up as a `GalaxyModel` so it has an associated redshift and can be directly
+    `centre` and `mass_at_200`. We set it up as a `Model` so it has an associated redshift and can be directly
     passed to the tracer in the simulate function below.
 
     Many instances of the `perturbation_model` are created and used to simulate the many strong lens datasets that we fit. 
@@ -399,7 +397,9 @@ def sensitivity_mapping(
     subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
     therefore when it is detectable!).
     """
-    perturbation_model = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalNFWMCRLudlow)
+    perturbation_model = af.Model(
+        al.Galaxy, redshift=0.5, mass=al.mp.SphericalNFWMCRLudlow
+    )
 
     """
     Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick

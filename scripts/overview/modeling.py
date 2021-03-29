@@ -56,7 +56,7 @@ masked_imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
 masked_imaging_plotter.subplot()
 
 """
-We compose the lens model that we fit to the data using `GalaxyModel` objects. These behave analogously to `Galaxy`
+We compose the lens model that we fit to the data using `Model` objects. These behave analogously to `Galaxy`
 objects but their  `LightProfile` and `MassProfile` parameters are not specified and are instead determined by a
 fitting procedure.
 
@@ -68,14 +68,19 @@ We will fit our strong lens data with two galaxies:
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 """
-lens_galaxy_model = al.GalaxyModel(
-    redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+lens_galaxy_model = af.Model(
+    al.Galaxy,
+    redshift=0.5,
+    bulge=al.lp.EllipticalSersic,
+    mass=al.mp.EllipticalIsothermal,
 )
 
-source_galaxy_model = al.GalaxyModel(redshift=1.0, disk=al.lp.EllipticalExponential)
+source_galaxy_model = af.Model(
+    al.Galaxy, redshift=1.0, disk=al.lp.EllipticalExponential
+)
 
 """
-We now choose the `NonLinearSearch`, which is the fitting method used to determine the set of `LightProfile`
+We now choose the non-linear search, which is the fitting method used to determine the set of `LightProfile`
 and `MassProfile` parameters that best-fit our data.
 
 In this example we use `dynesty` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm that is
@@ -84,19 +89,17 @@ very effective at lens modeling.
 search = af.DynestyStatic(name="overview_modeling")
 
 """
-To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the phase by passing it the dataset and mask.
+To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the search by passing it the dataset and mask.
 
 (Lens modeling can often take hours, or more, to be performed. For this example, we have preloaded the results of the
 lens modeling process so that the code above runs instantly.)
 """
-phase = al.PhaseImaging(
+search = al.PhaseImaging(
     search=search,
-    galaxies=af.CollectionPriorModel(
-        lens=lens_galaxy_model, source=source_galaxy_model
-    ),
+    galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model),
 )
 
-result = phase.run(dataset=imaging, mask=mask)
+result = search.run(dataset=imaging, mask=mask)
 
 """
 The `PhaseImaging` object above returns a `Result` object, which contains the maximum log likelihood `Tracer`
@@ -111,7 +114,7 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-In fact, this ``Result`` object contains the full posterior information of our ``NonLinearSearch``, including all
+In fact, this ``Result`` object contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model.
 
 The script `autolens_workspace/examples/mdoel/result.py` contains a full description of all information contained

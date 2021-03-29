@@ -22,12 +22,14 @@ An example of these objects being used to make a phase is as follows:
 phase = al.PhaseImaging(
     name="phase___hyper_example",
     
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+    galaxies=af.Collection(
+        lens=af.Model(
+    al.Galaxy, 
             redshift=setup.redshift_lens,
             hyper_galaxy=phase_last.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+    al.Galaxy, 
             redshift=setup.redshift_source,
         ),
     ),
@@ -47,7 +49,7 @@ __HYPER searches__
 The hyper-galaxies, hyper-image_sky and hyper-background-noise all have non-linear parameters we need to fit for
 during our modeling.
 
-How do we fit for the hyper-parameters using our `NonLinearSearch` (e.g. MultiNest)? Typically, we don't fit for them
+How do we fit for the hyper-parameters using our non-linear search (e.g. MultiNest)? Typically, we don't fit for them
 simultaneously with the lens and source models, as this creates an unnecessarily large parameter space which we`d
 fail to fit accurately and efficiently.
 
@@ -169,14 +171,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[1]_mass[sie]_source[bulge]", n_live_points=80
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=al.mp.EllipticalIsothermal,
                 shear=setup.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
-                redshift=setup.redshift_source, bulge=al.lp.EllipticalSersic
+            source=af.Model(
+                al.Galaxy, redshift=setup.redshift_source, bulge=al.lp.EllipticalSersic
             ),
         ),
         settings=settings,
@@ -212,14 +215,16 @@ def make_pipeline(setup, settings):
             name="phase[2]_mass[fixed]_source[inversion_magnification_initialization]",
             n_live_points=30,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase1.result.instance.galaxies.lens.mass,
                 shear=phase1.result.instance.galaxies.lens.shear,
                 hyper_galaxy=phase1.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=al.pix.VoronoiMagnification,
                 regularization=al.reg.Constant,
@@ -242,13 +247,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[3]_mass[sie]_source[fixed]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase1.result.model.galaxies.lens.mass,
                 shear=phase1.result.model.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=phase1.result.instance.galaxies.source.pixelization,
                 regularization=phase1.result.instance.galaxies.source.regularization,
@@ -275,13 +282,15 @@ def make_pipeline(setup, settings):
             evidence_tolerance=setup.setup_hyper.evidence_tolerance,
             sample="rstagger",
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase3.result.instance.galaxies.lens.mass,
                 shear=phase3.result.instance.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=setup.setup_source.pixelization_prior_model,
                 regularization=setup.setup_source.regularization_prior_model,
@@ -309,13 +318,15 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[5]_mass[sie]_source[inversion]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=phase3.result.model.galaxies.lens.mass,
                 shear=phase3.result.model.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 pixelization=phase4.result.instance.galaxies.source.pixelization,
                 regularization=phase4.result.instance.galaxies.source.regularization,

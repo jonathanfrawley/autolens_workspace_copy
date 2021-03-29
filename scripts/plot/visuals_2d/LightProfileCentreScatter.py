@@ -101,7 +101,9 @@ tracer_plotter.figures(image=True)
 To plot the light profile centres manually, we can pass them into a` Visuals2D` object. This is useful for plotting 
 the centres on figures where they are not an internal property, like an `Array2D`.
 """
-light_profile_centres = tracer.extract_attribute(cls=al.lp.LightProfile, name="centre")
+light_profile_centres = tracer.extract_attribute(
+    cls=al.lp.LightProfile, attr_name="centre"
+)
 
 visuals_2d = aplt.Visuals2D(light_profile_centres=light_profile_centres)
 image = tracer.image_from_grid(grid=grid)

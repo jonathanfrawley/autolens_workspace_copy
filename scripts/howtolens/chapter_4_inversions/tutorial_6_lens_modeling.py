@@ -2,7 +2,7 @@
 Tutorial 6: Lens Modeling
 =========================
 
-When modeling complex source's with parametric profiles, we quickly entered a regime where our `NonLinearSearch` was
+When modeling complex source's with parametric profiles, we quickly entered a regime where our non-linear search was
 faced with a parameter space of dimensionality N=30+ parameters. This made the model-fitting inefficient, and very
 likely to infer a local maxima.
 
@@ -14,7 +14,6 @@ interesting scientific questions!
 However, `Inversion` have some short comings that we need to be aware of before we begin using them for lens modeling.
 That`s what we are going to cover in this tutorial.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -154,13 +153,13 @@ print(correct_fit.log_evidence)
 The log evidence *is* lower. However, the difference in log evidence isn't *that large*. This is going to be a problem 
 for the non-linear search, as its going to see *a lot* of solutions with really high log evidence value. Furthermore, 
 these solutions occupy a *large volumne* of parameter space (e.g. everywhere the lens model that is wrong). This makes 
-it easy for the `NonLinearSearch` to get lost searching through these unphysical solutions and, unfortunately, infer an 
+it easy for the non-linear search to get lost searching through these unphysical solutions and, unfortunately, infer an 
 incorrect lens model (e.g. a local maxima).
 
-There is no simple fix for this. The reality is that for an `Inversion` these solutions exist. This is how phase 
+There is no simple fix for this. The reality is that for an `Inversion` these solutions exist. This is how search 
 chaining and pipelines were initially conceived, they offer a simple solution to this problem. We write a pipeline that 
 begins by modeling the source galaxy as a `LightProfile`, `initializing` our lens mass model. Then, when we switch to 
-an `Inversion` in the next phase, our mass model starts in the correct regions of parameter space and doesn`t get lost 
+an `Inversion` in the next search, our mass model starts in the correct regions of parameter space and doesn`t get lost 
 sampling these incorrect solutions.
 
 Its not ideal, but its also not a big problem. Furthermore, `LightProfile`'ss run faster computationally than 

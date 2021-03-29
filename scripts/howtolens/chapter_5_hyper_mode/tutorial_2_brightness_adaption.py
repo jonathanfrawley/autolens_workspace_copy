@@ -8,14 +8,13 @@ raises an interesting question; how do we adapt our source `Pixelization` to the
 actually reconstructed the source and therefore know what to adapt it too?
 
 To do this, we define a `hyper-galaxy-image` of the lensed source galaxy. This is a model image of the source
-computed using a previous lens model fit to the image (e.g. in an earlier phase of a pipeline). This image tells us
+computed using a previous lens model fit to the image (e.g. in an earlier search of a pipeline). This image tells us
 where in the image our source is located, thus telling us where we need to adapt our source pixelization!
 
 So, lets go into the details of how this works. we'll use the same compact source galaxy as the previous tutorial
 and we'll begin by fitting it with a magnification based `Pixelization`. Why? So we can use its model image to set up
 the hyper-galaxy-image.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

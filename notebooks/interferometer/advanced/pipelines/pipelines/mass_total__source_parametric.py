@@ -45,7 +45,7 @@ def make_pipeline(setup, settings, real_space_mask):
     This pipeline is tagged according to whether:
 
         1) The lens galaxy mass model includes an `ExternalShear`.
-        2) `PriorModel`'s that make up the `bulge`, `disk`, etc in the `SetupSourceParametric` as well as options that
+        2) `Model`'s that make up the `bulge`, `disk`, etc in the `SetupSourceParametric` as well as options that
            customize this model, like the alignement of centres, etc.
     """
 
@@ -65,13 +65,15 @@ def make_pipeline(setup, settings, real_space_mask):
         search=af.DynestyStatic(
             name="phase[1]_mass[sie]_source[parametric]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=al.mp.EllipticalIsothermal,
                 shear=setup.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 bulge=setup.setup_source.bulge_prior_model,
                 disk=setup.setup_source.disk_prior_model,
@@ -102,13 +104,15 @@ def make_pipeline(setup, settings, real_space_mask):
         search=af.DynestyStatic(
             name="phase[2]__source_inversion_initialization", n_live_points=20
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_lens,
                 mass=mass,
                 shear=phase1.result.instance.galaxies.lens.shear,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=setup.redshift_source,
                 bulge=phase1.result.model.galaxies.source.bulge,
                 disk=phase1.result.model.galaxies.source.disk,

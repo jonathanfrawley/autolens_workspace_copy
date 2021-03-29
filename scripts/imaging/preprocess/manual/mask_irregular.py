@@ -15,8 +15,8 @@ import numpy as np
 
 """
 This tool allows one to mask a bespoke mask for a given image of a strong lens, which can then be loaded
-before a pipeline is run and passed to that pipeline so as to become the default masked used by a phase (if a mask
-function is not passed to that phase).
+before a pipeline is run and passed to that pipeline so as to become the default masked used by a search (if a mask
+function is not passed to that search).
 
 This tool creates an irregular mask, which can form any shape and is not restricted to circles, annuli, ellipses,
 etc. This mask is created as follows:

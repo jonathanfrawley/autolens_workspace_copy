@@ -4,7 +4,6 @@ Tutorial 5: Borders
 
 In the previous tutorial, we told our `Inversion` to use a border. Here, we'll discuss what this border does.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

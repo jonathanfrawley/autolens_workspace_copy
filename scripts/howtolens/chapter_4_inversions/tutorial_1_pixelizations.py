@@ -5,7 +5,6 @@ Tutorial 1: Pixelizations
 To begin chapter 4, we'll begin by learning about `Pixelization``., which we apply to a source-plane to reconstruct a
 source-`Galaxy`'s light.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

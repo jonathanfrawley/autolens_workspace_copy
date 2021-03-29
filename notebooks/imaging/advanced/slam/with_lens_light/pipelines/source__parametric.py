@@ -63,7 +63,8 @@ def make_pipeline(slam, settings):
         1) Use the light model determined from `SetupLightParametric` (e.g. `bulge_prior_model`, `disk_prior_model`, 
            etc.).
     """
-    lens = al.GalaxyModel(
+    lens = af.Model(
+        al.Galaxy,
         redshift=slam.redshift_lens,
         bulge=slam.pipeline_source_parametric.setup_light.bulge_prior_model,
         disk=slam.pipeline_source_parametric.setup_light.disk_prior_model,
@@ -72,7 +73,7 @@ def make_pipeline(slam, settings):
 
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(name="phase[1]_light[parametric]", n_live_points=75),
-        galaxies=af.CollectionPriorModel(lens=lens),
+        galaxies=af.Collection(lens=lens),
         settings=settings,
     )
 
@@ -104,8 +105,9 @@ def make_pipeline(slam, settings):
             n_live_points=200,
             walks=10,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
                 disk=phase1.result.instance.galaxies.lens.disk,
@@ -113,7 +115,8 @@ def make_pipeline(slam, settings):
                 mass=mass,
                 shear=slam.pipeline_source_parametric.setup_mass.shear_prior_model,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 bulge=slam.pipeline_source_parametric.setup_source.bulge_prior_model,
                 disk=slam.pipeline_source_parametric.setup_source.disk_prior_model,
@@ -132,7 +135,8 @@ def make_pipeline(slam, settings):
         1) Set lens`s mass, shear and source`s light using models from searches 2.
     """
 
-    lens = al.GalaxyModel(
+    lens = af.Model(
+        al.Galaxy,
         redshift=slam.redshift_lens,
         bulge=slam.pipeline_source_parametric.setup_light.bulge_prior_model,
         disk=slam.pipeline_source_parametric.setup_light.disk_prior_model,
@@ -146,9 +150,10 @@ def make_pipeline(slam, settings):
             name="phase[3]_light[parametric]_mass[total]_source[parametric]",
             n_live_points=200,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             lens=lens,
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 bulge=phase2.result.model.galaxies.source.bulge,
                 disk=phase2.result.model.galaxies.source.disk,

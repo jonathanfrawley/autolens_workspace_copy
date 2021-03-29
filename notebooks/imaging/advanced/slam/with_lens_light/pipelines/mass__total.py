@@ -75,7 +75,7 @@ def make_pipeline(slam, settings, source_results, light_results, end_stochastic=
         search=af.DynestyStatic(
             name="phase[1]_light[parametric]_mass[total]_source", n_live_points=100
         ),
-        galaxies=af.CollectionPriorModel(lens=lens, source=source),
+        galaxies=af.Collection(lens=lens, source=source),
         hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
             result=light_results.last, as_model=True
         ),

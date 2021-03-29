@@ -81,7 +81,8 @@ def make_pipeline(slam, settings, source_results, light_results, end_stochastic=
     """
     smbh = slam.pipeline_mass.smbh_prior_model_from_result(result=light_results.last)
 
-    lens = al.GalaxyModel(
+    lens = af.Model(
+        al.Galaxy,
         redshift=slam.redshift_lens,
         bulge=bulge,
         disk=disk,
@@ -100,7 +101,7 @@ def make_pipeline(slam, settings, source_results, light_results, end_stochastic=
         search=af.DynestyStatic(
             name="phase[1]_light[fixed]_mass[light_dark]_source", n_live_points=200
         ),
-        galaxies=af.CollectionPriorModel(lens=lens, source=source),
+        galaxies=af.Collection(lens=lens, source=source),
         hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
             result=light_results.last, as_model=True
         ),

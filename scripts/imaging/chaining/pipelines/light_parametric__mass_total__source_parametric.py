@@ -72,11 +72,11 @@ In search 1 we fit a lens model where:
  
  - The lens galaxy's mass and source galaxy are omitted.
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(redshift=0.5, bulge=af.PriorModel(al.lp.EllipticalSersic))
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=af.Model(al.lp.EllipticalSersic))
     )
 )
 
@@ -101,14 +101,15 @@ In search 2 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-model = af.CollectionPriorModel(
-    lens=al.GalaxyModel(
+model = af.Collection(
+    lens=af.Model(
+        al.Galaxy,
         redshift=redshift_lens,
         bulge=result_1.instance.galaxies.lens.bulge,
         mass=al.mp.EllipticalIsothermal,
         shear=al.mp.ExternalShear,
     ),
-    source=al.GalaxyModel(redshift=redshift_source, bulge=al.lp.EllipticalSersic),
+    source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic),
 )
 
 search = af.DynestyStatic(
@@ -140,15 +141,16 @@ The result of search 1 is sufficient for subtracting the lens light, so that sea
 mass model and source light. However, the lens light model may not be particularly accurate, so we opt not to use
 the result of search 1 to initialize the priors.
 """
-model = af.CollectionPriorModel(
-    lens=al.GalaxyModel(
+model = af.Collection(
+    lens=af.Model(
+        al.Galaxy,
         redshift=redshift_lens,
-        bulge=af.PriorModel(al.lp.EllipticalSersic),
+        bulge=af.Model(al.lp.EllipticalSersic),
         mass=result_2.model.galaxies.lens.mass,
         shear=result_2.model.galaxies.lens.shear,
     ),
-    source=al.GalaxyModel(
-        redshift=redshift_source, bulge=result_2.model.galaxies.source.bulge
+    source=af.Model(
+        al.Galaxy, redshift=redshift_source, bulge=result_2.model.galaxies.source.bulge
     ),
 )
 

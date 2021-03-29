@@ -58,7 +58,8 @@ def make_pipeline(slam, settings, source_results):
         result=source_results.last, noise_factor_is_model=True
     )
 
-    lens = al.GalaxyModel(
+    lens = af.Model(
+        al.Galaxy,
         redshift=slam.redshift_lens,
         bulge=slam.pipeline_light.setup_light.bulge_prior_model,
         disk=slam.pipeline_light.setup_light.disk_prior_model,
@@ -79,7 +80,7 @@ def make_pipeline(slam, settings, source_results):
             name="phase[1]_light[parametric]_mass[fixed]_source[fixed]",
             n_live_points=100,
         ),
-        galaxies=af.CollectionPriorModel(lens=lens, source=source),
+        galaxies=af.Collection(lens=lens, source=source),
         hyper_image_sky=slam.setup_hyper.hyper_image_sky_from_result(
             result=source_results.last, as_model=True
         ),

@@ -74,7 +74,7 @@ samples_gen = agg.values("samples")
 
 """
 When we print this the length of this generator converted to a list of outputs we see 3 different NestSamples 
-instances. These correspond to each fit of each phase to each of our 3 images.
+instances. These correspond to each fit of each search to each of our 3 images.
 """
 print("NestedSampler Samples: \n")
 print(samples_gen)
@@ -158,14 +158,14 @@ print(ml_instances[1].galaxies)
 print(ml_instances[2].galaxies)
 
 """
-These galaxies will be named according to the phase (in this case, `lens` and `source`).
+These galaxies will be named according to the search (in this case, `lens` and `source`).
 """
 print(ml_instances[0].galaxies.lens)
 print()
 print(ml_instances[1].galaxies.source)
 
 """
-Their `LightProfile`'s and `MassProfile`'s are also named according to the phase.
+Their `LightProfile`'s and `MassProfile`'s are also named according to the search.
 """
 print(ml_instances[0].galaxies.lens.mass)
 print(ml_instances[1].galaxies.source.bulge)

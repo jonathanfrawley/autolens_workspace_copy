@@ -69,12 +69,12 @@ shutil.move("info.json", path.join(dataset_path, "info.json"))
 
 """
 For the info to be available to the results of a model-fit, the runner must load the info file from the .json and 
-pass it to the phase.run() or pipeline.run() function:
+pass it to the search.run() or pipeline.run() function:
 
 info_file = path.join(dataset_path, "info.json")
 
 with open(info_file, "r") as f:
     info = json.load(f)
 
-phase.run(dataset=dataset, mask=mask, info=info)
+search.run(dataset=dataset, mask=mask, info=info)
 """

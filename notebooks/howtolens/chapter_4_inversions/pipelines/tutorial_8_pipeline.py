@@ -60,9 +60,9 @@ def make_pipeline(setup, settings):
             n_live_points=50,
             evidence_tolerance=5.0,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+        galaxies=af.Collection(
+            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
+            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
         ),
         settings=settings,
     )
@@ -72,7 +72,8 @@ def make_pipeline(setup, settings):
 
         1) Fix the lens's `MassProfile`'s to the results of search 1.
     """
-    source = al.GalaxyModel(
+    source = af.Model(
+        al.Galaxy,
         redshift=1.0,
         pixelization=al.pix.VoronoiMagnification,
         regularization=al.reg.Constant,
@@ -95,9 +96,9 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[2]_source[inversion_initialize]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy, redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source=source,
         ),
@@ -123,11 +124,12 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[3]_mass[sie]_source[inversion]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy, redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=1.0,
                 pixelization=phase2.result.hyper.instance.galaxies.source.pixelization,
                 regularization=phase2.result.hyper.instance.galaxies.source.regularization,

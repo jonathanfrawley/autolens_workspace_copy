@@ -11,7 +11,6 @@ In this example, we'll use the `mass_profiles` and `light_profiles` modules intr
 
 3) `Galaxy`'s have redshifts, defining where they are relative to one another in lensing calculations.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -78,9 +78,9 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(redshift=0.5, bulge=af.PriorModel(al.lp.EllipticalSersic))
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=af.Model(al.lp.EllipticalSersic))
     )
 )
 
@@ -116,21 +116,22 @@ NOTES:
 """
 bulge = result_1.instance.galaxies.lens.bulge
 
-dark = af.PriorModel(al.mp.EllipticalNFWMCRLudlow)
+dark = af.Model(al.mp.EllipticalNFWMCRLudlow)
 dark.centre = bulge.centre
 dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e15)
 dark.redshift_object = redshift_lens
 dark.redshift_source = redshift_source
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=0.5,
             bulge=bulge,
-            dark=af.PriorModel(al.mp.EllipticalNFW),
+            dark=af.Model(al.mp.EllipticalNFW),
             shear=al.mp.ExternalShear,
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
     )
 )
 
@@ -163,22 +164,25 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 Notes:
 
- - This phase attempts to address any issues there may have been with the bulge's stellar mass model.
+ - This search attempts to address any issues there may have been with the bulge's stellar mass model.
 """
 bulge = result_1.model.galaxies.lens.bulge
 
 dark = result_2.model.galaxies.lens.dark
 dark.centre = bulge.centre
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=0.5,
             bulge=bulge,
             dark=dark,
             shear=result_2.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=result_2.model.galaxies.source.bulge),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
+        ),
     )
 )
 

@@ -10,7 +10,6 @@ This raises the same question as before, how do we adapt our `Regularization` sc
 reconstructed it? Just like in the last tutorial, we'll use a model image of a strongly lensed source from a previous
 model that we've begun calling the `hyper-galaxy-image`.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

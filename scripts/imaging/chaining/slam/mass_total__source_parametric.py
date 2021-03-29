@@ -7,9 +7,9 @@ lens, first the Source, then the (lens) Light and finally the Mass. Each of thes
 which customize the model and analysis in that pipeline.
 
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS PIPELINE.
+uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
 
-Using a SOURCE PARAMETRIC PIPELINE and a MASS PIPELINE this SLaM script fits `Imaging` of a strong lens system, where
+Using a SOURCE PARAMETRIC PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Imaging` of a strong lens system, where
 in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
@@ -18,8 +18,8 @@ in the final model:
 
 This uses the SLaM pipelines:
 
- `source__parametric/source_parametric__no_lens_light`
- `mass__total/mass__total__no_lens_light`
+ `source_parametric/no_lens_light`
+ `mass_total/no_lens_light`
 
 Check them out for a full description of the analysis!
 """
@@ -29,10 +29,14 @@ Check them out for a full description of the analysis!
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import os
+import sys
 from os import path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+
+sys.path.insert(0,os.getcwd())
 import slam
 
 """
@@ -80,12 +84,7 @@ redshift_source = 1.0
 """
 __HYPER SETUP__
 
-The `SetupHyper` determines which hyper-mode features are used during the model-fit as is used identically to the
-hyper pipeline examples.
-
-The `SetupHyper` input `hyper_fixed_after_source` fixes the hyper-parameters to the values computed by the hyper 
-extension at the end of the SOURCE PIPELINE. By fixing the hyper-parameter values at this point, model comparison 
-of different models in the LIGHT PIPELINE and MASS PIPELINE can be performed consistently.
+The `SetupHyper` determines which hyper-mode features are used during the model-fit.
 """
 setup_hyper = al.SetupHyper(
     hyper_galaxies_lens=False,
@@ -102,17 +101,20 @@ light, which in this example:
  
  - Uses a parametric `EllipticalSersic` bulge for the source's light (omitting a disk / envelope).
  - Uses an `EllipticalIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
- - Fixes the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS PIPELINE).
+
+ We use the following optional settings:
+ 
+ - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-source_results = slam.source_parametric.no_lens_light(
+source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
-    mass=af.PriorModel(al.mp.EllipticalIsothermal),
-    shear=af.PriorModel(al.mp.ExternalShear),
-    source_bulge=af.PriorModel(al.lp.EllipticalSersic),
+    mass=af.Model(al.mp.EllipticalIsothermal),
+    shear=af.Model(al.mp.ExternalShear),
+    source_bulge=af.Model(al.lp.EllipticalSersic),
     mass_centre=(0.0, 0.0),
     redshift_lens=0.5,
     redshift_source=1.0,
@@ -125,18 +127,22 @@ __MASS TOTAL PIPELINE (no lens light)__
 The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens mass model to a high level of accuracy, 
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
- - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
- - Uses the `EllipticalSersic` model representing a bulge for the source's light.
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS PIPELINE.
+ - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
+ PARAMETRIC PIPELINE + The centre if unfixed from (0.0, 0.0)].
+ 
+ - Uses the `EllipticalSersic` model representing a bulge for the source's light [priors initialized from SOURCE 
+ PARAMETRIC PIPELINE].
+ 
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, results=source_results)
+analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
-    source_results=source_results,
-    mass=af.PriorModel(al.mp.EllipticalPowerLaw),
+    source_results=source_parametric_results,
+    mass=af.Model(al.mp.EllipticalPowerLaw),
 )
 
 """

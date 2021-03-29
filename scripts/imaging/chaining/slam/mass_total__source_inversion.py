@@ -7,10 +7,10 @@ lens, first the Source, then the (lens) Light and finally the Mass. Each of thes
 which customize the model and analysis in that pipeline.
 
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS PIPELINE.
+uses a parametric `EllipticalSersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
 
-Using a SOURCE PARAMETRIC PIPELINE, INVERSION SOURCE PIPELINE and a MASS PIPELINE this SLaM script fits `Imaging` of a
-strong lens system, where in the final model:
+Using a SOURCE PARAMETRIC PIPELINE, SOURCE INVERSION PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Imaging`
+of a strong lens system, where in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `EllipticalPowerLaw`.
@@ -18,9 +18,9 @@ strong lens system, where in the final model:
 
 This uses the SLaM pipelines:
 
- `source__parametric/source_parametric__no_lens_light`
+ `source_parametric/no_lens_light`
  `source__inversion/source_inversion__no_lens_light`
- `mass__total/mass__total__no_lens_light`
+ `mass_total/no_lens_light`
 
 Check them out for a detailed description of the analysis!
 """
@@ -30,11 +30,15 @@ Check them out for a detailed description of the analysis!
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import os
+import sys
 from os import path
-import slam
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+
+sys.path.insert(0,os.getcwd())
+import slam
 
 """
 __Dataset + Masking__ 
@@ -81,12 +85,7 @@ redshift_source = 1.0
 """
 __HYPER SETUP__
 
-The `SetupHyper` determines which hyper-mode features are used during the model-fit as is used identically to the
-hyper pipeline examples.
-
-The `SetupHyper` input `hyper_fixed_after_source` fixes the hyper-parameters to the values computed by the hyper 
-extension at the end of the SOURCE PIPELINE. By fixing the hyper-parameter values at this point, model comparison 
-of different models in the LIGHT PIPELINE and MASS PIPELINE can be performed consistently.
+The `SetupHyper` determines which hyper-mode features are used during the model-fit.
 """
 setup_hyper = al.SetupHyper(
     hyper_galaxies_lens=False,
@@ -103,7 +102,11 @@ light, which in this example:
 
  - Uses a parametric `EllipticalSersic` bulge for the source's light (omitting a disk / envelope).
  - Uses an `EllipticalIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
- - Fixes the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS PIPELINE).
+ 
+We use the following optional settings:
+ 
+ - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
+ PIPELINE).
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
@@ -111,9 +114,9 @@ source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
     setup_hyper=setup_hyper,
     analysis=analysis,
-    mass=af.PriorModel(al.mp.EllipticalIsothermal),
-    shear=af.PriorModel(al.mp.ExternalShear),
-    source_bulge=af.PriorModel(al.lp.EllipticalSersic),
+    mass=af.Model(al.mp.EllipticalIsothermal),
+    shear=af.Model(al.mp.ExternalShear),
+    source_bulge=af.Model(al.lp.EllipticalSersic),
     mass_centre=(0.0, 0.0),
     redshift_lens=0.5,
     redshift_source=1.0,
@@ -131,22 +134,20 @@ regularization, to set up the model and hyper images, and then:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
  SOURCE INVERSION PIPELINE.
 
-In this example we use the following optional settings:
+We use the following optional settings:
 
- - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to 
- remove unphysical solutions from the `Inversion` model-fitting.
+ - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
-positions = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "positions.json")
-)
-
 settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
+    positions_threshold=source_parametric_results.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
 
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
-    results=source_parametric_results,
+    positions=source_parametric_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
 
@@ -167,18 +168,28 @@ using the lens mass model and source model of the SOURCE INVERSION PIPELINE to i
 example it:
 
  - Uses an `EllipticalPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
- - Uses an `Inversion` for the source's light.
+ - Uses an `Inversion` for the source's light [priors fixed from SOURCE INVERSION PIPELINE].
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINES through to the MASS 
  PIPELINE.
  
-In this example we use the following optional settings:
+We use the following optional settings:
 
- - Positions: We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to 
- remove unphysical solutions from the `Inversion` model-fitting.
+ - Hyper: We may be using hyper features and therefore pass the result of the SOURCE INVERSION PIPELINE to use as the
+ hyper dataset if required.
+
+ - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
+settings_lens = al.SettingsLens(
+    positions_threshold=source_inversion_results.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
+)
+
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
-    results=source_inversion_results,
+    hyper_result=source_inversion_results.last,
+    positions=source_inversion_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
 
@@ -187,7 +198,7 @@ mass_results = slam.mass_total.no_lens_light(
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,
-    mass=af.PriorModel(al.mp.EllipticalPowerLaw),
+    mass=af.Model(al.mp.EllipticalPowerLaw),
 )
 
 """

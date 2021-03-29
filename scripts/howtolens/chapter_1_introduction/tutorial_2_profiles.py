@@ -5,7 +5,6 @@ Tutorial 2: Profiles
 In this example, we'll create a `Grid2D` of Cartesian $(y,x)$ coordinates and pass it to the `light_profiles`  module to
 create images on this `Grid2D` and the `mass_profiles` module to create deflection-angle maps on this grid.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

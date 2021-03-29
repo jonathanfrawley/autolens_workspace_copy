@@ -6,7 +6,6 @@ In this example, we'll use the `imaging` module to simulate `Imaging` of a stron
 simulate, we mean that it will appear as if we had observed it using a real telescope, with this example making an
 image representative of Hubble Space Telescope imaging.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

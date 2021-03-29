@@ -31,7 +31,6 @@ way. Therefore, when determining their lensed images, we can sum the lensed imag
 So, lets do it - lets use the `plane` module in AutoLens to create a strong lensing system like the one pictured above. 
 For simplicity, we'll assume 1 lens galaxy and 1 source galaxy.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -89,7 +89,7 @@ grid = al.Grid2D.from_mask(mask=mask)
 
 """
 We create the `InputDeflections` `MassProfile`.almosst the same as the previous example. This is going to be passed to 
-a  `GalaxyModel` below, so we can use it with a source model to fit to the `Imaging` data using a non-linear search.
+a  `Model` below, so we can use it with a source model to fit to the `Imaging` data using a non-linear search.
 
 However, we pass two additional parameters, `preload_grid` and `preload_blurring_grid`. 
 
@@ -112,10 +112,10 @@ input_deflections = al.mp.InputDeflections(
 )
 
 """
-We now create the lens and source `GalaxyModel`, where the source is an `EllipticalSersic`.
+We now create the lens and source `Model`, where the source is an `EllipticalSersic`.
 """
-lens = al.GalaxyModel(redshift=0.5, mass=input_deflections)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=input_deflections)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
 """
 __Settings__
@@ -139,12 +139,12 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Search__
 
-The source is fitted to the `Imaging` data via the input deflection angles using a `NonLinearSearch`, which we 
+The source is fitted to the `Imaging` data via the input deflection angles using a non-linear search, which we 
 specify below as the nested sampling algorithm Dynesty (https://dynesty.readthedocs.io/en/latest/). Checkout 
 other examples on the workspace if you are unsure what this does!
 
 The script `autolens_workspace/notebooks/modeling/customize/non_linear_searches.py` gives a description of the types of
-non-linear searches that **PyAutoLens** supports. If you do not know what a `NonLinearSearch` is or how it 
+non-linear searches that **PyAutoLens** supports. If you do not know what a non-linear search is or how it 
 operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 """
 search = af.DynestyStatic(
@@ -156,23 +156,21 @@ search = af.DynestyStatic(
 """
 __Phase__
 
-We can now combine the model, settings and search to create and run a phase, fitting our data with the lens model.
+We can now combine the model, settings and search to create and run a search, fitting our data with the lens model.
 
 The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
 
  `/autolens_workspace/output/misc/light_sersic__mass_sie__source_sersic/phase__light_sersic__mass_sie__source_bulge`.
 """
-phase = al.PhaseImaging(
-    search=search,
-    galaxies=af.CollectionPriorModel(lens=lens, source=source),
-    settings=settings,
+search = al.PhaseImaging(
+    search=search, galaxies=af.Collection(lens=lens, source=source), settings=settings
 )
 
 """
-We can now begin the fit by passing the dataset and mask to the phase, which will use the `NonLinearSearch` to fit
+We can now begin the fit by passing the dataset and mask to the search, which will use the non-linear search to fit
 the model to the data. 
 
 The fit outputs visualization on-the-fly, so checkout the path 
 `autolens_workspace/output/misc/phase__input_deflections` to see how your fit is doing!
 """
-result = phase.run(dataset=imaging, mask=mask)
+result = search.run(dataset=imaging, mask=mask)

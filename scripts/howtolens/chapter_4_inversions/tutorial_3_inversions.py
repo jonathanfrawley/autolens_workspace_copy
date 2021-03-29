@@ -5,7 +5,6 @@ Tutorial 3: Inversions
 We've covered `Mapper``., which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 can use these `Mapper`'s (which map things) to reconstruct the source galaxy - I hope you're excited!
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -86,14 +86,14 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalExponential)
 
 bulge.centre = disk.centre
 
-lens = al.GalaxyModel(redshift=0.5, bulge=bulge, disk=disk)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
 
-model = af.CollectionPriorModel(galaxies=af.CollectionPriorModel(lens=lens))
+model = af.Collection(galaxies=af.Collection(lens=lens))
 
 """
 __Search + Analysis + Model-Fit (Search 1)__
@@ -130,19 +130,20 @@ values that are not free parameters fitted for by the non-linear search of searc
 We also use the inferred centre of the lens light model in search 1 to initialize the priors on the lens mass model 
 in search 2. This uses the term `model` to pass priors, as we saw in other examples.
 """
-mass = af.PriorModel(al.mp.EllipticalIsothermal)
+mass = af.Model(al.mp.EllipticalIsothermal)
 
 mass.centre = result_1.model.galaxies.lens.bulge.centre
 
-lens = al.GalaxyModel(
+lens = af.Model(
+    al.Galaxy,
     redshift=0.5,
     bulge=result_1.instance.galaxies.lens.bulge,
     disk=result_1.instance.galaxies.lens.disk,
     mass=mass,
 )
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(galaxies=af.CollectionPriorModel(lens=lens))
+model = af.Collection(galaxies=af.Collection(lens=lens))
 
 """
 __Search + Analysis + Model-Fit (Search 2)__
@@ -170,7 +171,8 @@ search 2.
 Of course, one could easily edit this script to fit the bulge + disk as a model in search 2, where the results of 
 search 1 initialize their priors:
 
- lens = al.GalaxyModel(
+ lens = af.Model(
+    al.Galaxy, 
      redshift=0.5,
      bulge=phase1.result.model.galaxies.lens.bulge,
      disk=phase1.result.model.galaxies.lens.disk,
@@ -190,7 +192,7 @@ lens light as an `instance` or `model`!
 
 __Pipelines__
 
-Advanced search chaining uses `pipelines` that chain together multiple searches to perform very complex lens modeling 
+Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling 
 in a robust and efficient way. 
 
 The following example pipelines exploit our ability to model separately the lens's light and its mass / the source to 

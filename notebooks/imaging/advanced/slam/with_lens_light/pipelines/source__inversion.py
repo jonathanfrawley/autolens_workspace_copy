@@ -89,8 +89,9 @@ def make_pipeline(slam, settings, source_parametric_results):
             name="phase[1]_light[fixed]_mass[fixed]_source[inversion_magnification_initialization]",
             n_live_points=20,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 bulge=source_parametric_results.last.instance.galaxies.lens.bulge,
                 disk=source_parametric_results.last.instance.galaxies.lens.disk,
@@ -100,7 +101,8 @@ def make_pipeline(slam, settings, source_parametric_results):
                     result=source_parametric_results.last
                 ),
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 pixelization=al.pix.VoronoiMagnification,
                 regularization=al.reg.Constant,
@@ -131,8 +133,9 @@ def make_pipeline(slam, settings, source_parametric_results):
             name="phase[2]_light[fixed]_mass[total]_source[inversion_magnification]",
             n_live_points=50,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 bulge=source_parametric_results.last.instance.galaxies.lens.bulge,
                 disk=source_parametric_results.last.instance.galaxies.lens.disk,
@@ -140,7 +143,8 @@ def make_pipeline(slam, settings, source_parametric_results):
                 shear=source_parametric_results.last.model.galaxies.lens.shear,
                 hyper_galaxy=phase1.result.instance.optional.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 pixelization=phase1.result.instance.galaxies.source.pixelization,
                 regularization=phase1.result.instance.galaxies.source.regularization,
@@ -167,8 +171,9 @@ def make_pipeline(slam, settings, source_parametric_results):
             evidence_tolerance=slam.setup_hyper.evidence_tolerance,
             sample="rstagger",
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 bulge=phase2.result.instance.galaxies.lens.bulge,
                 disk=phase2.result.instance.galaxies.lens.disk,
@@ -176,7 +181,8 @@ def make_pipeline(slam, settings, source_parametric_results):
                 shear=phase2.result.instance.galaxies.lens.shear,
                 hyper_galaxy=phase2.result.instance.optional.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 pixelization=slam.pipeline_source_inversion.setup_source.pixelization_prior_model,
                 regularization=slam.pipeline_source_inversion.setup_source.regularization_prior_model,
@@ -205,8 +211,9 @@ def make_pipeline(slam, settings, source_parametric_results):
         search=af.DynestyStatic(
             name="phase[4]_light[fixed]_mass[total]_source[inversion]", n_live_points=50
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_lens,
                 bulge=phase2.result.instance.galaxies.lens.bulge,
                 disk=phase2.result.instance.galaxies.lens.disk,
@@ -214,7 +221,8 @@ def make_pipeline(slam, settings, source_parametric_results):
                 shear=phase2.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase3.result.instance.optional.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=slam.redshift_source,
                 pixelization=phase3.result.instance.galaxies.source.pixelization,
                 regularization=phase3.result.instance.galaxies.source.regularization,

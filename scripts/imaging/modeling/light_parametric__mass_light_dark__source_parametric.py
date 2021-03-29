@@ -56,13 +56,13 @@ imaging_plotter.subplot_imaging()
 """
 __Model__
 
-We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
+We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a lens model where:
 
  - The lens galaxy's light and stellar mass is a parametric `EllipticalSersic` [8 parameters].
  
  - The lens galaxy's dark matter mass distribution is a `EllipticalNFW` whose centre is aligned with the 
- `EllipticalSersic` of the light and stellar mass mdoel above [5 parameters].
+ `EllipticalSersic` bulge of the light and stellar mass mdoel above [5 parameters].
  
  - The lens mass model also includes an `ExternalShear` [2 parameters].
  
@@ -79,21 +79,21 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-bulge = af.PriorModel(al.lmp.EllipticalSersic)
-dark = af.PriorModel(al.mp.EllipticalNFW)
+bulge = af.Model(al.lmp.EllipticalSersic)
+dark = af.Model(al.mp.EllipticalNFW)
 bulge.centre = dark.centre
 
-lens = al.GalaxyModel(redshift=0.5, bulge=bulge, dark=dark, shear=al.mp.ExternalShear)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
-
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
+lens = af.Model(
+    al.Galaxy, redshift=0.5, bulge=bulge, dark=dark, shear=al.mp.ExternalShear
 )
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+The lens model is fitted to the data using a non-linear search. In this example, we use the nested sampling algorithm 
 Dynesty (https://dynesty.readthedocs.io/en/latest/). We make the following changes to the Dynesty settings:
 
  - Increase the number of live points, `n_live_points`, from the default value of 50 to 100. 

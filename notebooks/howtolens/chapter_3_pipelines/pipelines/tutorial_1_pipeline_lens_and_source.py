@@ -65,8 +65,10 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         search=af.DynestyStatic(
             name="phase[1]_light[bulge]", n_live_points=30, evidence_tolerance=5.0
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=al.lp.EllipticalSersic
+            )
         ),
         settings=settings,
     )
@@ -89,7 +91,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
      
     Thus, phase2 includes the lens light model from search 1, but it is completely fixed during the model-fit!
     """
-    mass = af.PriorModel(al.mp.EllipticalIsothermal)
+    mass = af.Model(al.mp.EllipticalIsothermal)
     mass.centre_0 = phase1.result.model.galaxies.lens.bulge.centre_0
     mass.centre_1 = phase1.result.model.galaxies.lens.bulge.centre_1
 
@@ -99,14 +101,15 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=50,
             evidence_tolerance=5.0,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=redshift_lens,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
                 mass=mass,
             ),
-            source=al.GalaxyModel(
-                redshift=redshift_source, bulge=al.lp.EllipticalSersic
+            source=af.Model(
+                al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic
             ),
         ),
         settings=settings,
@@ -124,13 +127,15 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         search=af.DynestyStatic(
             name="phase[3]_light[bulge]_mass[sie]_source[bulge]", n_live_points=100
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
                 redshift=redshift_lens,
                 bulge=phase1.result.model.galaxies.lens.bulge,
                 mass=phase2.result.model.galaxies.lens.mass,
             ),
-            source=al.GalaxyModel(
+            source=af.Model(
+                al.Galaxy,
                 redshift=redshift_source,
                 bulge=phase2.result.model.galaxies.source.bulge,
             ),

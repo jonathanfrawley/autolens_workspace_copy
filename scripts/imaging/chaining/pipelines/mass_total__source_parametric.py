@@ -72,12 +72,15 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
-            redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal,
+            shear=al.mp.ExternalShear,
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
     )
 )
 
@@ -103,24 +106,21 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
  [12 parameters: priors of bulge initialized from search 1].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=20.
-
-The lens mass model priors of the `EllipticalPowerLaw` and `ExternalShear` are passed from search 1. 
-The source light model priors of the `EllipticalSersic` bulge are passed from search 1.
 """
-mass = af.PriorModel(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllipticalPowerLaw)
 mass.take_attributes(result_1.model.galaxies.lens.mass)
 
 bulge = result_1.model.galaxies.source.bulge
-disk = af.PriorModel(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalSersic)
 
 bulge.centre = disk.centre
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
-            redshift=0.5, mass=mass, shear=result_1.model.galaxies.lens.shear
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy, redshift=0.5, mass=mass, shear=result_1.model.galaxies.lens.shear
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=bulge, disk=disk),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk),
     )
 )
 

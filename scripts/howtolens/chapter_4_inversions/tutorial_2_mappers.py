@@ -5,7 +5,6 @@ Tutorial 2: Mappers
 In the previous example, we made a `Mapper` from a rectangular `Pixelization`. However, it wasn`t clear what a _Mapper_
 was actually mapping. Infact, it didn`t do much mapping at all! Therefore, in this tutorial, we'll cover mapping.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

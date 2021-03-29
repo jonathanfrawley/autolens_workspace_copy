@@ -9,7 +9,6 @@ Fortunately, in **PyAutoLens**, you won't actually spend much hands-on time with
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

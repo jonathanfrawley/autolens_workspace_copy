@@ -88,7 +88,9 @@ tracer_plotter.figures(image=True)
 To plot the mass profile centres manually, we can pass them into a` Visuals2D` object. This is useful for plotting 
 the centres on figures where they are not an internal property, like an `Array2D`.
 """
-mass_profile_centres = tracer.extract_attribute(cls=al.mp.MassProfile, name="centre")
+mass_profile_centres = tracer.extract_attribute(
+    cls=al.mp.MassProfile, attr_name="centre"
+)
 visuals_2d = aplt.Visuals2D(mass_profile_centres=mass_profile_centres)
 image = tracer.image_from_grid(grid=grid)
 

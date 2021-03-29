@@ -2,12 +2,11 @@
 Pipelines: Mass Total + Source Parametric
 =========================================
 
-By chaining together two searches this script fits `Interferometer` data of a strong lens system, where in
-the final phase of the pipeline:
+By chaining together two searches this script fits `Interferometer` data of a strong lens system, where in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
- - The source galaxy's two `LightProfile`'s are modeled as `EllipticalSersic``..
+ - The source galaxy's light is a bulge+disk parametric `EllipticalSersic`'s.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -16,12 +15,13 @@ the final phase of the pipeline:
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
+import numpy as np
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
-import numpy as np
 
 """
-__Dataset__ 
+__Dataset + Masking__ 
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
@@ -40,91 +40,109 @@ real_space_mask = al.Mask2D.circular(
 
 visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
 
+settings_masked_interferometer = al.SettingsMaskedInterferometer(
+    transformer_class=al.TransformerNUFFT
+)
+
+masked_interferometer = al.MaskedInterferometer(
+    interferometer=interferometer,
+    visibilities_mask=visibilities_mask,
+    real_space_mask=real_space_mask,
+    settings=settings_masked_interferometer,
+)
+
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
 
 """
-__Settings__
+__Paths__
 
-The `SettingsPhaseInterferometer` describe how the model is fitted to the data in the log likelihood function.
-
-These settings are used and described throughout the `autolens_workspace/notebooks/interferometer/modeling` example scripts, with a 
-complete description of all settings given in `autolens_workspace/notebooks/interferometer/modeling/customize/settings.py`.
-
-The settings chosen here are applied to all phases in the pipeline.
+The path the results of all chained searches are output:
 """
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    grid_class=al.Grid2D, sub_size=2, transformer_class=al.TransformerNUFFT
-)
-
-settings = al.SettingsPhaseInterferometer(
-    settings_masked_interferometer=settings_masked_interferometer
-)
+path_prefix = path.join("interferometer", "chaining", "mass_total__source_parametric")
 
 """
-__Pipeline_Setup__:
+__Redshifts__
 
-Pipelines use `Setup` objects to customize how different aspects of the model are fitted. 
-
-First, we create a `SetupMassTotal`, which customizes:
-
- - The `MassProfile` used to fit the lens's total mass distribution.
- - If there is an `ExternalShear` in the mass model or not.
+The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
+from arc-seconds to kiloparsecs, masses to solar masses, etc.).
 """
-setup_mass = al.SetupMassTotal(with_shear=True)
+redshift_lens = 0.5
+redshift_source = 1.0
 
 """
-Next, we create a `SetupSourceParametric` which customizes:
+__Model + Search + Analysis + Model-Fit (Search 1)__
 
- - The `LightProfile`'s which fit different components of the source light, such as its `bulge` and `disk`.
- - The alignment of these components, for example if the `bulge` and `disk` centres are aligned.
+In search 1 we fit a lens model where:
+
+ - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
  
-In this example we fit the source light as one component, a `bulge` represented as an `EllipticalSersic`. We have 
-included options of `SetupSourceParametric` with input values of `None`, illustrating how it could be edited to fit different models.
+ - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-setup_source = al.SetupSourceParametric()
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal,
+            shear=al.mp.ExternalShear,
+        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+    )
+)
+
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[1]_mass[sie]_source[parametric]",
+    n_live_points=50,
+)
+
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+
+result_1 = search.fit(model=model, analysis=analysis)
 
 """
-_Pipeline Tagging_
+__Model + Search + Analysis + Model-Fit (Search 2)__
 
-The `Setup` objects are input into a `SetupPipeline` object, which is passed into the pipeline and used to customize
-the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
-is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
+We use the results of search 1 to create the lens model fitted in search 2, where:
 
-This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
-to different output folders and thus not clash with one another!
-
-The `path_prefix` below specifies the path the pipeline results are written to, which is:
-
- `autolens_workspace/output/pipelines/dataset_type/dataset_name` 
- `autolens_workspace/output/pipelines/interferometer/mass_sie__source_sersic_x2/`
+ - The lens galaxy's total mass distribution is an `EllipticalPowerLaw` with `ExternalShear` [8 parameters: priors 
+ initialized from search 1].
  
- The redshift of the lens and source galaxies are also input (see `notebooks/interferometer/modeling/customize/redshift.py`) for a 
-description of what inputting redshifts into **PyAutoLens** does.
+ - The source galaxy's light is a bulge+disk using two parametric `EllipticalSersic`'s whose centres are shared
+ [12 parameters: priors of bulge initialized from search 1].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=20.
 """
-setup = al.SetupPipeline(
-    path_prefix=path.join("pipelines", dataset_name),
-    redshift_lens=0.5,
-    redshift_source=1.0,
-    setup_mass=setup_mass,
-    setup_source=setup_source,
+mass = af.Model(al.mp.EllipticalPowerLaw)
+mass.take_attributes(result_1.model.galaxies.lens.mass)
+
+bulge = result_1.model.galaxies.source.bulge
+disk = af.Model(al.lp.EllipticalSersic)
+
+bulge.centre = disk.centre
+
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy, redshift=0.5, mass=mass, shear=result_1.model.galaxies.lens.shear
+        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk),
+    )
 )
 
-"""
-__Pipeline Creation__
-
-To create a pipeline we import it from the pipelines folder and run its `make_pipeline` function, inputting the 
-`Setup` and `SettingsPhase` above.
-"""
-from pipelines import mass_total__source_parametric
-
-pipeline = mass_total__source_parametric.make_pipeline(
-    setup=setup, settings=settings, real_space_mask=real_space_mask
+search = af.DynestyStatic(
+    path_prefix=path_prefix,
+    name="search[2]_mass[total]_source[parametric]",
+    n_live_points=100,
 )
 
-"""
-__Pipeline Run__
+analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
 
-Running a pipeline is the same as running a phase, we simply pass it our lens dataset and mask to its run function.
+result_2 = search.fit(model=model, analysis=analysis)
+
 """
-pipeline.run(dataset=interferometer, mask=visibilities_mask)
+Finish.
+"""

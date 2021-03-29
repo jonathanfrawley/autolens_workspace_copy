@@ -78,14 +78,14 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalExponential)
 
 bulge.centre = disk.centre
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(redshift=0.5, bulge=bulge, disk=disk)
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
     )
 )
 
@@ -122,22 +122,23 @@ NOTES:
 bulge = result_1.instance.galaxies.lens.bulge
 disk = result_1.instance.galaxies.lens.disk
 
-dark = af.PriorModel(al.mp.EllipticalNFWMCRLudlow)
+dark = af.Model(al.mp.EllipticalNFWMCRLudlow)
 dark.centre = bulge.centre
 dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e15)
 dark.redshift_object = redshift_lens
 dark.redshift_source = redshift_source
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=0.5,
             bulge=bulge,
             disk=disk,
-            dark=af.PriorModel(al.mp.EllipticalNFW),
+            dark=af.Model(al.mp.EllipticalNFW),
             shear=al.mp.ExternalShear,
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
     )
 )
 
@@ -170,7 +171,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 Notes:
 
- - This phase attempts to address any issues there may have been with the bulge's stellar mass model.
+ - This search attempts to address any issues there may have been with the bulge's stellar mass model.
 """
 bulge = result_1.model.galaxies.lens.bulge
 disk = result_1.model.galaxies.lens.disk
@@ -178,15 +179,18 @@ disk = result_1.model.galaxies.lens.disk
 dark = result_2.model.galaxies.lens.dark
 dark.centre = bulge.centre
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=0.5,
             bulge=bulge,
             dark=dark,
             shear=result_2.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(redshift=1.0, bulge=result_2.model.galaxies.source.bulge),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
+        ),
     )
 )
 
@@ -221,19 +225,21 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 NOTES:
 
- - This phase allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+ - This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
  of the regularization scheme, before using these models to refit the lens mass model.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.instance.galaxies.lens.bulge,
             disk=result_3.instance.galaxies.lens.disk,
             dark=result_3.instance.galaxies.lens.dark,
             shear=result_3.instance.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=al.pix.VoronoiMagnification,
             regularization=al.reg.Constant,
@@ -270,16 +276,18 @@ The lens mass model also includes an `ExternalShear` [2 parameters: priors initi
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.model.galaxies.lens.bulge,
             disk=result_3.model.galaxies.lens.disk,
             dark=result_3.model.galaxies.lens.dark,
             shear=result_3.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=result_4.instance.galaxies.source.pixelization,
             regularization=result_4.instance.galaxies.source.regularization,
@@ -296,14 +304,20 @@ search = af.DynestyStatic(
 """
 __Positions + Analysis + Model-Fit (Search 5)__
 
-We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove unphysical
-solutions from the `Inversion` model-fitting.
+We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
+    positions_threshold=result_4.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, settings_lens=settings_lens)
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging,
+    settings_lens=settings_lens,
+    positions=result_4.image_plane_multiple_image_positions,
+)
 
 result_5 = search.fit(model=model, analysis=analysis)
 

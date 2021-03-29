@@ -71,7 +71,9 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
 
         1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
     """
-    left_lens = al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
+    left_lens = af.Model(
+        al.Galaxy, redshift=redshift_lens, bulge=al.lp.EllipticalSersic
+    )
     left_lens.bulge.centre_0 = 0.0
     left_lens.bulge.centre_1 = -1.0
 
@@ -81,9 +83,9 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=30,
             evidence_tolerance=5.0,
         ),
-        galaxies=af.CollectionPriorModel(
-            left_lens=al.GalaxyModel(
-                redshift=redshift_lens, bulge=al.lp.EllipticalSersic
+        galaxies=af.Collection(
+            left_lens=af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=al.lp.EllipticalSersic
             )
         ),
         settings=settings,
@@ -95,7 +97,9 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         1) Fix the centres to (0.0, 1.0), the pixel we know the right `Galaxy`'s light centre peaks.
         2) Pass the left lens's light model as an instance, to improve the fitting of the right galaxy.
     """
-    right_lens = al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
+    right_lens = af.Model(
+        al.Galaxy, redshift=redshift_lens, bulge=al.lp.EllipticalSersic
+    )
     right_lens.bulge.centre_0 = 0.0
     right_lens.bulge.centre_1 = 1.0
 
@@ -105,7 +109,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=30,
             evidence_tolerance=5.0,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             left_lens=phase1.result.instance.galaxies.left_lens, right_lens=right_lens
         ),
     )
@@ -116,16 +120,18 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         1) Perform the lens light subtraction using the models inferred in searches 1 and 2.
         2) Fix the centres of the mass profiles to (0.0, 1.0) and (0.0, -1.0).
         
-    Note how when we construct the `GalaxyModel` we are using the results above to set up the light profiles, but
+    Note how when we construct the `Model` we are using the results above to set up the light profiles, but
     using new mass profiles to set up the mass modeling.
     """
-    left_lens = al.GalaxyModel(
+    left_lens = af.Model(
+        al.Galaxy,
         redshift=redshift_lens,
         bulge=phase1.result.instance.galaxies.left_lens.bulge,
         mass=al.mp.EllipticalIsothermal,
     )
 
-    right_lens = al.GalaxyModel(
+    right_lens = af.Model(
+        al.Galaxy,
         redshift=redshift_lens,
         bulge=phase2.result.instance.galaxies.right_lens.bulge,
         mass=al.mp.EllipticalIsothermal,
@@ -142,11 +148,11 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=50,
             evidence_tolerance=5.0,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             left_lens=left_lens,
             right_lens=right_lens,
-            source=al.GalaxyModel(
-                redshift=redshift_source, bulge=al.lp.EllipticalExponential
+            source=af.Model(
+                al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalExponential
             ),
         ),
     )
@@ -163,10 +169,10 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         bulge=phase1.result.model.galaxies.left_lens.bulge
 
     The model would be set up with these fixed centres! We want to treat the centres as free parameters in this phase,
-    requiring us to unpack the prior passing and setup the models using a PriorModel.
+    requiring us to unpack the prior passing and setup the models using a Model.
     
     """
-    left_sersic = af.PriorModel(al.lp.EllipticalSersic)
+    left_sersic = af.Model(al.lp.EllipticalSersic)
     left_sersic.elliptical_comps = (
         phase1.result.model.galaxies.left_lens.bulge.elliptical_comps
     )
@@ -176,7 +182,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
     left_sersic.sersic_index = phase1.result.model.galaxies.left_lens.bulge.sersic_index
 
-    left_mass = af.PriorModel(al.mp.EllipticalIsothermal)
+    left_mass = af.Model(al.mp.EllipticalIsothermal)
     left_mass.elliptical_comps = (
         phase3.result.model.galaxies.left_lens.mass.elliptical_comps
     )
@@ -184,11 +190,11 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         phase3.result.model.galaxies.left_lens.mass.einstein_radius
     )
 
-    left_lens = al.GalaxyModel(
-        redshift=redshift_lens, bulge=left_sersic, mass=left_mass
+    left_lens = af.Model(
+        al.Galaxy, redshift=redshift_lens, bulge=left_sersic, mass=left_mass
     )
 
-    right_sersic = af.PriorModel(al.lp.EllipticalSersic)
+    right_sersic = af.Model(al.lp.EllipticalSersic)
     right_sersic.elliptical_comps = (
         phase2.result.model.galaxies.right_lens.bulge.elliptical_comps
     )
@@ -200,7 +206,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         phase2.result.model.galaxies.right_lens.bulge.sersic_index
     )
 
-    right_mass = af.PriorModel(al.mp.EllipticalIsothermal)
+    right_mass = af.Model(al.mp.EllipticalIsothermal)
     right_mass.elliptical_comps = (
         phase3.result.model.galaxies.right_lens.mass.elliptical_comps
     )
@@ -208,8 +214,8 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         phase3.result.model.galaxies.right_lens.mass.einstein_radius
     )
 
-    right_lens = al.GalaxyModel(
-        redshift=redshift_lens, bulge=right_sersic, mass=right_mass
+    right_lens = af.Model(
+        al.Galaxy, redshift=redshift_lens, bulge=right_sersic, mass=right_mass
     )
 
     phase4 = al.PhaseImaging(
@@ -218,7 +224,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=60,
             evidence_tolerance=0.3,
         ),
-        galaxies=af.CollectionPriorModel(
+        galaxies=af.Collection(
             left_lens=left_lens,
             right_lens=right_lens,
             source=phase3.result.model.galaxies.source,

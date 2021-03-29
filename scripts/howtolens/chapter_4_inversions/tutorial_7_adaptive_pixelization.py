@@ -6,7 +6,6 @@ In this tutorial we'll use a new `Pixelization`, called the VoronoiMagnification
 doesn`t use a uniform `Grid2D` of rectangular pixels, but instead uses an irregular `Voronoi` pixels. So, why do we
 want to do that? Lets take another quick look at the rectangular grid..
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

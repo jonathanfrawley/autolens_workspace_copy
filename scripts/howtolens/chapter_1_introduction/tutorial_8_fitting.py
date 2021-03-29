@@ -5,7 +5,6 @@ Tutorial 8: Fitting
 In this example, we'll fit the `Imaging` data we simulated in the previous exercise. we'll do this using model images
 generated via a `Tracer`, and by comparing to the simulated image we'll get diagnostics about the quality of the fit.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

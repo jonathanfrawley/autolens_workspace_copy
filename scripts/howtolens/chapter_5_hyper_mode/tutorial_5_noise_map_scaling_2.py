@@ -11,7 +11,6 @@ Yep, you guessed it, it`s the lens galaxy `LightProfile` fit and subtraction. Ju
 profile`s mean we can`t perfectly reconstruct the source's light, the same is true of the Sersic profiles we use to
 fit the lens galaxy's light. Lets take a look.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

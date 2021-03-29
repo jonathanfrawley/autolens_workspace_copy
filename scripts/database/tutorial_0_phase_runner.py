@@ -5,7 +5,7 @@ Database: Phase Runner
 This script fits a sample of three simulated strong lenses using a single `PhaseImaging` object, to illustrate
 aggregator functionality in the aggregator tutorials a1 - a5.
 
-The phase fits each lens with:
+The search fits each lens with:
  
  - An `EllipticalIsothermal` `MassProfile` for the lens galaxy's mass.
  - An `EllipticalSersic` `LightProfile` for the source galaxy's light.
@@ -39,7 +39,7 @@ for dataset_name in [
     """
     Info:
 
-    We can pass information on our dataset to the `phase.run()` method, which will be accessible to the aggregator 
+    We can pass information on our dataset to the `search.run()` method, which will be accessible to the aggregator 
     to aid interpretation of results. This information is passed as a dictionary, with th redshifts of the lens
     and source good examples of information you may wish to pass.
     """
@@ -74,7 +74,7 @@ for dataset_name in [
     """
     Pickle Files:
 
-    We can pass strings specifying the path and filename of .pickle files stored on our hard-drive to the `phase.run()`
+    We can pass strings specifying the path and filename of .pickle files stored on our hard-drive to the `search.run()`
     method, which will make them accessible to the aggregator  to aid interpretation of results. Our simulated strong
     lens datasets have a `true_tracer.pickle` file which we pass in below, which we use in the `Aggregator` tutorials to
     easily illustrate how we can check if a model-fit recovers its true input parameters.
@@ -82,23 +82,23 @@ for dataset_name in [
     pickle_files = [path.join(dataset_path, "true_tracer.pickle")]
 
     """
-    The `SettingsPhaseImaging` (which customize the fit of the phase`s fit), will also be available to the aggregator! 
+    The `SettingsPhaseImaging` (which customize the fit of the search`s fit), will also be available to the aggregator! 
     """
     settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
     settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
-    phase = al.PhaseImaging(
+    search = al.PhaseImaging(
         search=af.DynestyStatic(
             path_prefix=path.join("database", "phase_runner", dataset_name),
             name="phase_aggregator",
             n_live_points=50,
         ),
-        galaxies=af.CollectionPriorModel(
-            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+        galaxies=af.Collection(
+            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
+            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
         ),
         settings=settings,
     )
 
-    phase.run(dataset=imaging, mask=mask, info=info, pickle_files=pickle_files)
+    search.run(dataset=imaging, mask=mask, info=info, pickle_files=pickle_files)

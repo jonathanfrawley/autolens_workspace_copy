@@ -15,7 +15,6 @@ chi-squared distribution and an inability to fit the data to the noise level.
 
 So, lets simulate an image and fit it with a slightly incorrect mass model.
 """
-#%matplotlib inline
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

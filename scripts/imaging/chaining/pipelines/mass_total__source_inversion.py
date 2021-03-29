@@ -74,14 +74,17 @@ In search 1 we fit a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             mass=al.mp.EllipticalIsothermal,
             shear=al.mp.ExternalShear,
         ),
-        source=al.GalaxyModel(redshift=redshift_source, bulge=al.lp.EllipticalSersic),
+        source=af.Model(
+            al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic
+        ),
     )
 )
 
@@ -109,17 +112,19 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
 
-This phase allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
 of the regularization scheme, before using these models to refit the lens mass model.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             mass=result_1.instance.galaxies.lens.mass,
             shear=result_1.instance.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=al.pix.VoronoiMagnification,
             regularization=al.pix.Rectangular,
@@ -151,17 +156,19 @@ We use the results of searches 1 and 2 to create the lens model fitted in search
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
 
-This phase allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
 of the regularization scheme, before using these models to refit the lens mass model.
 """
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
             redshift=redshift_lens,
             mass=result_1.model.galaxies.lens.mass,
             shear=result_1.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=result_2.instance.galaxies.source.pixelization,
             regularization=result_2.instance.galaxies.source.regularization,
@@ -178,24 +185,22 @@ search = af.DynestyStatic(
 """
 __Positions + Analysis + Model-Fit (Search 3)__
 
-We use the `auto_positions` feature, described in `chaining/examples/parametric_to_inversion.py` to remove unphysical
-solutions from the `Inversion` model-fitting.
+We update the positions and positions threshold using the previous model-fitting result (as described 
+ in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    auto_positions_factor=3.0, auto_positions_minimum_threshold=0.2
+    positions_threshold=result_2.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging, results=result_2, settings_lens=settings_lens
+    dataset=masked_imaging,
+    positions=result_2.image_plane_multiple_image_positions,
+    settings_lens=settings_lens,
 )
 
 result_3 = search.fit(model=model, analysis=analysis)
-
-
-"""
-__Refine__
-"""
-
 
 """
 __Model + Search + Analysis + Model-Fit (Search 4)__
@@ -211,18 +216,22 @@ We use the results of searches 2 and 4 to create the lens model fitted in search
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=3.
 
-This phase allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
 of the regularization scheme, before using these models to refit the lens mass model.
 """
-mass = af.PriorModel(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllipticalPowerLaw)
 mass.take_attributes(result_3.model.galaxies.lens.mass)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(
-            redshift=redshift_lens, mass=mass, shear=result_3.model.galaxies.lens.shear
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=mass,
+            shear=result_3.model.galaxies.lens.shear,
         ),
-        source=al.GalaxyModel(
+        source=af.Model(
+            al.Galaxy,
             redshift=redshift_source,
             pixelization=result_2.instance.galaxies.source.pixelization,
             regularization=result_2.instance.galaxies.source.regularization,

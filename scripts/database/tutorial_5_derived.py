@@ -35,10 +35,10 @@ Probability Density Function (PDF).
 But what if we want the errors on the axis-ratio? This wasn`t a free parameter in our model so we can`t just 
 marginalize over all other parameters.
 
-Instead, we need to compute the axis-ratio of every lens model sampled by the `NonLinearSearch` and from this determine 
+Instead, we need to compute the axis-ratio of every lens model sampled by the non-linear search and from this determine 
 the PDF of the axis-ratio. When combining the different axis-ratios we weight each value by its `weight`. For Dynesty,
 the nested sampler we fitted our aggregator sample with, this down weights the model which gave lower likelihood fits.
-For other `NonLinearSearch` methods (e.g. MCMC) the weights can take on a different meaning but can still be used for
+For other non-linear search methods (e.g. MCMC) the weights can take on a different meaning but can still be used for
 combining different model results.
 
 Below, we get an instance of every Dynesty sample using the `Samples`, compute that models axis-ratio, store them in a 

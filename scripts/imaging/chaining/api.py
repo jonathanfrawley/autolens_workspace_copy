@@ -1,5 +1,6 @@
 """
-__Chaining: API__
+Chaining: API
+=============
 
 Non-linear search chaining is an advanced model-fitting approach in **PyAutoLens** which breaks the model-fitting
 procedure down into multiple non-linear searches, using the results of the initial searches to initialization parameter
@@ -71,7 +72,7 @@ path_prefix = (path.join("imaging", "chaining", "api"),)
 """
 __Model (Search 1)__
 
-We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In the first
+We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
  - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
@@ -79,12 +80,10 @@ search our lens model is:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 __Search + Analysis + Model-Fit (Search 1)__
 
@@ -104,17 +103,15 @@ result_1 = search.fit(model=model, analysis=analysis)
 """
 __Model Chaining__
 
-We use the results of search 1 to create the `GalaxyModel` components that we fit in search 2.
+We use the results of search 1 to create the `Model` components that we fit in search 2.
 
-The term `model` below tells PyAutoLens to pass the lens and source models as model-components that are to be fitted
+The term `model` below passes the lens and source models as model-components that are to be fitted
 for by the non-linear search. In other chaining examples, we'll see other ways to pass prior results.
 """
 lens = result_1.model.galaxies.lens
 source = result_1.model.galaxies.source
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search + Analysis + Model-Fit (Search 2)__
@@ -168,12 +165,12 @@ Lets say I chain two parameters as follows:
 By invoking the `model` attribute, the prior is passed following 3 rules:
 
  1) The new parameter, in this case the einstein radius, uses a GaussianPrior. A GaussianPrior is ideal, as the 1D 
- pdf results we compute at the end of a phase are easily summarized as a Gaussian.
+ pdf results we compute at the end of a search are easily summarized as a Gaussian.
 
  2) The mean of the GaussianPrior is the median PDF value of the parameter estimated in search 1.
 
- This ensures that the initial sampling of the new phase`s non-linear starts by searching the region of non-linear 
- parameter space that correspond to highest log likelihood solutions in the previous phase. Thus, we`re setting 
+ This ensures that the initial sampling of the new search`s non-linear starts by searching the region of non-linear 
+ parameter space that correspond to highest log likelihood solutions in the previous search. Thus, we`re setting 
  our priors to look in the `correct` regions of parameter space.
 
  3) The sigma of the Gaussian will use the maximum of two values: 
@@ -185,7 +182,7 @@ By invoking the `model` attribute, the prior is passed following 3 rules:
  The idea here is simple. We want a value of sigma that gives a GaussianPrior wide enough to search a broad region of 
  parameter space, so that the lens model can change if a better solution is nearby. However, we want it  to be narrow 
  enough that we don't search too much of parameter space, as this will be slow or risk leading us  into an incorrect 
- solution! A natural choice is the errors of the parameter from the previous phase.
+ solution! A natural choice is the errors of the parameter from the previous search.
 
  Unfortunately, this doesn`t always work. Lens modeling is prone to an effect called `over-fitting` where we 
  underestimate the errors on our lens model parameters. This is especially true when we take the shortcuts in early 
@@ -199,11 +196,11 @@ There are two ways a value is specified using the priors/width file:
 
  1) Absolute: In this case, the error assumed on the parameter is the value given in the config file. For example, if 
  for the width on centre_0 of a `LightProfile`, the width modifier reads "Absolute" with a value  0.05. This means if 
- the error on the parameter centre_0 was less than 0.05 in the previous phase, the sigma of its GaussianPrior in this 
- phase will be 0.05.
+ the error on the parameter centre_0 was less than 0.05 in the previous search, the sigma of its GaussianPrior in this 
+ search will be 0.05.
 
  2) Relative: In this case, the error assumed on the parameter is the % of the value of the estimate value given in the 
- config file. For example, if the intensity estimated in the previous phase was 2.0,  and the relative error in the 
+ config file. For example, if the intensity estimated in the previous search was 2.0,  and the relative error in the 
  config file reads "Relative" with a value 0.5, then the sigma of the GaussianPrior will be 50% of this value, i.e. 
  sigma = 0.5 * 2.0 = 1.0.
 
@@ -215,9 +212,9 @@ absolute errors on the centre.
 However, there are parameters where using an absolute value does not make sense. Intensity is a good example of this. 
 The intensity of an image depends on its unit_label, S/N, galaxy brightness, etc. There is no single absolute value 
 that one can use to generically chain the intensity of any two proflies. Thus, it makes more sense to chain them using 
-the relative value from a previous phase.
+the relative value from a previous search.
 
-We can customize how priors are passed from the results of a phase and `NonLinearSearch` by inputting to the search 
+We can customize how priors are passed from the results of a search and non-linear search by inputting to the search 
 a `PriorPasser` object:
 """
 search = af.DynestyStatic(

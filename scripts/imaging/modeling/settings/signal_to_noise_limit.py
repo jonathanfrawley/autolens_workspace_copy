@@ -77,22 +77,21 @@ __Model + Search + Analysis__
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
 """
-bulge = af.PriorModel(al.lp.EllipticalSersic)
-disk = af.PriorModel(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllipticalExponential)
 bulge.centre = disk.centre
 
-lens = al.GalaxyModel(
+lens = af.Model(
+    al.Galaxy,
     redshift=0.5,
     bulge=bulge,
     disk=disk,
     mass=al.mp.EllipticalIsothermal,
     shear=al.mp.ExternalShear,
 )
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "settings"),

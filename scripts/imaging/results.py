@@ -2,7 +2,7 @@
 Modeling: Results
 =================
 
-After fitting strong lens data a phase returns a `result` variable, which we have used sparingly throughout the
+After fitting strong lens data a search returns a `result` variable, which we have used sparingly throughout the
 examples scripts to plot the maximum log likelihood tracer and fits. However, this `Result` object has a lot more
 information than that, and this script will cover everything it contains.
 
@@ -27,7 +27,7 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-The code below, which we have omitted comments from, reperforms all the tasks that create the phase and perform the
+The code below, which we have omitted comments from, reperforms all the tasks that create the search and perform the
 model-fit in this script. If anything in this code is not clear to you, you should go over the beginner model-fit
 script again.
 """
@@ -45,15 +45,15 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-phase = al.PhaseImaging(
+search = al.PhaseImaging(
     search=af.DynestyStatic(
         path_prefix=path.join("imaging", dataset_name),
         name="phase_mass[sie]_source[bulge]",
         n_live_points=50,
     ),
-    galaxies=af.CollectionPriorModel(
-        lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
     ),
     settings=al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(
@@ -62,7 +62,7 @@ phase = al.PhaseImaging(
     ),
 )
 
-result = phase.run(dataset=imaging, mask=mask)
+result = search.run(dataset=imaging, mask=mask)
 
 """
 Great, so we have the `Result` object we'll cover in this script. As a reminder, we can use the 
@@ -78,7 +78,7 @@ fit_imaging_plotter.subplot_fit_imaging()
 """
 The result contains a lot more information about the model-fit. 
 
-For example, its `Samples` object contains the complete set of `NonLinearSearch` samples, for example every set of 
+For example, its `Samples` object contains the complete set of non-linear search samples, for example every set of 
 parameters evaluated, their log likelihoods and so on, which are used for computing information about the model-fit 
 such as the error on every parameter. Our model-fit used the nested sampling algorithm Dynesty, so the `Samples` object
 returned is a `NestSamples` objct.
@@ -152,11 +152,11 @@ the pipeline.
 """
 print(ml_instance.galaxies)
 
-"""These galaxies will be named according to the phase (in this case, `lens` and `source`)."""
+"""These galaxies will be named according to the search (in this case, `lens` and `source`)."""
 print(ml_instance.galaxies.lens)
 print(ml_instance.galaxies.source)
 
-"""Their `LightProfile`'s and `MassProfile`'s are also named according to the phase."""
+"""Their `LightProfile`'s and `MassProfile`'s are also named according to the search."""
 print(ml_instance.galaxies.lens.mass)
 
 """
@@ -252,17 +252,17 @@ corner.corner(
 """
 __Aggregator__
 
-Once a phase has completed running, we have a set of results on our hard disk we manually inspect and analyse. 
-Alternatively, we return the results from the phase.run() method and manipulate them in a Python script, as we did
+Once a search has completed running, we have a set of results on our hard disk we manually inspect and analyse. 
+Alternatively, we return the results from the search.run() method and manipulate them in a Python script, as we did
 in this script.
 
 However, imagine your dataset is large and consists of many images of strong lenses. You analyse each image 
-individually using the same phase, producing a large set of results on your hard disk corresponding to the full sample.
+individually using the same search, producing a large set of results on your hard disk corresponding to the full sample.
 That will be a lot of paths and directories to navigate! At some point, there`ll be too many results for it to be
 a sensible use of your time to analyse the results by sifting through the outputs on your hard disk.
 
 PyAutoFit`s aggregator tool allows us to load results in a Python script or, more importantly, a Jupyter notebook. This
-bypasses the need for us to run a phase and can load the results of any number of lenses at once, allowing us to 
+bypasses the need for us to run a search and can load the results of any number of lenses at once, allowing us to 
 manipulate the results of extremely large lens samples!
 
 If the `Aggregator`. sounds useful to you, then checkout the tutorials in the path:

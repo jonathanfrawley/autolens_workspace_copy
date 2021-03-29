@@ -3,7 +3,7 @@ Database 2: Filters
 ===================
 
 Lets suppose we had the results of other fits in the folder `output/aggregator`, and we *only* wanted fits which used
-the phase defined in `phase_runner.py`. To avoid loading all the other results, we can use the aggregator`s filter
+the search defined in `phase_runner.py`. To avoid loading all the other results, we can use the aggregator`s filter
 tool, which filters the results and provides us with only the results we want.
 
 The filter provides us with the aggregator object we used in the previous tutorial, so can be used in an identical
@@ -38,7 +38,7 @@ results. This is useful if you fit a samples of lenses where:
  - Fits using different non-linear searches, with different settings, are contained in the same path.
 
 The example below shows us using the contains filter to get the results of all 3 lenses. The contains method
-only requires that the string is in the path structure, thus we do not need to specify the full phase name.
+only requires that the string is in the path structure, thus we do not need to specify the full search name.
 """
 agg_filter = agg.filter(agg.directory.contains("phase_runner"))
 print("Directory Filtered NestedSampler Samples: \n")
@@ -46,14 +46,14 @@ print("Total Samples Objects = ", len(list(agg_filter.values("samples"))), "\n\n
 
 """
 If we filter based on the dataset name, we can load the results of just one of the three model-fits performed in 
-the tutorial_0 phase runner.
+the tutorial_0 search runner.
 """
 agg_filter = agg.filter(agg.directory.contains("mass_sie__source_sersic__0"))
 print("Directory Filtered NestedSampler Samples: \n")
 print("Total Samples Objects = ", len(list(agg_filter.values("samples"))), "\n\n")
 
 """
-If we filtered using an incorrect phase name we would get no results:
+If we filtered using an incorrect search name we would get no results:
 """
 name = "phase__incorrect_name"
 agg_filter_incorrect = agg.filter(agg.directory.contains("invalid_string"))

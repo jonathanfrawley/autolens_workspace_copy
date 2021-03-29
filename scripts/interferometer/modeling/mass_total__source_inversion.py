@@ -74,7 +74,7 @@ masked_interferometer = al.MaskedInterferometer(
 """
 __Model__
 
-We compose our lens model using `GalaxyModel` objects, which represent the galaxies we fit to our data. In this 
+We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
  - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
@@ -91,19 +91,17 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-lens = al.GalaxyModel(
-    redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+lens = af.Model(
+    al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
 )
-source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-model = af.CollectionPriorModel(
-    galaxies=af.CollectionPriorModel(lens=lens, source=source)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search__
 
-The lens model is fitted to the data using a `NonLinearSearch`. In this example, we use the nested sampling algorithm 
+The lens model is fitted to the data using a non-linear search. In this example, we use the nested sampling algorithm 
 Dynesty (https://dynesty.readthedocs.io/en/latest/).
 
 The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_searches` gives an overview of the 
