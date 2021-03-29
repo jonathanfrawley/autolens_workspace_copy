@@ -31,7 +31,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 """
 We now pass the light profile and grid to a `LightProfilePlotter` and call various `figure_*` methods to 
-plot different attributes.
+plot different attributes in 1D and 2D.
 """
 light_profile_plotter = aplt.LightProfilePlotter(light_profile=bulge, grid=grid)
 light_profile_plotter.figures_1d(image=True)
