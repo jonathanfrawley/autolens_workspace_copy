@@ -44,7 +44,7 @@ The `Array2D` includes a its border as an internal property, meaning we can plot
 """
 include_2d = aplt.Include2D(border=True)
 array_plotter = aplt.Array2DPlotter(array=masked_image, include_2d=include_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The appearance of the border is customized using a `BorderScatter` object.
@@ -60,7 +60,7 @@ mat_plot_2d = aplt.MatPlot2D(border_scatter=border_scatter)
 array_plotter = aplt.Array2DPlotter(
     array=masked_image, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 To plot the border manually, we can pass it into a` Visuals2D` object.
@@ -70,7 +70,7 @@ This means we don't need to create the `masked_image` array we used above.
 visuals_2d = aplt.Visuals2D(border=mask.border_grid_1d)
 
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

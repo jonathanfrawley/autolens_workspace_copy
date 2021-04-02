@@ -67,7 +67,7 @@ imaging = al.Imaging.from_fits(
 We can plot an image as follows:
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 Does the figure display correctly on your computer screen? 
@@ -88,7 +88,7 @@ mat_plot_2d = aplt.MatPlot2D(
 )
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 Many matplotlib options can be customized, but for now we're only concerned with making sure figures display cleanly in 
@@ -152,13 +152,13 @@ include_2d = aplt.Include2D(origin=True)
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 include_2d = aplt.Include2D(origin=False)
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 Throughout the **HowToLens** lecture series you'll see lots more objects that can be included on figures and subplots.

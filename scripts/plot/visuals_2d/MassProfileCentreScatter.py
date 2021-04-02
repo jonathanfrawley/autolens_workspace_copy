@@ -55,7 +55,7 @@ include_2d = aplt.Include2D(
     caustics=False,
 )
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, include_2d=include_2d)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 The appearance of the mass profile centres are customized using a `MassProfileCentresScatter` object.
@@ -69,7 +69,7 @@ mat_plot_2d = aplt.MatPlot2D(mass_profile_centres_scatter=mass_profile_centres_s
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 By specifying two colors to the `MassProfileCentresScatter` object the mass profile centres of each plane
@@ -82,7 +82,7 @@ mat_plot_2d = aplt.MatPlot2D(mass_profile_centres_scatter=mass_profile_centres_s
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 To plot the mass profile centres manually, we can pass them into a` Visuals2D` object. This is useful for plotting 
@@ -95,7 +95,7 @@ image = tracer.image_from_grid(grid=grid)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

@@ -72,7 +72,7 @@ if gaussian_sigma is not None:
 The new image is plotted for inspection.
 """
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the image, lets output it to the dataset folder of the lens, so that we can load it from a .fits
@@ -93,7 +93,7 @@ noise_map = al.Array2D.from_fits(
 Now lets plot the image and mask, so we can check that the mask includes the regions of the image we want.
 """
 array_plotter = aplt.Array2DPlotter(array=image / noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Manually increase the noise values to extremely large values, such that the analysis essentially omits them.
@@ -105,7 +105,7 @@ noise_map = al.Array2D.manual_native(array=noise_map, pixel_scales=pixel_scales)
 The signal to noise-map is the best way to determine if these regions are appropriately masked out.
 """
 array_plotter = aplt.Array2DPlotter(array=image / noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the noise-map, lets output it to the dataset folder of the lens, so that we can load it from a .fits

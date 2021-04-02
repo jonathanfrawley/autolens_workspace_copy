@@ -91,7 +91,7 @@ print(traced_image.native[0, 2])
 This image appears as the Einstein ring we saw in the previous tutorial.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 We can also use the `Tracer` to compute the traced `Grid2D` of every plane, instead of getting the traced image itself:
@@ -116,8 +116,8 @@ include_2d = aplt.Include2D(grid=True)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=image_plane_grid, include_2d=include_2d
 )
-tracer_plotter.figures_of_planes(plane_image=True, plane_grid=True, plane_index=0)
-tracer_plotter.figures_of_planes(plane_image=True, plane_grid=True, plane_index=1)
+tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True, plane_index=0)
+tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True, plane_index=1)
 
 """
 **PyAutoLens** has tools for plotting a `Tracer`. A ray-tracing subplot plots the following:
@@ -180,7 +180,7 @@ You can also plot the above attributes on individual figures, using appropriate 
 commented out again for convenience)
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
-tracer_plotter.figures(
+tracer_plotter.figures_2d(
     image=True,
     convergence=True,
     potential=False,
@@ -204,13 +204,13 @@ NOTE: Again, numerical issues make the caustic appear 'jagged' when it should be
 include_2d = aplt.Include2D(critical_curves=True, caustics=True)
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
 
-tracer_plotter.figures_of_planes(plane_grid=True, plane_index=0)
-tracer_plotter.figures_of_planes(plane_grid=True, plane_index=1)
+tracer_plotter.figures_2d_of_planes(plane_grid=True, plane_index=0)
+tracer_plotter.figures_2d_of_planes(plane_grid=True, plane_index=1)
 
 """
 We can also plot the caustic on the source-plane image.
 """
-tracer_plotter.figures_of_planes(plane_image=True, plane_index=1)
+tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 Caustics also mark the regions in the source-plane where the multiplicity of the strong lens changes. That if,
@@ -224,7 +224,7 @@ source_galaxy = al.Galaxy(redshift=1.0, light=sersic_light_profile)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
-tracer_plotter.figures_of_planes(plane_image=True, plane_index=1)
+tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 Before we finish, you might be wondering why do both the image-plane and `Tracer` have the attributes convergence / 

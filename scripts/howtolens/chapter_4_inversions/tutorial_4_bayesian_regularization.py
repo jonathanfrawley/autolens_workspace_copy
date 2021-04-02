@@ -135,7 +135,7 @@ mat_plot_2d = aplt.MatPlot2D(cmap=aplt.Cmap(vmax=0.5, vmin=-0.5))
 inversion_plotter = aplt.InversionPlotter(
     inversion=no_regularization_fit.inversion, mat_plot_2d=mat_plot_2d
 )
-inversion_plotter.figures(reconstruction=True)
+inversion_plotter.figures_2d(reconstruction=True)
 
 """
 Over-fitting is why `Regularization`.s necessary. Solutions like this completely ruin our attempts to model a strong 

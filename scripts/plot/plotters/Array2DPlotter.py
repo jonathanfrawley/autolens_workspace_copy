@@ -25,7 +25,7 @@ image = al.Array2D.from_fits(file_path=image_path, hdu=0, pixel_scales=0.03)
 We now pass the array to an `Array2DPlotter` and call the `figure` method.
 """
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 An `Array2D` contains the following attributes which can be plotted automatically via the `Include2D` object.
@@ -45,7 +45,7 @@ masked_image = al.Array2D.manual_mask(array=image.native, mask=mask)
 include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 
 array_plotter = aplt.Array2DPlotter(array=masked_image, include_2d=include_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

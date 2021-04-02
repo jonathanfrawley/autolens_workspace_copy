@@ -64,7 +64,7 @@ mapper = tracer.mappers_of_planes_from_grid(grid=grid)[1]
 We now pass the mapper to a `MapperPlotter` and call various `figure_*` methods to plot different attributes.
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.figure()
+mapper_plotter.figure_2d()
 
 """
 The `Mapper` can also be plotted with a subplot of its original image.

@@ -55,7 +55,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 Lets look at the `Tracer`'s image; this is the image we'll be simulating.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 To simulate the `Imaging` data, we don't use the image plotted above. Instead, we use an image which has been generated
@@ -88,7 +88,7 @@ imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 Lets plot the image. We can see the image has been blurred due to the telescope optics and noise has been added.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 We'll now output these files to .fits files, we'll begin to analyze them in the next tutorial!

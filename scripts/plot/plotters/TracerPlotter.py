@@ -41,7 +41,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 We now pass the tracer` and grid to a `TracerPlotter` and call various `figure_*` methods to plot different attributes.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(
+tracer_plotter.figures_2d(
     image=True,
     convergence=True,
     potential=True,
@@ -76,7 +76,7 @@ include_2d = aplt.Include2D(
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=masked_grid, include_2d=include_2d
 )
-tracer_plotter.figures(image=True, source_plane=True)
+tracer_plotter.figures_2d(image=True, source_plane=True)
 tracer_plotter.subplot_tracer()
 
 """
@@ -87,7 +87,7 @@ this information is now available and thus the caustics of the source-plane are 
 The same is true of the `border, where the `border` plotted on the image-plane image has been ray-traced to the 
 source-plane. This is noteworthy as it means in the source-plane we can see where our entire masked region traces too.
 """
-tracer_plotter.figures_of_planes(plane_image=True, plane_index=1)
+tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 Finish.

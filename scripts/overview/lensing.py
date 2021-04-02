@@ -59,7 +59,7 @@ The PyAutoLens plot module provides methods for plotting objects and their prope
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=sersic_light_profile, grid=grid
 )
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 """
 **PyAutoLens** uses `MassProfile` objects to represent a galaxy's mass distribution and perform ray-tracing
@@ -78,7 +78,7 @@ Lets plot the `MassProfile`'s deflection angle map.
 mass_profile_plotter = aplt.MassProfilePlotter(
     mass_profile=isothermal_mass_profile, grid=grid
 )
-mass_profile_plotter.figures(
+mass_profile_plotter.figures_2d(
     convergence=False, potential=False, deflections_y=True, deflections_x=True
 )
 
@@ -120,7 +120,7 @@ the source's appears as a multiply imaged and strongly lensed Einstein ring.
 image = tracer.image_from_grid(grid=grid)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 The `TracerPlotter` includes the `MassProfile` quantities we plotted previously, which can be plotted as a subplot 
@@ -138,10 +138,10 @@ We can use the Tracer`s traced_grid method to plot the image-plalne and source-p
 traced_grids = tracer.traced_grids_of_planes_from_grid(grid=grid)
 
 grid_plotter = aplt.Grid2DPlotter(grid=traced_grids[0])
-grid_plotter.figure()  # Image-plane grid.
+grid_plotter.figure_2d()  # Image-plane grid.
 
 grid_plotter = aplt.Grid2DPlotter(grid=traced_grids[1])
-grid_plotter.figure()  # Source-plane grid.
+grid_plotter.figure_2d()  # Source-plane grid.
 
 """
 The PyAutoLens API has been designed such that all of the objects introduced above are extensible. `Galaxy` objects can
@@ -203,7 +203,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_
 This is what the lens looks like.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 Finish.

@@ -38,7 +38,7 @@ imaging = al.Imaging.from_fits(
 We can use the `Imaging` mat_plot_2d to plot the image, noise-map and psf of the dataset.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figures(image=True, noise_map=True, psf=True)
+imaging_plotter.figures_2d(image=True, noise_map=True, psf=True)
 
 """
 The `Imaging` mat_plot_2d also contains a subplot which plots all these properties simultaneously.
@@ -65,14 +65,14 @@ Note how the Grid2D has also had the mask applied to it.
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 grid_plotter = aplt.Grid2DPlotter(grid=masked_imaging.grid)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 Here is what our image looks like with the mask applied, where PyAutoLens has automatically zoomed around the mask
 to make the lensed source appear bigger.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 Following the lensing.py example, we can make a tracer from a collection of `LightProfile`, `MassProfile` and `Galaxy`
@@ -114,12 +114,12 @@ image with the `Imaging` PSF. We can see this by comparing the tracer`s image (w
 fit`s model image (which is).
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
-fit_imaging_plotter.figures(model_image=True)
+fit_imaging_plotter.figures_2d(model_image=True)
 
 """
 The fit creates the following:
@@ -133,7 +133,7 @@ we'll plot all 3 of these, alongside a subplot containing them all.
 For a good lens model where the model image and tracer are representative of the strong lens system the
 residuals, normalized residuals and chi-squareds are minimized:
 """
-fit_imaging_plotter.figures(
+fit_imaging_plotter.figures_2d(
     residual_map=True, normalized_residual_map=True, chi_squared_map=True
 )
 fit_imaging_plotter.subplot_fit_imaging()
@@ -170,7 +170,7 @@ Lets create a new fit using this tracer and replot its residuals, normalized res
 """
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-fit_imaging_plotter.figures(
+fit_imaging_plotter.figures_2d(
     residual_map=True, normalized_residual_map=True, chi_squared_map=True
 )
 fit_imaging_plotter.subplot_fit_imaging()

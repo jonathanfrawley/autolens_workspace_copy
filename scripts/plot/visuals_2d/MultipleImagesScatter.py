@@ -51,7 +51,7 @@ include_2d = aplt.Include2D(
     caustics=False,
 )
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, include_2d=include_2d)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 The appearance of the multiple images are customized using a `MultipleImagesScatter` object.
@@ -67,7 +67,7 @@ mat_plot_2d = aplt.MatPlot2D(multiple_images_scatter=multiple_images_scatter)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 By specifying two colors to the `MultipleImagesScatter` object the multiple images of each `LightProfile`
@@ -81,7 +81,7 @@ mat_plot_2d = aplt.MatPlot2D(multiple_images_scatter=multiple_images_scatter)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 
 # """

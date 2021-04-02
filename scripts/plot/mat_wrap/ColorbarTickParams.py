@@ -43,7 +43,7 @@ colorbar_tickparams = aplt.ColorbarTickParams(
 mat_plot_2d = aplt.MatPlot2D(colorbar_tickparams=colorbar_tickparams)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

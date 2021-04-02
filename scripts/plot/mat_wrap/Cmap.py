@@ -39,7 +39,7 @@ cmap = aplt.Cmap(cmap="jet", norm="linear", vmin=0.0, vmax=1.0)
 mat_plot_2d = aplt.MatPlot2D(cmap=cmap)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We can instead use logarithmic colormap (this wraps the `colors.LogNorm` matplotlib object).
@@ -49,7 +49,7 @@ cmap = aplt.Cmap(cmap="hot", norm="log", vmin=0.0, vmax=2.0)
 mat_plot_2d = aplt.MatPlot2D(cmap=cmap)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finally, we can use a symmetric log norm (this wraps the `colors.SymLogNorm` matplotlib object).
@@ -66,7 +66,7 @@ cmap = aplt.Cmap(
 mat_plot_2d = aplt.MatPlot2D(cmap=cmap)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

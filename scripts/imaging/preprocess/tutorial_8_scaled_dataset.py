@@ -48,7 +48,7 @@ image = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Next, load the noise-map, which we will use the scale the noise-map.
@@ -58,13 +58,13 @@ noise_map = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now lets plot the signal to noise-map, which will be reduced to nearly zero one we scale the noise.
 """
 array_plotter = aplt.Array2DPlotter(array=image / noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 First, we manually define a mask corresponding to the regions of the image we will scale.
@@ -109,7 +109,7 @@ if gaussian_sigma is not None:
 The new image is plotted for inspection.
 """
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the image, lets output it to the dataset folder of the lens, so that we can load it from a .fits
@@ -130,10 +130,10 @@ noise_map[mask == True] = 1.0e8
 The noise-map and signal to noise-map show the noise-map being scaled in the correct regions of the image.
 """
 array_plotter = aplt.Array2DPlotter(array=noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 array_plotter = aplt.Array2DPlotter(array=image / noise_map.slim)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the mask, lets output it to the dataset folder of the lens, so that we can load it from a .fits

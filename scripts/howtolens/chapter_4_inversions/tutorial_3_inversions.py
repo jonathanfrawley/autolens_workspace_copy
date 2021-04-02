@@ -47,7 +47,7 @@ mask = al.Mask2D.circular_annular(
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
@@ -100,7 +100,7 @@ Our `Inversion` has a reconstructed image and `Pixeilzation`, whcih we can plot 
 include_2d = aplt.Include2D(mask=True)
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, include_2d=include_2d)
-inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
+inversion_plotter.figures_2d(reconstructed_image=True, reconstruction=True)
 
 """
 And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper`s rectangular 
@@ -119,7 +119,7 @@ imaging = al.Imaging.from_fits(
 )
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 This code is doing all the the same as above (setup the `Mask2D`, `Galaxy`'s `Tracer`, `Mapper`, ec.).
@@ -135,7 +135,7 @@ mask = al.Mask2D.circular_annular(
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
@@ -162,7 +162,7 @@ inversion = al.Inversion(
 Lets inspect the complex source reconstruction.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, include_2d=include_2d)
-inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
+inversion_plotter.figures_2d(reconstructed_image=True, reconstruction=True)
 
 """
 Pretty great, huh? If you ran the complex source pipeline, you'll remember that getting a model image that looked that 

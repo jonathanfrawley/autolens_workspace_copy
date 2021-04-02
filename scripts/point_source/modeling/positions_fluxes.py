@@ -65,13 +65,13 @@ We can now plot our positions dataset over the observed image.
 visuals_2d = aplt.Visuals2D(positions=positions)
 
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We can also just plot the positions, omitting the image.
 """
 grid_plotter = aplt.Grid2DPlotter(grid=positions)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 For point-source modeling, we also need the noise of every measured position. This is simply the pixel-scale of our

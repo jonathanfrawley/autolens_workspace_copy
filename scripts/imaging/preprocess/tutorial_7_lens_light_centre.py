@@ -61,7 +61,7 @@ visuals_2d = aplt.Visuals2D(light_profile_centres=light_centre)
 array_plotter = aplt.Array2DPlotter(
     array=image, visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the lens light centre(s), lets output them to the dataset folder of the lens, so that we can 

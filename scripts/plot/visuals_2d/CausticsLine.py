@@ -46,7 +46,7 @@ The `Tracer` includes its caustics as an internal property, meaning we can plot 
 """
 include_2d = aplt.Include2D(critical_curves=False, caustics=True)
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, include_2d=include_2d)
-tracer_plotter.figures(source_plane=True)
+tracer_plotter.figures_2d(source_plane=True)
 
 """
 The appearance of the caustics is customized using a `CausticsPlot` object.
@@ -62,7 +62,7 @@ mat_plot_2d = aplt.MatPlot2D(caustics_plot=caustics_plot)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(source_plane=True)
+tracer_plotter.figures_2d(source_plane=True)
 
 """
 By specifying two colors to the `CausticsPlot` object the radial and tangential caustics
@@ -78,7 +78,7 @@ mat_plot_2d = aplt.MatPlot2D(caustics_plot=caustics_plot)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(source_plane=True)
+tracer_plotter.figures_2d(source_plane=True)
 
 
 """
@@ -91,7 +91,7 @@ image = tracer.image_from_grid(grid=grid)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

@@ -37,7 +37,7 @@ psf = al.Kernel2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 __1) PSF Size__
@@ -56,7 +56,7 @@ large_psf = al.Kernel2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=large_psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We can resize a psf the same way that we resize an image.
@@ -64,7 +64,7 @@ We can resize a psf the same way that we resize an image.
 trimmed_psf = al.preprocess.array_with_new_shape(array=psf, new_shape=(21, 21))
 
 array_plotter = aplt.Array2DPlotter(array=trimmed_psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 __PSF Dimensions__
@@ -81,7 +81,7 @@ even_psf = al.Kernel2D.from_fits(
 print(even_psf.shape_native)
 
 array_plotter = aplt.Array2DPlotter(array=even_psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Below, we show a function that allows one to rescale the PSF to the nearest odd-sized kernel. However, this uses an 
@@ -93,7 +93,7 @@ odd_psf = al.preprocess.psf_with_odd_dimensions_from_psf(psf=psf)
 print(odd_psf.shape_native)
 
 array_plotter = aplt.Array2DPlotter(array=odd_psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 __PSF Normalization__
@@ -117,7 +117,7 @@ unnormalized_psf = al.Kernel2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=unnormalized_psf)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The PSF is renormaized if the renormalize=True.
@@ -130,4 +130,4 @@ normalized_psf = al.Kernel2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=normalized_psf)
-array_plotter.figure()
+array_plotter.figure_2d()

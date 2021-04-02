@@ -101,7 +101,7 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
 
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures(reconstruction=True)
+inversion_plotter.figures_2d(reconstruction=True)
 
 """
 The fit isn't great. The main structure of the lensed source is reconstructed, but there are residuals. These 
@@ -139,7 +139,7 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
 
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures(reconstruction=True)
+inversion_plotter.figures_2d(reconstruction=True)
 
 print("Evidence = ", fit.log_evidence)
 
@@ -240,7 +240,7 @@ contribution_map = source_contribution_factor_1.hyper_galaxy.contribution_map_fr
 mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Contribution Map"))
 
 array_plotter = aplt.Array2DPlotter(array=contribution_map, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 source_contribution_factor_3 = al.Galaxy(
     redshift=1.0,
@@ -254,7 +254,7 @@ contribution_map = source_contribution_factor_3.hyper_galaxy.contribution_map_fr
 )
 
 array_plotter = aplt.Array2DPlotter(array=contribution_map, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 source_hyper_galaxy = al.Galaxy(
     redshift=1.0,
@@ -268,7 +268,7 @@ contribution_map = source_hyper_galaxy.hyper_galaxy.contribution_map_from_hyper_
 )
 
 array_plotter = aplt.Array2DPlotter(array=contribution_map, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 By increasing the contribution factor we allocate more pixels with higher contributions (e.g. values closer to 1.0) 

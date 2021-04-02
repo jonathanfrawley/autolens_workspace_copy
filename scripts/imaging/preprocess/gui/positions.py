@@ -127,7 +127,7 @@ positions = al.Grid2DIrregular(grid=positions)
 Now lets plot the image and positions, so we can check that the positions overlap different regions of the source.
 """
 array_plotter = aplt.Array2DPlotter(array=imaging.image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 
 """

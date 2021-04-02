@@ -31,7 +31,7 @@ legend = aplt.Legend(include_2d=True, loc="upper left", fontsize=10, ncol=2)
 mat_plot_2d = aplt.MatPlot2D(legend=legend)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

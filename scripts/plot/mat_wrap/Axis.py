@@ -27,14 +27,14 @@ We can customize the figure using the `Axis` matplotlib wrapper object which wra
  plt.axis: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axis.html
 """
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 axis = aplt.Axis(extent=[-1.0, 1.0, -1.0, 1.0])
 
 mat_plot_2d = aplt.MatPlot2D(axis=axis)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

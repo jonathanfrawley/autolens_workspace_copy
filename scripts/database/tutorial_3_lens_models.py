@@ -61,7 +61,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
 for tracer in ml_tracers:
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(convergence=True)
+    tracer_plotter.figures_2d(convergence=True)
 
 """
 Okay, so we can make a list of tracers and plot their convergences. However, we'll run into the same problem using 
@@ -93,7 +93,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 for tracer in tracer_gen:
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(convergence=True, potential=True)
+    tracer_plotter.figures_2d(convergence=True, potential=True)
 
 """
 Its cumbersome to always have to define a `make_tracer_generator` function to make a tracer generator, given that 
@@ -107,7 +107,7 @@ tracer_gen = al.agg.Tracer(aggregator=agg_filter)
 for tracer in tracer_gen:
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(convergence=True, potential=True)
+    tracer_plotter.figures_2d(convergence=True, potential=True)
 
 """
 Because instances are just lists of galaxies we can directly extract attributes of the `Galaxy` class. Lets print 

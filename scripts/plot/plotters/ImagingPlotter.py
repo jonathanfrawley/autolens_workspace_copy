@@ -31,7 +31,7 @@ imaging = al.Imaging.from_fits(
 We now pass the imaging to an `ImagingPlotter` and call various `figure_*` methods to plot different attributes.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figures(
+imaging_plotter.figures_2d(
     image=True,
     noise_map=True,
     psf=True,

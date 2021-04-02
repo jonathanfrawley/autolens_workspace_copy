@@ -118,7 +118,7 @@ Use these galaxies to setup a tracer, which will generate the image for the simu
 """
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 We can then pass this simulator a tracer, which uses the tracer to create a ray-traced image which is simulated as
@@ -150,7 +150,7 @@ mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png")
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
 imaging_plotter.subplot_imaging()
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()

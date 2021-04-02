@@ -71,7 +71,7 @@ grid = al.Grid2D.from_fits(
     pixel_scales=imaging.pixel_scales,
 )
 grid_plotter = aplt.Grid2DPlotter(grid=grid)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 The `Mask2D` our model-fit using the `InputDeflections` will use. This is set up the same way as the previous script, but

@@ -131,7 +131,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 include_2d = aplt.Include2D(mapper_source_grid_slim=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 Everything looks fine - we get a reconstructed source on a visually appeasing source-plane grid. So, why are we so 
@@ -147,7 +147,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 inversion_plotter = aplt.InversionPlotter(
     inversion=fit.inversion, include_2d=include_2d
 )
-inversion_plotter.figures(reconstruction=True)
+inversion_plotter.figures_2d(reconstruction=True)
 
 """
 Woah - whats happened? There are lots of extra points on our source-plane `Grid2D` which trace to extremely large radii 
@@ -171,7 +171,7 @@ becomes extremely cuspy (rising very sharply). This cause extremely large deflec
 a quick look.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=fit.grid)
-tracer_plotter.figures(deflections_y=True, deflections_x=True)
+tracer_plotter.figures_2d(deflections_y=True, deflections_x=True)
 
 """
 This means that our central image pixels are highly demagnified, tracing to extremely large values in the source plane! 
@@ -208,7 +208,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 This second point is a *huge* problem, as allowing source-pixels to fit regions of our mask in this completely 
@@ -227,7 +227,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 visuals_2d = aplt.Visuals2D(indexes=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
 
@@ -333,7 +333,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 include_2d = aplt.Include2D(mapper_source_grid_slim=True, border=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 However, when we relocate them, we get a good-looking source-plane with a well defined border and edge, thus ensuring 
@@ -347,7 +347,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 Multi-galaxy modeling is rife for border effects and if you have multiple lens galaxies I heartily recommend you pay 
@@ -370,7 +370,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 mask_circular = al.Mask2D.circular(
     shape_native=imaging.shape_native,
@@ -386,7 +386,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 
 mask_circular = al.Mask2D.circular(
@@ -403,7 +403,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 
 mask_circular = al.Mask2D.circular(
@@ -420,7 +420,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 And with that, borders are done. In truth, borders should pretty much take care of themselves when you're using 

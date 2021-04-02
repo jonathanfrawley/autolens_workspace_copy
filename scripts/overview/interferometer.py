@@ -39,7 +39,7 @@ and uv wavelength which represent the interferometer`s baselines.
 The data used in this tutorial contains 1 million visibilities and is representative of an ALMA dataset:
 """
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-interferometer_plotter.figures(visibilities=True, uv_wavelengths=True)
+interferometer_plotter.figures_2d(visibilities=True, uv_wavelengths=True)
 
 """
 Although interferometer lens modeling is performed in the uv-plane and therefore Fourier space, we still need to define
@@ -81,7 +81,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=real_space_mask.masked_grid_sub_1
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 To perform uv-plane modeling, **PyAutoLens** next Fourier transforms this image from real-sapce to the uv-plane.
@@ -151,7 +151,7 @@ fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
 fit_interferometer_plotter.subplot_fit_interferometer()
 
 inversion_plotter = aplt.InversionPlotter(inversion=fit.inversion)
-inversion_plotter.figures(reconstruction=True)
+inversion_plotter.figures_2d(reconstruction=True)
 
 """
 Finish.

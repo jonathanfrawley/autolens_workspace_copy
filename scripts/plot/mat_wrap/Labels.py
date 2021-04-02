@@ -39,7 +39,7 @@ xlabel = aplt.XLabel(label="Label of X", color="g", fontsize=10)
 mat_plot_2d = aplt.MatPlot2D(title=title, ylabel=ylabel, xlabel=xlabel)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 If we do not manually specify a label, the name of the function used to plot the image will be used as the title 
@@ -52,7 +52,7 @@ xlabel = aplt.XLabel()
 mat_plot_2d = aplt.MatPlot2D(title=title, ylabel=ylabel, xlabel=xlabel)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The units can be manually specified.
@@ -60,7 +60,7 @@ The units can be manually specified.
 mat_plot_2d = aplt.MatPlot2D(units=aplt.Units(in_kpc=True, conversion_factor=5.0))
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

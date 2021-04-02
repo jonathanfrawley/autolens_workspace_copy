@@ -44,7 +44,7 @@ The `Array2D` includes its mask as an internal property, meaning we can plot it 
 """
 include_2d = aplt.Include2D(mask=True)
 array_plotter = aplt.Array2DPlotter(array=masked_image, include_2d=include_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The appearance of the mask is customized using a `Scatter` object.
@@ -60,7 +60,7 @@ mat_plot_2d = aplt.MatPlot2D(mask_scatter=mask_scatter)
 array_plotter = aplt.Array2DPlotter(
     array=masked_image, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 
 """
@@ -71,7 +71,7 @@ This means we don't need to create the `masked_image` array we used above.
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

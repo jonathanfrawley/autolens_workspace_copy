@@ -44,7 +44,7 @@ The `Tracer` includes its critical_curves as an property, meaning we can plot th
 include_2d = aplt.Include2D(critical_curves=True, caustics=False)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, include_2d=include_2d)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 
 """
@@ -61,7 +61,7 @@ mat_plot_2d = aplt.MatPlot2D(critical_curves_plot=critical_curves_plot)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 By specifying two colors to the `CriticalCurvesPlot` object the radial and tangential critical_curves
@@ -77,7 +77,7 @@ mat_plot_2d = aplt.MatPlot2D(critical_curves_plot=critical_curves_plot)
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid, include_2d=include_2d, mat_plot_2d=mat_plot_2d
 )
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 
 """
@@ -90,7 +90,7 @@ image = tracer.image_from_grid(grid=grid)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

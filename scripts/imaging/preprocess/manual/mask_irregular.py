@@ -82,7 +82,7 @@ mask = al.Mask2D.manual(mask=mask, pixel_scales=image.pixel_scales, sub_size=1)
 
 visuals_2d = aplt.Visuals2D(mask=mask)
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Now we`re happy with the mask, lets output it to the dataset folder of the lens, so that we can load it from a .fits

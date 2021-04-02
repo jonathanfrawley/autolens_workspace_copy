@@ -35,7 +35,7 @@ visuals_2d = aplt.Visuals2D(grid=grid)
 We now plot the image with the grid overlaid.
 """
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We customize the grid's appearance using the `GridScatter` `matplotlib wrapper object which wraps the following method(s): 
@@ -49,7 +49,7 @@ mat_plot_2d = aplt.MatPlot2D(grid_scatter=grid_scatter)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.
