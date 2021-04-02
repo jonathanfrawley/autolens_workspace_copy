@@ -59,9 +59,7 @@ lens_galaxy = al.Galaxy(
     shear=al.mp.ExternalShear(elliptical_comps=(0.05, 0.05)),
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
@@ -71,7 +69,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(mask=True)
 
@@ -137,7 +135,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 """
 If we look at the lens fit, we'll see that our source-plane no longer uses rectangular pixels, but Voronoi pixels!
 """
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(
     mask=True, mapper_data_pixelization_grid=True, mapper_source_pixelization_grid=True

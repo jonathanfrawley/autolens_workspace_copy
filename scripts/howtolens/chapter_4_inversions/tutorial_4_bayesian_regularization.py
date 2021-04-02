@@ -55,8 +55,8 @@ def perform_fit_with_source_galaxy(imaging, source_galaxy):
         outer_radius=2.6,
     )
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+    masked_imaging = imaging.apply_mask(
+        mask=mask, settings=al.SettingsImaging(sub_size=2)
     )
 
     lens_galaxy = al.Galaxy(
@@ -71,7 +71,7 @@ def perform_fit_with_source_galaxy(imaging, source_galaxy):
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """

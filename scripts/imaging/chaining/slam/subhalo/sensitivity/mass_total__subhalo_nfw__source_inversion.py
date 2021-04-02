@@ -41,7 +41,7 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 import slam
 
 """
@@ -63,11 +63,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(
-    imaging=masked_imaging, visuals_2d=aplt.Visuals2D(mask=mask)
-)
+imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
 imaging_plotter.subplot_imaging()
 
 """

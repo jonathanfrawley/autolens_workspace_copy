@@ -44,10 +44,8 @@ mask = al.Mask2D.circular(
     radius=3.0,
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging,
-    mask=mask,
-    settings=al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2),
+masked_imaging = imaging.apply_mask(
+    mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
 )
 
 """
@@ -70,7 +68,7 @@ def fit_masked_imaging_with_source_galaxy(masked_imaging, source_galaxy):
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """
@@ -105,7 +103,7 @@ inversion_plotter.figures(regularization_weights=True)
 Lets now look at adaptive `Regularization`.n action, by setting up a hyper-galaxy-image and using the 
 `AdaptiveBrightness` `Regularization` scheme. This introduces additional hyper-galaxy-parameters, that I'll explain next.
 """
-hyper_image = fit.model_image.slim_binned
+hyper_image = fit.model_image.binned.slim
 
 source_adaptive_regularization = al.Galaxy(
     redshift=1.0,

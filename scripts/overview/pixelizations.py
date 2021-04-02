@@ -42,7 +42,7 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
-We are going to fit this data, so we must create `Mask2D` and `MaskedImaging` objects.
+We are going to fit this data, so we must create `Mask2D` and `Imaging` objects.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native,
@@ -51,7 +51,7 @@ mask = al.Mask2D.circular(
     radius=3.6,
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 """
 To reconstruct the source as a `Pixelization`, we simply pass it the `Pixelization` class we want to reconstruct its l
@@ -83,7 +83,7 @@ object.
 """
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 """
 The fit has been performed using an `Inversion` for the source galaxy. We can see this by plotting the source-plane
@@ -107,7 +107,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_imaging_plotter.subplot_of_planes(plane_index=1)

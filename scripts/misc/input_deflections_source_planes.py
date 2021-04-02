@@ -154,8 +154,8 @@ our input deflection angle map fit the image of a strong lens we are comparing t
 
 In this case, it gives a good fit, because we are using the true deflection angle map and source model!
 """
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
-fit_imaging = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+masked_imaging = imaging.apply_mask(mask=mask)
+fit_imaging = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit_imaging)
 fit_imaging_plotter.subplot_fit_imaging()
@@ -192,7 +192,7 @@ source galaxy's light. Try increasing / decreasing the coefficient value to see 
 regularization = al.reg.Constant(coefficient=1.0)
 
 inversion = al.Inversion(
-    masked_dataset=masked_imaging,
+    dataset=masked_imaging,
     mapper=mapper,
     regularization=al.reg.Constant(coefficient=1.0),
 )
@@ -202,7 +202,7 @@ Finally, lets plot:
 
  - The reconstruction of the source _Galaxy- in the source-plane.
  - The corresponding reconstructed image-plane image of the lensed source `Galaxy` (which accounts for PSF blurring).
- - The residuals of the fit to the `MaskedImaging`.
+ - The residuals of the fit to the `Imaging`.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 inversion_plotter.figures(reconstructed_image=True, reconstruction=True)

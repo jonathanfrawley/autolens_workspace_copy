@@ -25,6 +25,10 @@ __Dataset + Masking__
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
@@ -32,23 +36,8 @@ interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
-)
-
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
-
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    transformer_class=al.TransformerNUFFT
-)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
     real_space_mask=real_space_mask,
-    settings=settings_masked_interferometer,
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -99,7 +88,7 @@ search = af.DynestyStatic(
     n_live_points=50,
 )
 
-analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -139,7 +128,7 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 result_2 = search.fit(model=model, analysis=analysis)
 

@@ -181,8 +181,8 @@ array_plotter = aplt.Array2DPlotter(array=image_small_stamp)
 array_plotter.figure()
 
 """
-If we apply a masks to this image we get an error when we try to use it to set up a masked image because its 
-blurring region (defined by the PSF kernel shape) hits the image edge.
+If we apply a masks to this image we get find that the data is padded, because when we try to use it to set up a 
+masked image because its blurring region (defined by the PSF kernel shape) hits the image edge.
 """
 mask = al.Mask2D.circular(
     shape_native=image_small_stamp.shape_native,

@@ -44,7 +44,7 @@ mask_circular = al.Mask2D.circular(
     sub_size=2,
     radius=2.5,
 )
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask_circular)
+masked_imaging = imaging.apply_mask(mask=mask_circular)
 
 include_2d = aplt.Include2D(border=True)
 
@@ -64,7 +64,7 @@ mask_annular = al.Mask2D.circular_annular(
     outer_radius=2.5,
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask_circular)
+masked_imaging = imaging.apply_mask(mask=mask_circular)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)
 imaging_plotter.subplot_imaging()
@@ -83,8 +83,8 @@ def perform_fit_with_source_galaxy_mask_and_border(
     imaging, source_galaxy, mask, settings_pixelization
 ):
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+    masked_imaging = imaging.apply_mask(
+        mask=mask, settings=al.SettingsImaging(sub_size=2)
     )
 
     lens_galaxy = al.Galaxy(
@@ -100,7 +100,7 @@ def perform_fit_with_source_galaxy_mask_and_border(
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     return al.FitImaging(
-        masked_imaging=masked_imaging,
+        imaging=masked_imaging,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
     )
@@ -110,7 +110,7 @@ def perform_fit_with_source_galaxy_mask_and_border(
 Okay, so lets first look at our `Mapper` without using a border using our annular `Mask2D`.
 
 First, note how we set up the border. We use a `SettingsPixelization` object, which is analogous to the 
-`SettingsMaskedImaging` and `SettingsLens` objects we used in previous tutorials. Later, you'll see how these 
+`SettingsImaging` and `SettingsLens` objects we used in previous tutorials. Later, you'll see how these 
 settings can also be passed to a `SettingsPhaseImaging` object, to control the behaviour of the `Pixelization` during a
 model-fit.
 """
@@ -162,7 +162,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=fit.inversion.mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
 
-mapper_plotter.subplot_image_and_mapper(image=fit.masked_imaging.image)
+mapper_plotter.subplot_image_and_mapper(image=fit.imaging.image)
 
 """
 So, whats happening physically? Towards the centre of our `EllipticalIsothermal` `MassProfile`.the density profile 
@@ -233,7 +233,7 @@ visuals_2d = aplt.Visuals2D(indexes=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
 mapper_plotter = aplt.MapperPlotter(
     mapper=fit.inversion.mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
-mapper_plotter.subplot_image_and_mapper(image=fit.masked_imaging.image)
+mapper_plotter.subplot_image_and_mapper(image=fit.imaging.image)
 
 """
 This successfully addresses both of the issues above! However, you might be thinking, isn't that a bit of a hack? Its 
@@ -275,7 +275,7 @@ mask_circular = al.Mask2D.circular(
     radius=2.8,
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask_circular)
+masked_imaging = imaging.apply_mask(mask=mask_circular)
 
 include_2d = aplt.Include2D(border=True)
 
@@ -291,7 +291,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging, source_galaxy, mask, settings_pixelization
 ):
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = imaging.apply_mask(mask=mask)
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
@@ -312,7 +312,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     )
 
     return al.FitImaging(
-        masked_imaging=masked_imaging,
+        imaging=masked_imaging,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
     )

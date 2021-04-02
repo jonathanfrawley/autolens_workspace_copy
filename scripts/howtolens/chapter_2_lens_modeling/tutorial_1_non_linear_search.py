@@ -46,7 +46,7 @@ picture that a non-linear search in **PyAutoLens** operates as follows:
  1) Randomly guess a lens model and use its `LightProfile`'s and `MassProfile`'s to set up a lens galaxy, source galaxy
  and a `Tracer`.
 
- 2) Use this `Tracer` and a `MaskedImaging` to generate a model image and compare this model image to the
+ 2) Use this `Tracer` and a `Imaging` to generate a model image and compare this model image to the
  observed strong lens `Imaging` data using a `FitImaging` object, providing the log likelihood.
 
  3) Repeat this many times, using the likelihoods of previous fits (typically those with a high log_likelihood) to
@@ -92,7 +92,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -152,7 +152,7 @@ search = af.DynestyStatic(
 
 """
 We next create the `AnalysisImaging` object which defines the `log_likelihood_function` used by the non-linear search 
-to fit the model to the `MaskedImaging`dataset.
+to fit the model to the `Imaging`dataset.
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 

@@ -87,6 +87,8 @@ mask = al.Mask2D.circular(
 
 grid = al.Grid2D.from_mask(mask=mask)
 
+masked_imaging = imaging.apply_mask(mask=mask)
+
 """
 We create the `InputDeflections` `MassProfile`.almosst the same as the previous example. This is going to be passed to 
 a  `Model` below, so we can use it with a source model to fit to the `Imaging` data using a non-linear search.
@@ -112,29 +114,14 @@ input_deflections = al.mp.InputDeflections(
 )
 
 """
-We now create the lens and source `Model`, where the source is an `EllipticalSersic`.
+__Model__
+
+We now compose the lens and source `Model`, where the source is an `EllipticalSersic`.
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=input_deflections)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
 
-"""
-__Settings__
-
-Next, we specify the `SettingsPhaseImaging`, which describe how the model is fitted to the data in the log likelihood
-function. If you are not familiar with this checkout the example model scripts in `autolens_workspace/notebooks/modeling`. 
-Below, we specify:
-
-Different `SettingsPhase` are used in different example model scripts and a full description of all `SettingsPhase` 
-can be found in the example script `autolens/workspace/notebooks/modeling/customize/settings.py` and the following 
-chain -> <chain>
-
-The `preload_grid` input into the `InputDelections` 
-"""
-settings_masked_imaging = al.SettingsMaskedImaging(
-    grid_class=al.Grid2D, sub_size=mask.sub_size
-)
-
-settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 __Search__
@@ -149,28 +136,29 @@ operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("misc", dataset_name),
-    name="phase__input_deflections",
+    name="search__input_deflections",
     n_live_points=100,
 )
 
 """
-__Phase__
+__Analysis__
 
-We can now combine the model, settings and search to create and run a search, fitting our data with the lens model.
-
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
-
- `/autolens_workspace/output/misc/light_sersic__mass_sie__source_sersic/phase__light_sersic__mass_sie__source_bulge`.
+The `AnalysisImaging` object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
+the `Imaging`dataset.
 """
-search = al.PhaseImaging(
-    search=search, galaxies=af.Collection(lens=lens, source=source), settings=settings
-)
+analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 """
-We can now begin the fit by passing the dataset and mask to the search, which will use the non-linear search to fit
-the model to the data. 
+__Model-Fit__
 
-The fit outputs visualization on-the-fly, so checkout the path 
-`autolens_workspace/output/misc/phase__input_deflections` to see how your fit is doing!
+We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
+search to find which models fit the data with the highest likelihood.
+
+Checkout the folder `autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]` for live outputs 
+of the results of the fit, including on-the-fly visualization of the best fit model!
 """
-result = search.run(dataset=imaging, mask=mask)
+result = search.fit(model=model, analysis=analysis)
+
+"""
+Finish.
+"""

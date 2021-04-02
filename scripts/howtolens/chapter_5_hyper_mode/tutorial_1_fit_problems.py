@@ -154,10 +154,8 @@ def fit_imaging_with_voronoi_magnification_pixelization(
     imaging, mask, regularization_coefficient
 ):
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging,
-        mask=mask,
-        settings=al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2),
+    masked_imaging = imaging.apply_mask(
+        mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
     )
 
     lens_galaxy = al.Galaxy(
@@ -175,7 +173,7 @@ def fit_imaging_with_voronoi_magnification_pixelization(
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """

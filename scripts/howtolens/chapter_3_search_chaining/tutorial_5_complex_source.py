@@ -48,7 +48,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -210,7 +210,7 @@ that we unfortunately missed using the pipeline above.
 
 Lets confirm this, by manually fitting the `Imaging` data with the true input model.
 """
-masked_imaging = al.MaskedImaging(
+masked_imaging = al.Imaging(
     imaging=imaging,
     mask=al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
@@ -258,7 +258,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+true_fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=true_fit)
 fit_imaging_plotter.subplot_fit_imaging()

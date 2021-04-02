@@ -101,7 +101,7 @@ __PSF Normalization__
 The PSF should also be normalized to unity. That is, the sum of all values in the kernel used by PyAutoLens should sum 
 to 1. This ensures that the PSF convolution does not change the overall normalization of the image.
 
-PyAutoLens automatically renormalized PSF when they are passed into a MaskedImaging or SimulatedImaging object, so you 
+PyAutoLens automatically renormalized PSF when they are passed into a Imaging or SimulatedImaging object, so you 
 do not actually need to renormalize your PSF. However, it is better to do it now, just in case.
 
 Lets look at a PSF which is not normalized to unity, which is the default case corresponding to the `renormalize` flag 

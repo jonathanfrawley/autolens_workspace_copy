@@ -51,7 +51,7 @@ mask = al.Mask2D.circular(
     radius=3.0,
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -80,7 +80,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 """
 The fit contains our `Tracer`, which contains `Planes`, which contains `Galaxy`'s which contains `Profile`'s:

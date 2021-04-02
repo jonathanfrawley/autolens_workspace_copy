@@ -258,7 +258,7 @@ def source__from_result(
                 hyper_galaxy=hyper_galaxy,
             )
 
-    if not setup_hyper.hyper_fixed_after_source:
+    if hasattr(result, "hyper"):
 
         if source_is_model:
 

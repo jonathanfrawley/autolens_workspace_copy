@@ -49,10 +49,8 @@ mask = al.Mask2D.circular(
     radius=3.0,
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging,
-    mask=mask,
-    settings=al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2),
+masked_imaging = imaging.apply_mask(
+    mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
 )
 
 """
@@ -77,7 +75,7 @@ source_galaxy_magnification = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_magnification])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 """
 Lets have a quick look to make sure it has the same residuals we saw in tutorial 1.
@@ -98,7 +96,7 @@ information on where the lensed source is located to adapt our `Pixelization`.
 (The `slim_binned` ensures our hyper-image is at the native resolution of our `Imaging` data, as opposed to a 
 higher resolution sub-grid).
 """
-hyper_image = fit.model_image.slim_binned
+hyper_image = fit.model_image.binned.slim
 
 """
 Now lets take a look at brightness based adaption in action! Below, we define a source-galaxy using our new 
@@ -119,7 +117,7 @@ source_galaxy_brightness = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_brightness])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
@@ -251,21 +249,21 @@ the source.
 """
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_0])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_5])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_10])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
@@ -300,7 +298,7 @@ array_plotter.figure()
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_floor])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)

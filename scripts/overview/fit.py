@@ -57,12 +57,12 @@ mask = al.Mask2D.circular(
 )
 
 """
-The MaskedImaging object combines the dataset with the mask.
+The Imaging object combines the dataset with the mask.
  
 Here, the Mask2D is also used to compute the `Grid2D` we used in the lensing.py tutorial to compute lensing calculations.
 Note how the Grid2D has also had the mask applied to it.
 """
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 grid_plotter = aplt.Grid2DPlotter(grid=masked_imaging.grid)
 grid_plotter.figure()
@@ -116,7 +116,7 @@ fit`s model image (which is).
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
 tracer_plotter.figures(image=True)
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_imaging_plotter.figures(model_image=True)
@@ -168,7 +168,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 """
 Lets create a new fit using this tracer and replot its residuals, normalized residuals and chi-squareds.
 """
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter.figures(
     residual_map=True, normalized_residual_map=True, chi_squared_map=True

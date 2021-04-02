@@ -37,9 +37,7 @@ mask = al.Mask2D.circular_annular(
     inner_radius=0.3,
     outer_radius=3.0,
 )
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 """
 The `Inversion` maps pixels from the image-plane of our `Imaging` data to its source plane, via a lens model.
@@ -61,7 +59,7 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 """
-We can extract the `Inversion` from the `Tracer` by passing it the masked data.
+We can extract the `Inversion` from the `Tracer` by passing it the imaging data.
 """
 inversion = tracer.inversion_imaging_from_grid_and_data(
     grid=masked_imaging.grid,

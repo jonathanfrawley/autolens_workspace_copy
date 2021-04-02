@@ -21,27 +21,21 @@ First, lets load example interferometer of of a strong lens as an `Interferomete
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
 interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    real_space_mask=real_space_mask,
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
 )
 
 """
 We now mask the data and fit it with a `Tracer` to create a `FitInterferometer` object.
 """
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
-    real_space_mask=real_space_mask,
-    settings=al.SettingsMaskedInterferometer(transformer_class=al.TransformerNUFFT),
-)
-
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllipticalIsothermal(
@@ -64,7 +58,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitInterferometer(masked_interferometer=masked_interferometer, tracer=tracer)
+fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
 
 """
 We now pass the FitInterferometer to an `FitInterferometerPlotter` and call various `figure_*` methods 

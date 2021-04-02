@@ -49,10 +49,8 @@ mask = al.Mask2D.circular(
     radius=3.0,
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging,
-    mask=mask,
-    settings=al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2),
+masked_imaging = imaging.apply_mask(
+    mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
 )
 
 """
@@ -78,7 +76,7 @@ def fit_masked_imaging_with_source_galaxy(masked_imaging, source_galaxy):
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """
@@ -112,7 +110,7 @@ fit to the data. This shouldn`t be too problematic, as the solution still captur
 The `Pixelization` / `Regularization`.yper-galaxy-parameters have enough flexibility in how they use this image to 
 adapt themselves, so the hyper-galaxy-image doesn`t *need* to be perfect.
 """
-hyper_image = fit.model_image.slim_binned
+hyper_image = fit.model_image.binned.slim
 
 """
 You'll note that, unlike before, this source galaxy receives two types of hyper-galaxy-images, a `hyper_galaxy_image` 

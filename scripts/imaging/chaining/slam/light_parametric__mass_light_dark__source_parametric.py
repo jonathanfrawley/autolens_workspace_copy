@@ -38,7 +38,7 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 import slam
 
 """
@@ -60,11 +60,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(
-    imaging=masked_imaging, visuals_2d=aplt.Visuals2D(mask=mask)
-)
+imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -87,10 +85,6 @@ redshift_source = 1.0
 __HYPER SETUP__
 
 The `SetupHyper` determines which hyper-mode features are used during the model-fit.
-
-The `SetupHyper` input `hyper_fixed_after_source` fixes the hyper-parameters to the values computed by the hyper 
-extension at the end of the SOURCE PIPELINE. By fixing the hyper-parameter values at this point, model comparison 
-of different models in the LIGHT PIPELINE and MASS LIGHT DARK PIPELINE can be performed consistently.
 """
 setup_hyper = al.SetupHyper(
     hyper_galaxies_lens=False,

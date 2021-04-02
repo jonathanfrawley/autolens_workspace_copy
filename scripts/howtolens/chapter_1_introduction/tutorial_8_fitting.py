@@ -52,8 +52,8 @@ the edges where the signal is entirely background sky and noise.
 
 For the image we simulated, a 3" circular `Mask2D` will do the job.
 
-A `Mask2D` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid2D` - 
-defining the (masked) sub-grid used to calculate lensing quantities from a mask.
+A `Mask2D` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid2D`, 
+defining the sub-grid used to calculate lensing quantities.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native,
@@ -82,7 +82,7 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.figures(image=True)
 
 """
-To fit the data we create a `MaskedImaging` object, which is a `package` of all parts of a data-set we need in order 
+To fit the data we create a `Imaging` object, which is a `package` of all parts of a data-set we need in order 
 to fit it with a lens model:
 
  1) The imaging-data, including the image, PSF (so that when we compare a tracer`s image to the image instrument we 
@@ -94,10 +94,10 @@ to fit it with a lens model:
  3) A `Grid2D` aligned to the `Imaging` data's pixels, so the tracer`s image is generated on the same (masked) `Grid2D` 
  as the image.
 """
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 """
-Note that because the `Mask2D` is now an attribute of the `MaskedImaging` we can plot it using `Include2D`.
+Note that because the `Mask2D` is now an attribute of the `Imaging` we can plot it using `Include2D`.
 
 Because it is an attribute, the `mask` now also automatically `zooms` our plot around the masked region only. This 
 means that if our image is very large, we focus-in on the lens and source galaxies.
@@ -125,7 +125,7 @@ print(masked_imaging.psf)
 print()
 
 """
-The masked image and noise-map are again stored in 2D and 1D. 
+This image and noise-map are again stored in 2D and 1D. 
 
 However, the 1D array now corresponds only to the pixels that were not masked, whereas for the 2D array, all edge 
 values are masked and are therefore zeros.
@@ -143,8 +143,8 @@ print(masked_imaging.noise_map.native)
 print(masked_imaging.noise_map.slim)
 
 """
-The masked data also has a `Grid2D`, where only coordinates which are not masked are included (the masked 2D values are 
-set to [0.0. 0.0]).
+The masked dataset also has a `Grid2D`, where only coordinates which are not masked are included (the masked 2D values 
+are set to [0.0. 0.0]).
 """
 print("Masked Grid2D")
 print(masked_imaging.grid.native)
@@ -154,7 +154,7 @@ print(masked_imaging.grid.slim)
 To fit an image, create an image using a `Tracer`. Lets use the same `Tracer` we simulated the `Imaging` instrument 
 with (thus, our fit is `perfect`).
 
-Its worth noting that below, we use the `MaskedImaging`'s `Grid2D` to setup the `Tracer`. This ensures that our 
+Its worth noting that below, we use the `Imaging`'s `Grid2D` to setup the `Tracer`. This ensures that our 
 image-plane image is the same resolution and alignment as our lens data's masked image.
 """
 lens_galaxy = al.Galaxy(
@@ -182,7 +182,7 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
 tracer_plotter.figures(image=True)
 
 """
-To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. This performs the following:
+To fit the image, we pass the `Imaging` and `Tracer` to a `FitImaging` object. This performs the following:
 
  1) Blurs the tracer`s image with the lens data's PSF, ensuring the telescope optics are included in the fit. This 
  creates the fit`s `model_image`.
@@ -196,7 +196,7 @@ To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` obj
  5) Sums up these chi-squared values and converts them to a `log_likelihood`, which quantifies how good the tracer`s 
  fit to the data was (higher log_likelihood = better fit).
 """
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(mask=True)
 
@@ -204,8 +204,8 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-We can print the fit`s attributes. As usual, we can choose whether to return the fits in 2d or 1d, and in 2d if we 
-don't specify where we'll get all zeros, as the edges were masked:
+We can print the fit`s attributes. As usual, we can choose whether to return the fits in slim or native format, with
+the native data's edge values all zeros, as the edges were masked:
 """
 print("Model-Image:")
 print(fit.model_image.native)
@@ -243,16 +243,16 @@ print("Likelihood:")
 print(fit.log_likelihood)
 
 """
-We can customize the `MaskedImaging` we set up, using the `SettingsMaskedImaging` object. 
+We can customize the `Imaging` we set up, using the `SettingsImaging` object. 
 
 For example, we can: 
 
- - Specify the `Grid2D` used by the `MaskedImaging` to fit the data, where we below increase it from its default 
+ - Specify the `Grid2D` used by the `Imaging` to fit the data, where we below increase it from its default 
  value of 2 to 4.
 """
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=4)
+settings_masked_imaging = al.SettingsImaging(grid_class=al.Grid2D, sub_size=4)
 
-masked_imaging_custom = al.MaskedImaging(
+masked_imaging_custom = al.Imaging(
     imaging=imaging, mask=mask, settings=settings_masked_imaging
 )
 
@@ -288,7 +288,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
@@ -331,7 +331,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()

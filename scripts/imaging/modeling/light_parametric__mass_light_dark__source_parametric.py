@@ -40,17 +40,15 @@ imaging = al.Imaging.from_fits(
 __Masking__
 
 The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data, which we define
-and use to set up the `MaskedImaging` object that the lens model fits.
+and use to set up the `Imaging` object that the lens model fits.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(
-    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
-)
+imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -121,7 +119,7 @@ search = af.DynestyStatic(
 __Analysis__
 
 The `AnalysisImaging` object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
-the `MaskedImaging`dataset.
+the `Imaging`dataset.
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 

@@ -18,10 +18,17 @@ from os import path
 import numpy as np
 
 """
-To begin, we load an interferometer dataset from fits files:
+To begin, we define a real-space mask. Although interferometer lens modeling is performed in the uv-plane and 
+therefore Fourier space, we still need to define the grid of coordinates in real-space from which the lensed source's 
+images are computed. It is this image that is mapped to Fourier space to compare to the uv-plane data.
+"""
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
 
-Load the strong lens interferometer dataset `mass_sie__source_sersic` from .fits files, which is the dataset 
-we'll use in this example.
+"""
+We next load an interferometer dataset from fits files, which follows the same API that we have seen for an `Imaging`
+object.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
@@ -30,6 +37,7 @@ interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    real_space_mask=real_space_mask,
 )
 
 """
@@ -41,14 +49,6 @@ The data used in this tutorial contains 1 million visibilities and is representa
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.figures(visibilities=True, uv_wavelengths=True)
 
-"""
-Although interferometer lens modeling is performed in the uv-plane and therefore Fourier space, we still need to define
-a `real-space mask`. This mask defines the grid on which the image of the lensed source galaxy is computed via a
-_Tracer_, which when we fit it to data data in the uv-plane is mapped to Fourier space.
-"""
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
 
 """
 To perform uv-plane modeling, **PyAutoLens** generates an image of the strong lens system in real-space via a `Tracer`. 
@@ -102,22 +102,16 @@ transform of ~10 million in less than a second!
 transformer_class = al.TransformerNUFFT
 
 """
-The perform a fit, we follow the same process we did for imaging, creating a *MaskedInterferometer* object which 
-behaves analogously to a `MaskImaging` object.
+The use this transformer in a fit, we use the `apply_settings` method.
 """
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
-    real_space_mask=real_space_mask,
-    settings=al.SettingsMaskedInterferometer(transformer_class=transformer_class),
+interferometer = interferometer.apply_settings(
+    settings=al.SettingsInterferometer(transformer_class=transformer_class)
 )
 
 """
-The masked interferometer can now be used with a *FitInterferometer* object to fit it to a data-set:
+The interferometer can now be used with a `FitInterferometer` object to fit it to a data-set:
 """
-fit = al.FitInterferometer(masked_interferometer=masked_interferometer, tracer=tracer)
+fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
 
 fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
 fit_interferometer_plotter.subplot_fit_interferometer()
@@ -142,7 +136,7 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitInterferometer(
-    masked_interferometer=masked_interferometer,
+    interferometer=interferometer,
     tracer=tracer,
     settings_inversion=al.SettingsInversion(use_linear_operators=True),
 )

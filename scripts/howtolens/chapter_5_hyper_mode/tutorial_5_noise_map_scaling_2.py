@@ -45,10 +45,8 @@ mask = al.Mask2D.circular(
     radius=3.0,
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging,
-    mask=mask,
-    settings=al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2),
+masked_imaging = imaging.apply_mask(
+    mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
 )
 
 """
@@ -62,7 +60,7 @@ def fit_masked_imaging_with_lens_and_source_galaxy(
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """
@@ -243,7 +241,7 @@ tracer = al.Tracer.from_galaxies(
 )
 
 al.FitImaging(
-    masked_imaging=masked_imaging,
+    imaging=masked_imaging,
     tracer=tracer,
     hyper_image_sky=hyper_image_sky,
     hyper_background_noise=hyper_background_noise,

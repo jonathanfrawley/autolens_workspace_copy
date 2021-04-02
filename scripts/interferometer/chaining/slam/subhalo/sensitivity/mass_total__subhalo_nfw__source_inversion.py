@@ -41,7 +41,7 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 import slam
 
 """
@@ -49,30 +49,19 @@ __Dataset + Masking__
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
 dataset_name = "mass_sie__source_sersic"
-dataset_path = path.join("../../../../../../../autofit_workspace/dataset", "interferometer", dataset_name)
+dataset_path = path.join("dataset", "interferometer", dataset_name)
 
 interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
-)
-
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
-
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    transformer_class=al.TransformerNUFFT
-)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
     real_space_mask=real_space_mask,
-    settings=settings_masked_interferometer,
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -83,7 +72,9 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("interferometer", "slam", "mass_total__subhalo_nfw__source_inversion")
+path_prefix = path.join(
+    "interferometer", "slam", "mass_total__subhalo_nfw__source_inversion"
+)
 
 """
 __Redshifts__
@@ -120,7 +111,7 @@ We use the following optional settings:
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
  PIPELINE).
 """
-analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
@@ -154,7 +145,7 @@ We use the following optional settings:
 settings_lens = al.SettingsLens(positions_threshold=0.2)
 
 analysis = al.AnalysisInterferometer(
-    dataset=masked_interferometer,
+    dataset=interferometer,
     positions=source_parametric_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
@@ -179,7 +170,7 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
 analysis = al.AnalysisInterferometer(
-    dataset=masked_interferometer,
+    dataset=interferometer,
     positions=source_inversion_results.last.image_plane_multiple_image_positions,
 )
 
@@ -202,6 +193,8 @@ Each model-fit performed by sensitivity mapping creates a new instance of an `An
 data simulated by the `simulate_function` for that model. This requires us to write a wrapper around the 
 PyAutoLens `AnalysisInterferometer` class.
 """
+
+
 class AnalysisInterferometerSensitivity(al.AnalysisInterferometer):
     def __init__(self, dataset):
 
@@ -217,7 +210,6 @@ subhalo_results = slam.subhalo.sensitivity_mapping_interferometer(
     path_prefix=path_prefix,
     analysis_cls=AnalysisInterferometerSensitivity,
     uv_wavelengths=interferometer.uv_wavelengths,
-    visibilities_mask=visibilities_mask,
     real_space_mask=real_space_mask,
     mass_results=mass_results,
     subhalo_mass=af.Model(al.mp.SphericalNFWMCRLudlow),

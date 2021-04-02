@@ -71,8 +71,8 @@ values of the light profile we average overall multiple coordinates in the pixel
 galaxies.
 """
 print("intensity of top-left `Grid2D` pixel:")
-print(light_image.native_binned[0, 0])
-print(light_image.slim_binned[0])
+print(light_image.binned.native[0, 0])
+print(light_image.binned[0])
 
 """
 If you find these `native` and `slim` data structures confusing, I wouldn't worry about it. From here on, we'll pretty 
@@ -117,13 +117,13 @@ print("deflection-angles of `Grid2D` sub-pixel 1:")
 print(mass_profile_deflections.native[0, 1])
 print()
 print("deflection-angles of `Grid2D` pixel 0:")
-print(mass_profile_deflections.native_binned[0, 1])
+print(mass_profile_deflections.binned.native[0, 1])
 print()
 print("deflection-angles of central `Grid2D` pixels:")
-print(mass_profile_deflections.native_binned[49, 49])
-print(mass_profile_deflections.native_binned[49, 50])
-print(mass_profile_deflections.native_binned[50, 49])
-print(mass_profile_deflections.native_binned[50, 50])
+print(mass_profile_deflections.binned.native[49, 49])
+print(mass_profile_deflections.binned.native[49, 50])
+print(mass_profile_deflections.binned.native[50, 49])
+print(mass_profile_deflections.binned.native[50, 50])
 
 """
 A `ProfilePlotter`can plot these deflection angles.

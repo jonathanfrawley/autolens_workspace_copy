@@ -44,13 +44,13 @@ imaging = al.Imaging.from_fits(
 We next mask the dataset, to remove the exterior regions of the image that do not contain emission from the lens or
 source galaxy.
 
-Note how when we plot the `MaskedImaging` below, the figure now zooms into the masked region.
+Note how when we plot the `Imaging` below, the figure now zooms into the masked region.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 masked_imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
 masked_imaging_plotter.subplot()

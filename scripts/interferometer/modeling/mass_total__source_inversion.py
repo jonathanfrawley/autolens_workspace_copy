@@ -22,6 +22,15 @@ import autolens.plot as aplt
 import numpy as np
 
 """
+__Masking__
+
+We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
+"""
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
+"""
 __Dataset__
 
 Load and plot the strong lens `Interferometer` dataset `mass_sie__source_sersic` from .fits files , which we will fit 
@@ -40,35 +49,14 @@ interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferomete
 interferometer_plotter.subplot_interferometer()
 
 """
-__Masking__
+We now create the `Interferometer` object which is used to fit the lens model.
 
-The perform an interferometer model-fit we require two masks: 
-
- 1) A ‘real_space_mask’ which defines the grid the image of the lensed source galaxy is evaluated using.
- 2) A ‘visibilities_mask’ defining which visibilities are omitted from the chi-squared evaluation (in this case, none).
-"""
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
-
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-"""
-We now create the `MaskedInterferometer` object which is used to fit the lens model.
-
-This includes a `SettingsMaskedInterferometer`, which includes the method used to Fourier transform the real-space 
+This includes a `SettingsInterferometer`, which includes the method used to Fourier transform the real-space 
 image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
 transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
 """
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
+settings_interferometer = al.SettingsInterferometer(
     transformer_class=al.TransformerNUFFT
-)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
-    real_space_mask=real_space_mask,
-    settings=settings_masked_interferometer,
 )
 
 """
@@ -122,7 +110,7 @@ search = af.DynestyStatic(
 __Analysis__
 
 The `AnalysisInterferometer` object defines the `log_likelihood_function` used by the non-linear search to fit the 
-model to the `MaskedInterferometer`dataset.
+model to the `Interferometer`dataset.
 
 For interferometer model-fits, we include a `SettingsInversion` object which describes how the linear algebra 
 calculations required to use an `Inversion` are performed. One of two different approaches can be used: 
@@ -139,7 +127,7 @@ calculations required to use an `Inversion` are performed. One of two different 
 settings_inversion = al.SettingsInversion(use_linear_operators=True)
 
 analysis = al.AnalysisInterferometer(
-    dataset=masked_interferometer, settings_inversion=settings_inversion
+    dataset=interferometer, settings_inversion=settings_inversion
 )
 
 """

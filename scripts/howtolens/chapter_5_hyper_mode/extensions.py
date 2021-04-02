@@ -40,22 +40,18 @@ def hyper_fit(
         values for the hyper-model components for passing to later model-fits.
     """
 
-    if not setup_hyper.hyper_fixed_after_source:
+    hyper_model = al.util.model.hyper_model_from(
+        setup_hyper=setup_hyper,
+        result=result,
+        include_hyper_image_sky=include_hyper_image_sky,
+    )
 
-        hyper_model = al.util.model.hyper_model_from(
-            setup_hyper=setup_hyper,
-            result=result,
-            include_hyper_image_sky=include_hyper_image_sky,
-        )
-
-        return al.util.model.hyper_fit(
-            hyper_model=hyper_model,
-            setup_hyper=setup_hyper,
-            result=result,
-            analysis=analysis,
-        )
-
-    return result
+    return al.util.model.hyper_fit(
+        hyper_model=hyper_model,
+        setup_hyper=setup_hyper,
+        result=result,
+        analysis=analysis,
+    )
 
 
 def stochastic_fit(

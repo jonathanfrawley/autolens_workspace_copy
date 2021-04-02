@@ -49,12 +49,10 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.figures(image=True)
 
 """
-Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
+Next, lets set the `Imaging` and `Mask2D` up as a `Imaging` object and setup a `Tracer` using the input lens 
 galaxy model (we don't need to provide the source's `LightProfile`, as we're using a `Mapper` to reconstruct it).
 """
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -88,7 +86,7 @@ works in a second - but lets just go ahead and use the `Inversion` first. (Ignor
 now, we'll cover this in the next tutorial).
 """
 inversion = al.Inversion(
-    masked_dataset=masked_imaging,
+    dataset=masked_imaging,
     mapper=mapper,
     regularization=al.reg.Constant(coefficient=1.0),
 )
@@ -136,7 +134,7 @@ visuals_2d = aplt.Visuals2D(mask=mask)
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.figures(image=True)
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -152,7 +150,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=masked_imaging.
 mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 inversion = al.Inversion(
-    masked_dataset=masked_imaging,
+    dataset=masked_imaging,
     mapper=mapper,
     regularization=al.reg.Constant(coefficient=1.0),
 )
@@ -225,10 +223,10 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 """
-Then, like before, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. Indeed, we see some 
+Then, like before, we pass the `Imaging` and `Tracer` to a `FitImaging` object. Indeed, we see some 
 pretty good looking residuals - we're certainly fitting the lensed source accurately!
 """
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(mask=True)
 

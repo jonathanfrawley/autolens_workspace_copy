@@ -58,9 +58,7 @@ mask = al.Mask2D.circular_annular(
     inner_radius=0.3,
     outer_radius=3.0,
 )
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)

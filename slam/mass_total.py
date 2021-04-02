@@ -5,6 +5,7 @@ from . import extensions
 
 from typing import Union
 
+
 def no_lens_light(
     path_prefix: str,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],

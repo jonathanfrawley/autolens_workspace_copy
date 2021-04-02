@@ -36,7 +36,7 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 import slam
 
 """
@@ -44,6 +44,11 @@ __Dataset + Masking__
 
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
+
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
@@ -51,23 +56,8 @@ interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
-)
-
-real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
-)
-
-visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-settings_masked_interferometer = al.SettingsMaskedInterferometer(
-    transformer_class=al.TransformerNUFFT
-)
-
-masked_interferometer = al.MaskedInterferometer(
-    interferometer=interferometer,
-    visibilities_mask=visibilities_mask,
     real_space_mask=real_space_mask,
-    settings=settings_masked_interferometer,
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -114,7 +104,7 @@ light, which in this example:
  
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
-analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
@@ -143,7 +133,7 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
  
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
-analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,

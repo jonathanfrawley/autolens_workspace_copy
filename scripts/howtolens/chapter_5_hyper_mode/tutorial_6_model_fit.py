@@ -39,7 +39,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -111,9 +111,7 @@ model = af.Collection(
             mass=al.mp.EllipticalIsothermal,
             shear=al.mp.ExternalShear,
         ),
-        source=af.Model(
-            al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic
-        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
     )
 )
 
@@ -136,9 +134,7 @@ model = af.Collection(
             shear=result_2.model.galaxies.lens.shear,
         ),
         source=af.Model(
-            al.Galaxy,
-            redshift=1.0,
-            bulge=result_2.model.galaxies.source.bulge,
+            al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
         ),
     )
 )
@@ -419,4 +415,3 @@ However, it may instead be time that you check out the for the SLaM pipelines, w
 provide a lot more flexibility in customizing the model and fitting procedure to fully exploit the hyper-mode features
 whilst fitting many different lens models.
 """
-

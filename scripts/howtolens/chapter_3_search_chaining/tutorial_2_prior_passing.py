@@ -45,7 +45,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=2.6
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = imaging.apply_mask(mask=mask)
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
@@ -293,7 +293,7 @@ Lets go through an example using a real parameter. Lets say in search 1 we fit t
 elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 ± 2.0 where the error value of 2.0 
 was computed at 3.0 sigma confidence. To pass this as a prior to search 2, we would write:
 
- lens.bulge.sersic_index = phase1.result.model.lens.bulge.sersic_index
+ lens.bulge.sersic_index = result_1.model.lens.bulge.sersic_index
 
 The prior on the lens galaxy's sersic `LightProfile` in search 2 would thus be a GaussianPrior, with mean=4.0 and 
 sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 ± 2.0 to 

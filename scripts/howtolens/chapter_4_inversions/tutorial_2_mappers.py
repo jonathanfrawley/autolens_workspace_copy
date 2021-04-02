@@ -148,12 +148,10 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.figures(image=True)
 
 """
-As usual, we setup our `Imaging` and `Mask2D` up as a `MaskedImaging` object and create a `Tracer` using the (masked) 
+As usual, we setup our `Imaging` and `Mask2D` up as a `Imaging` object and create a `Tracer` using the (masked) 
 grid.
 """
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)])
 

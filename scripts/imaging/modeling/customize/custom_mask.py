@@ -55,8 +55,8 @@ mask_custom = al.Mask2D.from_fits(
     pixel_scales=imaging.pixel_scales,
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask_custom  # <----- The custom mask is used here!
+masked_imaging = imaging.apply_mask(
+    mask=mask_custom  # <----- The custom mask is used here!
 )
 
 """
@@ -91,7 +91,7 @@ __Model-Fit__
 We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
 search to find which models fit the data with the highest likelihood.
 
-Because the `AnalysisImaging` was passed a `MaskedImaging` with the custom mask, this mask is used by the model-fit.
+Because the `AnalysisImaging` was passed a `Imaging` with the custom mask, this mask is used by the model-fit.
 """
 result = search.fit(model=model, analysis=analysis)
 

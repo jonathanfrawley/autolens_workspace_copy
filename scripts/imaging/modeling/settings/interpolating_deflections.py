@@ -40,20 +40,20 @@ import autolens.plot as aplt
 """
 __Settings Specific Code__
 
-To use deflection angle interpolation, we create a `SettingsMaskedImaging` object and specify that the 
+To use deflection angle interpolation, we create a `SettingsImaging` object and specify that the 
 `grid_class=al.Grid2DInterpolate` and `pixel_scales_interp=0.05`. 
 
 By using a `Grid2dInterpolate` the interpolation scheme described above is used, with the coarse grid used to compute 
 deflection angles having a pixel-scale of 0.05". 
 """
-settings_masked_imaging = al.SettingsMaskedImaging(
+settings_masked_imaging = al.SettingsImaging(
     grid_class=al.Grid2DInterpolate, pixel_scales_interp=0.05
 )
 
 """
 __Dataset + Masking__ 
 
-For this sub-grid to be used in the model-fit, we must pass the `settings_masked_imaging` to the `MaskedImaging` object,
+For this sub-grid to be used in the model-fit, we must pass the `settings_masked_imaging` to the `Imaging` object,
 which will be created using a `Grid2D` with a `sub-size value` of 4 (instead of the default of 2).
 """
 dataset_name = "mass_sie__source_sersic"
@@ -70,10 +70,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging,
+masked_imaging = imaging.apply_mask(
     mask=mask,
-    settings=settings_masked_imaging,  # <----- The `SettingsMaskedImaging` above is used here!
+    settings=settings_masked_imaging,  # <----- The `SettingsImaging` above is used here!
 )
 
 """
@@ -106,7 +105,7 @@ __Model-Fit__
 We now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear search 
 to find which models fit the data with the highest likelihood.
 
-Because the `AnalysisImaging` was passed a `MaskedImaging` with a `al.Grid2DInterpolate`, deflection angle interpolation 
+Because the `AnalysisImaging` was passed a `Imaging` with a `al.Grid2DInterpolate`, deflection angle interpolation 
 is used to speed-up the evalution of the mass models deflection angles.
 """
 result = search.fit(model=model, analysis=analysis)

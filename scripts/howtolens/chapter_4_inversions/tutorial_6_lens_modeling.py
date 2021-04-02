@@ -68,13 +68,13 @@ def perform_fit_with_lens__source_galaxy(imaging, lens_galaxy, source_galaxy):
         outer_radius=2.2,
     )
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=1)
+    masked_imaging = imaging.apply_mask(
+        mask=mask, settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 
 """
@@ -232,9 +232,7 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
-masked_imaging = al.MaskedImaging(
-    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
-)
+masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -242,7 +240,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 This fit now subtracts the lens galaxy's light from the image and fits the resulting source-only image with the 
 `Inversion`. When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
 """
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(mask=True)
 
@@ -270,7 +268,7 @@ lens_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 include_2d = aplt.Include2D(mask=True)
 
