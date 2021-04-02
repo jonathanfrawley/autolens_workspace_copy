@@ -1,5 +1,5 @@
 """
-Settings: Signal To Noise Limit
+__Settings__: Signal To Noise Limit
 ===============================
 
 This example demonstrates how to use set a signal-to-noise limit on the `Imaging` that is used to perform a

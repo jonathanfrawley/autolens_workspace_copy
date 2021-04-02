@@ -1,5 +1,5 @@
 """
-Settings: Sub Gridding
+__Settings__: Sub Gridding
 ======================
 
 This example demonstrates how to change the sub-grid used by a parametric `LightProfile` to compute the surface

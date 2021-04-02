@@ -105,7 +105,7 @@ light, which in this example:
  - Uses a parametric `EllSersic` bulge for the source's light (omitting a disk / envelope).
  - Uses an `EllIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
-We use the following optional settings:
+__Settings__:
  
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
  PIPELINE).
@@ -136,7 +136,7 @@ regularization, to set up the model and hyper images, and then:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
  SOURCE INVERSION PIPELINE.
 
-We use the following optional settings:
+__Settings__:
 
  - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
@@ -165,12 +165,26 @@ The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens m
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
  - Uses an `EllPowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
+ 
  - Uses the `EllSersic` model representing a bulge for the source's light.
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
+ 
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL 
+ PIPELINE.
+
+__Preloads__:
+ 
+ - Pixelization: We preload the pixelization using the maximum likelihood hyper-result of the SOURCE INVERSION PIPELINE. 
+ This ensures the source pixel-grid is not recalculated every iteration of the log likelihood function, speeding up 
+ the model-fit (this is only possible because the source pixelization is fixed).    
 """
+preloads = al.Preloads.setup(
+    result=source_inversion_results.last.hyper, pixelization=True
+)
+
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
     positions=source_inversion_results.last.image_plane_multiple_image_positions,
+    preloads=preloads,
 )
 
 mass_results = slam.mass_total.no_lens_light(
@@ -191,13 +205,22 @@ sensitivty mapping if given in the script `sensitivity_mapping.py`.
 Each model-fit performed by sensitivity mapping creates a new instance of an `Analysis` class, which contains the
 data simulated by the `simulate_function` for that model. This requires us to write a wrapper around the 
 PyAutoLens `AnalysisImaging` class.
+
+__Preloads__:
+ 
+ - Pixelization: We preload the pixelization using the maximum likelihood hyper-result of the SOURCE INVERSION PIPELINE. 
+ This ensures the source pixel-grid is not recalculated every iteration of the log likelihood function, speeding up 
+ the model-fit (this is only possible because the source pixelization is fixed).   
 """
+preloads = al.Preloads.setup(
+    result=source_inversion_results.last.hyper, pixelization=True
+)
 
 
 class AnalysisImagingSensitivity(al.AnalysisImaging):
     def __init__(self, dataset):
 
-        super().__init__(dataset=dataset)
+        super().__init__(dataset=dataset, preloads=preloads)
 
         self.hyper_galaxy_image_path_dict = (
             mass_results.last.hyper_galaxy_image_path_dict

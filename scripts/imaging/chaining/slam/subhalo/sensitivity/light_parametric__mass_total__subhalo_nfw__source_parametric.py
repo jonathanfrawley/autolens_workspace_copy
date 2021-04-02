@@ -111,7 +111,7 @@ source galaxy's light, which in this example:
  
  - Uses an `EllIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
- We use the following optional settings:
+ __Settings__:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """

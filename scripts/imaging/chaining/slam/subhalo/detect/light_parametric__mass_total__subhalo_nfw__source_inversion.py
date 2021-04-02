@@ -108,7 +108,7 @@ source galaxy's light, which in this example:
  
  - Uses an `EllIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
- We use the following optional settings:
+ __Settings__:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
@@ -145,7 +145,7 @@ regularization, to set up the model and hyper images, and then:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
  SOURCE INVERSION PIPELINE.
 
-We use the following optional settings:
+__Settings__:
 
  - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
@@ -183,18 +183,19 @@ In this example it:
 
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS 
  PIPELINE [fixed values].
+ 
+__Preloads__: 
+ 
+ - Inversion: We preload linear algebra matrices used by the inversion using the maximum likelihood hyper-result of the 
+ SOURCE INVERSION PIPELINE. This ensures these matrices are not recalculated every iteration of the log likelihood 
+ function, speeding up the model-fit (this is possible because the mass model and source pixelization are fixed).  
 """
-settings_lens = al.SettingsLens(
-    positions_threshold=source_inversion_results.last.positions_threshold_from(
-        factor=3.0, minimum_threshold=0.2
-    )
-)
+preloads = al.Preloads.setup(result=source_inversion_results.last.hyper, inversion=True)
 
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
     hyper_result=source_inversion_results.last,
-    positions=source_inversion_results.last.image_plane_multiple_image_positions,
-    settings_lens=settings_lens,
+    preloads=preloads,
 )
 
 bulge = af.Model(al.lp.EllSersic)
@@ -226,7 +227,14 @@ model of the LIGHT PARAMETRIC PIPELINE. In this example it:
  - Uses the `EllSersic` model representing a bulge for the source's light [priors initialized from SOURCE 
  PARAMETRIC PIPELINE].
  
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
+ - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL 
+ PIPELINE.
+ 
+__Preloads__:
+ 
+ - Pixelization: We preload the pixelization using the maximum likelihood hyper-result of the SOURCE INVERSION PIPELINE. 
+ This ensures the source pixel-grid is not recalculated every iteration of the log likelihood function, speeding up 
+ the model-fit (this is only possible because the source pixelization is fixed).  
 """
 settings_lens = al.SettingsLens(
     positions_threshold=source_inversion_results.last.positions_threshold_from(
@@ -234,11 +242,16 @@ settings_lens = al.SettingsLens(
     )
 )
 
+preloads = al.Preloads.setup(
+    result=source_inversion_results.last.hyper, pixelization=True
+)
+
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
     hyper_result=source_inversion_results.last,
     positions=source_inversion_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
+    preloads=preloads,
 )
 
 mass_results = slam.mass_total.with_lens_light(
@@ -265,6 +278,12 @@ For this runner the SUBHALO PIPELINE customizes:
  - The [number_of_steps x number_of_steps] size of the grid-search, as well as the dimensions it spans in arc-seconds.
  - The `number_of_cores` used for the gridsearch, where `number_of_cores > 1` performs the model-fits in paralle using
  the Python multiprocessing module.
+ 
+__Preloads__:
+ 
+ - Pixelization: We preload the pixelization using the maximum likelihood hyper-result of the SOURCE INVERSION PIPELINE. 
+ This ensures the source pixel-grid is not recalculated every iteration of the log likelihood function, speeding up 
+ the model-fit (this is only possible because the source pixelization is fixed).   
 """
 settings_lens = al.SettingsLens(
     positions_threshold=mass_results.last.positions_threshold_from(
@@ -272,11 +291,16 @@ settings_lens = al.SettingsLens(
     )
 )
 
+preloads = al.Preloads.setup(
+    result=source_inversion_results.last.hyper, pixelization=True
+)
+
 analysis = al.AnalysisImaging(
     dataset=masked_imaging,
     positions=mass_results.last.image_plane_multiple_image_positions,
     hyper_result=source_inversion_results.last,
     settings_lens=settings_lens,
+    preloads=preloads,
 )
 
 subhalo_results = slam.subhalo.detection_single_plane(

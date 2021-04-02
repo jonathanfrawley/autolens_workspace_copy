@@ -303,6 +303,18 @@ __Model-Fits via Searches 6 & 7__
 
 We are now ready to use hyper-model to adapt the `Inversion` to the source's unlensed morphology, given that the 
 model-fit above will give us reliable hyper images.
+
+__Preloads__: 
+ 
+Calculating the source-plane pixel grid of a `VoronoiBrightnessImage` pixelization is computationally expensive, slowing
+down the time a log likelihood evaluation takes in **PyAutoLens**. However, when the source pixelization is fixed there
+is no need recalculate the centre of every source-pixel centre (in the image-plane). 
+
+This is the case in search 7 and we can therefore set up the analysis with a `Preload` object containing the image 
+pixel source pixel centres, which will then not be recalculated every iteration of the likelihood function. This speeds
+up the model-fit significantly.
+  
+This uses the maximum likelihood hyper-result search 6. 
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_5)
 
@@ -363,6 +375,12 @@ model = af.Collection(
     hyper_background_noise=result_6.instance.hyper_background_noise,
 )
 
+preloads = al.Preloads.setup(result=result_6, pixelization=True)
+
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging, hyper_result=result_5, preloads=preloads
+)
+
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[7]_light[fixed]_mass[total]_source[inversion]",
@@ -399,6 +417,10 @@ with multiple components.
 The final search in this hyper-pipeline fits an `EllPowerLaw` mass model, which benefits a lot from hyper-mode
 as the `slope` is a difficult parameter to infer which relies heavily on the intricacies of how the source is 
 reconstructed. 
+
+__Preloads__: 
+
+We again preload this with the image-pixel source pixel centres, now using the hyper-result of search 7.
 """
 mass = af.Model(al.mp.EllPowerLaw)
 mass.take_attributes(result_7.model.galaxies.lens.mass)
@@ -422,7 +444,11 @@ model = af.Collection(
     )
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_7)
+preloads = al.Preloads.setup(result=result_7.hyper, pixelization=True)
+
+analysis = al.AnalysisImaging(
+    dataset=masked_imaging, hyper_result=result_7.hyper, preloads=preloads
+)
 
 search = af.DynestyStatic(
     path_prefix=path_prefix,

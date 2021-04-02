@@ -1,5 +1,5 @@
 """
-Settings: Interpolating Deflections
+__Settings__: Interpolating Deflections
 ===================================
 
 This example demonstrates how to use deflection-angles interpolation during a model-fit, which computes the deflection

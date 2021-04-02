@@ -190,9 +190,9 @@ fit_imaging_plotter.subplot_fit_imaging()
 And now lets confirm it uses significantly fewer iterations.
 """
 print("Total Dynesty Iterations:")
-print("Slow settings: ~500000")
+print("Slow __Settings__: ~500000")
 print(result_slow.samples.total_samples)
-print("Fast settings: ", result_fast.samples.total_samples)
+print("Fast __Settings__: ", result_fast.samples.total_samples)
 
 """
 __Optimizers__

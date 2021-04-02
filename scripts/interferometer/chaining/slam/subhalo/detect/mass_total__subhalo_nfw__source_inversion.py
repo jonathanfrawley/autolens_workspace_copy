@@ -107,7 +107,7 @@ source galaxy's light, which in this example:
  
  - Uses an `EllIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
- We use the following optional settings:
+ __Settings__:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
@@ -144,7 +144,7 @@ regularization, to set up the model and hyper images, and then:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the
  SOURCE INVERSION PIPELINE.
 
-We use the following optional settings:
+__Settings__:
 
  - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.

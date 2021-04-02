@@ -97,7 +97,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 __Search__
 
 The lens model is fitted to the data using a non-linear search. In this example, we use the nested sampling algorithm 
-Dynesty (https://dynesty.readthedocs.io/en/latest/). We make the following changes to the Dynesty settings:
+Dynesty (https://dynesty.readthedocs.io/en/latest/). We make the following changes to the Dynesty __Settings__:
 
  - Increase the number of live points, `n_live_points`, from the default value of 50 to 100. 
  - Increase the number of random walks per live point, `walks` from the default value of 5 to 10. 
