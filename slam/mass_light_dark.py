@@ -16,42 +16,45 @@ def with_lens_light(
     lens_disk: af.Model(al.lp.LightProfile) = None,
     lens_envelope: af.Model(al.lp.LightProfile) = None,
     dark: af.Model(al.mp.MassProfile) = af.Model(al.mp.EllNFWMCRLudlow),
+    smbh: af.Model(al.mp.MassProfile) = None,
     einstein_mass_range: Optional[Tuple[float, float]] = (0.01, 5.0),
     end_with_hyper_extension: bool = False,
-):
+) -> af.ResultsCollection:
     """
     The SLaM MASS LIGHT DARK PIPELINE for fitting imaging data with a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_results : af.ResultCollection
+    source_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE which ran before this pipeline.
-    light_results : af.ResultCollection
+    light_results
         The results of the SLaM LIGHT PARAMETRIC PIPELINE which ran before this pipeline.
-    mass : af.Model(mp.MassProfile)
+    mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
-    lens_bulge : af.Model(lmp.LightMassProfile)
+    smbh
+        The `MassProfile` used to fit the a super massive black hole in the lens galaxy.
+    lens_bulge
         The `LightMassProfile` `Model` used to represent the light and stellar mass distribution of the lens galaxy's
         bulge (set to None to omit a bulge).
-    lens_disk : af.Model(lmp.LightMassProfile)
+    lens_disk
         The `LightMassProfile` `Model` used to represent the light and stellar mass distribution of the lens galaxy's
         disk (set to None to omit a disk).
-    lens_envelope : af.Model(lmp.LightMassProfile)
+    lens_envelope
         The `LightMassProfile` `Model` used to represent the light and stellar mass distribution of the lens galaxy's
         envelope (set to None to omit an envelope).
-    dark : af.Model(mp.MassProfile)
+    dark
         The `MassProfile` `Model` used to represent the dark matter distribution of the lens galaxy's (set to None to
         omit dark matter).
-    einstein_mass_range : (float, float)
+    einstein_mass_range
         The values a the estimate of the Einstein Mass in the LIGHT PIPELINE is multiplied by to set the lower and
         upper limits of the profile's mass-to-light ratio.
-    end_with_hyper_extension : bool
+    end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
     """
@@ -99,7 +102,8 @@ def with_lens_light(
     dark.redshift_object = light_results.last.instance.galaxies.lens.redshift
     dark.redshift_source = light_results.last.instance.galaxies.source.redshift
 
-    #  smbh = self.pipeline_mass.smbh_prior_model_from_result(result=result)
+    if smbh is not None:
+        smbh.centre = lens_bulge.centre
 
     source = slam_util.source__from_result_model_if_parametric(
         result=source_results.last, setup_hyper=setup_hyper
@@ -115,7 +119,7 @@ def with_lens_light(
                 envelope=lens_envelope,
                 dark=dark,
                 shear=source_results.last.model.galaxies.lens.shear,
-                #      smbh=smbh,
+                smbh=smbh,
                 hyper_galaxy=setup_hyper.hyper_galaxy_lens_from_result(
                     result=light_results.last
                 ),

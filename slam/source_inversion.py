@@ -15,23 +15,23 @@ def no_lens_light(
         al.pix.VoronoiBrightnessImage
     ),
     regularization: af.Model(al.reg.Regularization) = af.Model(al.reg.Constant),
-):
+) -> af.ResultsCollection:
     """
     The S:aM SOURCE INVERSION PIPELINE for fitting imaging data without a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_parametric_results : af.ResultCollection
+    source_parametric_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE which ran before this pipeline.
-    pixelization : af.Model(pix.Pixelization)
+    pixelization
         The pixelization used by the `Inversion` which fits the source light.
-    regularization : af.Model(reg.Regularization)
+    regularization
         The regularization used by the `Inversion` which fits the source light.
     """
 
@@ -239,23 +239,23 @@ def with_lens_light(
         al.pix.VoronoiBrightnessImage
     ),
     regularization: af.Model(al.reg.Regularization) = af.Model(al.reg.Constant),
-):
+) -> af.ResultsCollection:
     """
-    The S:aM SOURCE INVERSION PIPELINE for fitting imaging data with a lens light component.
+    The SLaM SOURCE INVERSION PIPELINE for fitting imaging data with a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_parametric_results : af.ResultCollection
+    source_parametric_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE which ran before this pipeline.
-    pixelization : af.Model(pix.Pixelization)
+    pixelization
         The pixelization used by the `Inversion` which fits the source light.
-    regularization : af.Model(reg.Regularization)
+    regularization
         The regularization used by the `Inversion` which fits the source light.
     """
 

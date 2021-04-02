@@ -3,7 +3,7 @@ import autolens as al
 from . import slam_util
 from . import extensions
 
-from typing import Union
+from typing import Union, Optional, Tuple
 
 
 def no_lens_light(
@@ -12,28 +12,31 @@ def no_lens_light(
     setup_hyper: al.SetupHyper,
     source_results: af.ResultsCollection,
     mass: af.Model(al.mp.MassProfile) = af.Model(al.mp.EllIsothermal),
-    mass_centre: (float, float) = None,
+    smbh: af.Model(al.mp.MassProfile) = None,
+    mass_centre: Optional[Tuple[float, float]] = None,
     end_with_hyper_extension: bool = False,
-):
+) -> af.ResultsCollection:
     """
     The SLaM MASS TOTAL PIPELINE for fitting imaging data without a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_results : af.ResultCollection
+    source_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE which ran before this pipeline.
-    mass : af.Model(mp.MassProfile)
+    mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
-    mass_centre : (float, float)
+    smbh
+        The `MassProfile` used to fit the a super massive black hole in the lens galaxy.
+    mass_centre
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
-    end_with_hyper_extension : bool
+    end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
     """
@@ -57,6 +60,9 @@ def no_lens_light(
     if mass_centre is not None:
         mass.centre = mass_centre
 
+    if smbh is not None:
+        smbh.centre = mass.centre
+
     source = slam_util.source__from_result_model_if_parametric(
         result=source_results.last, setup_hyper=setup_hyper
     )
@@ -67,6 +73,7 @@ def no_lens_light(
                 al.Galaxy,
                 redshift=source_results.last.instance.galaxies.lens.redshift,
                 mass=mass,
+                smbh=smbh,
                 shear=source_results.last.model.galaxies.lens.shear,
             ),
             source=source,
@@ -111,30 +118,33 @@ def with_lens_light(
     source_results: af.ResultsCollection,
     light_results: af.ResultsCollection,
     mass: af.Model(al.mp.MassProfile) = af.Model(al.mp.EllIsothermal),
-    mass_centre: (float, float) = None,
+    smbh: af.Model(al.mp.MassProfile) = None,
+    mass_centre: Optional[Tuple[float, float]] = None,
     end_with_hyper_extension: bool = False,
-):
+) -> af.ResultsCollection:
     """
     The SLaM MASS TOTAL PIPELINE for fitting imaging data with a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_results : af.ResultCollection
+    source_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE which ran before this pipeline.
-    light_results : af.ResultCollection
+    light_results
         The results of the SLaM LIGHT PARAMETRIC PIPELINE which ran before this pipeline.
-    mass : af.Model(mp.MassProfile)
+    mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
-    mass_centre : (float, float)
+    smbh
+        The `MassProfile` used to fit the a super massive black hole in the lens galaxy.
+    mass_centre
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
-    end_with_hyper_extension : bool
+    end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
     """
@@ -158,7 +168,8 @@ def with_lens_light(
     if mass_centre is not None:
         mass.centre = mass_centre
 
-    #  smbh = self.pipeline_mass.smbh_prior_model_from_result(result=result)
+    if smbh is not None:
+        smbh.centre = mass.centre
 
     source = slam_util.source__from_result_model_if_parametric(
         result=source_results.last, setup_hyper=setup_hyper
@@ -174,7 +185,7 @@ def with_lens_light(
                 envelope=light_results.last.instance.galaxies.lens.envelope,
                 mass=mass,
                 shear=source_results.last.model.galaxies.lens.shear,
-                #      smbh=smbh,
+                smbh=smbh,
                 hyper_galaxy=setup_hyper.hyper_galaxy_lens_from_result(
                     result=light_results.last
                 ),

@@ -1,8 +1,10 @@
 import autofit as af
 import autolens as al
 
+from typing import Tuple, Optional
 
-def set_lens_light_centres(lens, light_centre: (float, float)):
+
+def set_lens_light_centres(lens, light_centre: Tuple[float, float]):
     """
     Set the (y,x) centre of every light profile in the lens light model to the same input value `light_centre`
     Parameters
@@ -24,7 +26,7 @@ def set_lens_light_centres(lens, light_centre: (float, float)):
 
 
 def set_lens_light_model_centre_priors(
-    lens, light_centre_gaussian_prior_values: (float, float)
+    lens: af.Model, light_centre_gaussian_prior_values: Tuple[float, float]
 ):
     """
     Set the mean and sigma of every `GaussianPrior` of every light profile in the lens light model to the same value,
@@ -59,11 +61,11 @@ def set_lens_light_model_centre_priors(
 
 def pass_light_and_mass_profile_priors(
     model: af.Model(al.lmp.LightMassProfile),
-    result_light_component,
+    result_light_component: af.Model,
     result: af.Result,
-    einstein_mass_range: (float, float) = None,
+    einstein_mass_range: Optional[Tuple[float, float]] = None,
     as_instance: bool = False,
-):
+) -> Optional[af.Model]:
     """
     Returns an updated version of a `LightMassProfile` model (e.g. a bulge or disk) whose priors are initialized from
     previous results of a `Light` pipeline.
@@ -113,9 +115,9 @@ def pass_light_and_mass_profile_priors(
 def update_mass_to_light_ratio_prior(
     model: af.Model(al.lmp.LightMassProfile),
     result: af.Result,
-    einstein_mass_range: (float, float),
+    einstein_mass_range: Tuple[float, float],
     bins: int = 100,
-):
+) -> Optional[af.Model]:
     """
     Updates the mass to light ratio parameter of a `LightMassProfile` model (e.g. a bulge or disk) such that the
     the `LogUniformPrior` on the mass-to-light ratio of the model-component is set with lower and upper limits that
@@ -126,14 +128,14 @@ def update_mass_to_light_ratio_prior(
 
     Parameters
     ----------
-    model : af.Model(al.lmp.LightMassProfile)
+    model
         The light and mass profile whoses priors are passed from the LIGHT PIPELINE.
-    result : af.Result
+    result
         The result of the LIGHT PIPELINE used to pass the priors.
-    einstein_mass_range : (float, float)
+    einstein_mass_range
         The values a the estimate of the Einstein Mass in the LIGHT PIPELINE is multiplied by to set the lower and upper
         limits of the profile's mass-to-light ratio.
-    bins : int
+    bins
         The number of bins used to map a calculated Einstein Mass to that of the `LightMassProfile`.
 
     Returns
@@ -174,7 +176,9 @@ def update_mass_to_light_ratio_prior(
     return model
 
 
-def mass__from_result(mass, result: af.Result, unfix_mass_centre=False):
+def mass__from_result(
+    mass, result: af.Result, unfix_mass_centre: bool = False
+) -> af.Model:
     """
     Returns an updated mass `Model` whose priors are initialized from previous results in a pipeline.
 
@@ -186,8 +190,11 @@ def mass__from_result(mass, result: af.Result, unfix_mass_centre=False):
 
     Parameters
     ----------
-    results : af.Result
+    results
         The result of a previous SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE.
+    unfix_mass_centre
+        If the `mass_centre` was fixed to an input value in a previous pipeline, then `True` will unfix it and make it
+        free parameters that are fitted for.
 
     Returns
     -------
@@ -210,7 +217,7 @@ def mass__from_result(mass, result: af.Result, unfix_mass_centre=False):
 
 
 def source__from_result(
-    result: af.Result, setup_hyper, source_is_model: bool = False
+    result: af.Result, setup_hyper: al.SetupHyper, source_is_model: bool = False
 ) -> af.Model:
     """
     Setup the source model using the previous pipeline and search results.
@@ -227,6 +234,8 @@ def source__from_result(
     ----------
     result : af.Result
         The result of the previous source pipeline.
+    setup_hyper
+        The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
     source_is_model : bool
         If `True` the source is returned as a *model* where the parameters are fitted for using priors of the
         search result it is loaded from. If `False`, it is an instance of that search's result.
@@ -303,7 +312,9 @@ def source__from_result(
             )
 
 
-def source__from_result_model_if_parametric(result: af.Result, setup_hyper):
+def source__from_result_model_if_parametric(
+    result: af.Result, setup_hyper: al.SetupHyper
+) -> af.Model:
     """
     Setup the source model for a MASS PIPELINE using the previous SOURCE PIPELINE results.
 
@@ -317,8 +328,10 @@ def source__from_result_model_if_parametric(result: af.Result, setup_hyper):
 
     Parameters
     ----------
-    result : af.Result
+    result
         The result of the previous source pipeline.
+    setup_hyper
+        The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
     """
     if result.instance.galaxies.source.pixelization is None:
         return source__from_result(

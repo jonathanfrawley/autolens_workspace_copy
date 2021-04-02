@@ -104,12 +104,12 @@ To compose a lens model, we set up a `Galaxy` as a `Model`. Whereas previous, we
 every parameter of a `Galaxy`'s `LightProfile`'s and  `MassProfile`'s, when it is a `Model` these only the class of each
 profile is passed and its parameters are fitted for and inferred by the non-linear search.
 
-Lets model the lens galaxy with an `SphIsothermal` `MassProfile`.(which is what it was simulated with).
+Lets model the lens galaxy with an spherical isothermal mass profile (which is what it was simulated with).
 """
 lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal)
 
 """
-Lets model the source galaxy with a spherical exponential `LightProfile` (again, what it was simulated with).
+Lets model the source galaxy with a spherical exponential light profile (again, what it was simulated with).
 """
 source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential)
 

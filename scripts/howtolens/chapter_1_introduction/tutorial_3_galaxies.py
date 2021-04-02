@@ -98,7 +98,7 @@ galaxy_plotter.subplot_of_light_profiles(image=True)
 
 """
 `MassProfile`'s interact with `Galaxy` objects in the exact same way as `LightProfile`'s. Lets create a `Galaxy` with three 
-`SphIsothermal` `MassProfile`'s. 
+spherical isothermal mass profile's. 
 """
 mass_profile_1 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 

@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 from . import extensions
 
-from typing import Union
+from typing import Union, Optional, Tuple
 
 
 def no_lens_light(
@@ -16,41 +16,40 @@ def no_lens_light(
     source_envelope: af.Model(al.lp.LightProfile) = None,
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
-    mass_centre: (float, float) = None,
-):
+    mass_centre: Optional[Tuple[float, float]] = None,
+) -> af.ResultsCollection:
     """
     The SlaM SOURCE PARAMETRIC PIPELINE for fitting imaging data without a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    mass : af.Model(mp.MassProfile)
+    mass
         The `MassProfile` fitted by this pipeline.
-    shear : af.Model(mp.MassSheet)
+    shear
         The model used to represent the external shear in the mass model (set to None to turn off shear).
-                bulge_prior_model : af.Model(lp.LightProfile)
-    source_bulge : af.Model(lp.LightProfile)
+    source_bulge
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's bulge (set to
         None to omit a bulge).
-    source_disk : af.Model(lp.LightProfile)
+    source_disk
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's disk (set to
         None to omit a disk).
-    source_envelope : af.Model(lp.LightProfile)
+    source_envelope
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's envelope (set to
         None to omit an envelope).
-    redshift_lens : float
+    redshift_lens
         The redshift of the lens galaxy fitted, used by the pipeline for converting arc-seconds to kpc, masses to
         solMass, etc.
-    redshift_source : float
+    redshift_source
         The redshift of the source galaxy fitted, used by the pipeline for converting arc-seconds to kpc, masses to
         solMass, etc.
-    mass_centre : (float, float)
-       If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
+    mass_centre
+        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
     """
 
@@ -122,53 +121,48 @@ def with_lens_light(
     source_envelope: af.Model(al.lp.LightProfile) = None,
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
-    mass_centre: (float, float) = None,
-):
+    mass_centre: Optional[Tuple[float, float]] = None,
+) -> af.ResultsCollection:
     """
     The SlaM SOURCE PARAMETRIC PIPELINE for fitting imaging data with a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    lens_bulge : af.Model(lp.LightProfile)
+    lens_bulge
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
-    lens_disk : af.Model(lp.LightProfile)
+    lens_disk
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's disk (set to
         None to omit a disk).
-    lens_envelope : af.Model(lp.LightProfile)
+    lens_envelope
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's envelope (set to
         None to omit an envelope).        
-    mass : af.Model(mp.MassProfile)
+    mass
         The `MassProfile` fitted by this pipeline.
-    shear : af.Model(mp.MassSheet)
+    shear
         The model used to represent the external shear in the mass model (set to None to turn off shear).
                 bulge_prior_model : af.Model(lp.LightProfile)
-    source_bulge : af.Model(lp.LightProfile)
+    source_bulge
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's bulge (set to
         None to omit a bulge).
-    source_disk : af.Model(lp.LightProfile)
+    source_disk
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's disk (set to
         None to omit a disk).
-    source_envelope : af.Model(lp.LightProfile)
+    source_envelope
         The `LightProfile` `Model` used to represent the light distribution of the source galaxy's envelope (set to
         None to omit an envelope).
-    redshift_lens : float
+    redshift_lens
         The redshift of the lens galaxy fitted, used by the pipeline for converting arc-seconds to kpc, masses to
         solMass, etc.
-    redshift_source : float
+    redshift_source
         The redshift of the source galaxy fitted, used by the pipeline for converting arc-seconds to kpc, masses to
         solMass, etc.
-    light_centre : (float, float) or None
-       If input, a fixed (y,x) centre of the galaxy is used for every light model centre which are not treated as a
-        free parameter by the non-linear search.
-    light_centre_gaussian_prior_values : (float, float) or None
-       If input, the mean and sigma of every light model centre is set using these values as (mean, sigma).
     mass_centre : (float, float)
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.

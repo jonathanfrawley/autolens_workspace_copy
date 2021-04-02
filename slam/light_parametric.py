@@ -3,7 +3,7 @@ import autolens as al
 from . import slam_util
 from . import extensions
 
-from typing import Union
+from typing import Union, Optional
 
 
 def with_lens_light(
@@ -15,30 +15,30 @@ def with_lens_light(
     lens_disk: af.Model(al.lp.LightProfile) = None,
     lens_envelope: af.Model(al.lp.LightProfile) = None,
     end_with_hyper_extension: bool = False,
-):
+) -> af.ResultsCollection:
     """
     The SlaM LIGHT PARAMETRIC PIPELINE for fitting imaging data with a lens light component.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    source_results : af.ResultCollection
+    source_results
         The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE INVERSION PIPELINE which ran before this pipeline.
-    lens_bulge : af.Model(lp.LightProfile)
+    lens_bulge
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
-    lens_disk : af.Model(lp.LightProfile)
+    lens_disk
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's disk (set to
         None to omit a disk).
-    lens_envelope : af.Model(lp.LightProfile)
+    lens_envelope
         The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's envelope (set to
         None to omit an envelope).
-    end_with_hyper_extension : bool
+    end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
     """

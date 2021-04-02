@@ -3,7 +3,7 @@ import autolens as al
 from autofit.non_linear.grid import sensitivity as s
 from . import slam_util
 
-from typing import Union, Tuple
+from typing import Union, Tuple, ClassVar
 import numpy as np
 
 
@@ -16,29 +16,29 @@ def detection_single_plane(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
-):
+) -> af.ResultsCollection:
     """
     The SLaM SUBHALO PIPELINE for fitting imaging data with or without a lens light component, where it is assumed
     that the subhalo is at the same redshift as the lens galaxy.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
+    analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    mass_results : af.ResultCollection
+    mass_results
         The results of the SLaM MASS PIPELINE which ran before this pipeline.
-    subhalo_mass : af.Model(mp.MassProfile)
+    subhalo_mass
         The `MassProfile` used to fit the subhalo in this pipeline.
-    grid_dimension_arcsec : float
+    grid_dimension_arcsec
         the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
         all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
-    number_of_steps : int
+    number_of_steps
         The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-    number_of_cores : int
+    number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
     """
@@ -206,29 +206,29 @@ def detection_multi_plane(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
-):
+) -> af.ResultsCollection:
     """
     The SLaM SUBHALO PIPELINE for fitting imaging data with or without a lens light component, where the subhalo is a
     free parameters and therefore including multi-plane ray-tracing.
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    analysis : al.AnalysisImaging
-        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_hyper : SetupHyper
+    analysis
+        The analysis which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    mass_results : af.ResultCollection
+    mass_results
         The results of the SLaM MASS PIPELINE which ran before this pipeline.
-    subhalo_mass : af.Model(mp.MassProfile)
+    subhalo_mass
         The `MassProfile` used to fit the subhalo in this pipeline.
-    grid_dimension_arcsec : float
+    grid_dimension_arcsec
         the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
         all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
-    number_of_steps : int
+    number_of_steps
         The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-    number_of_cores : int
+    number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
     """
@@ -393,10 +393,10 @@ def detection_multi_plane(
 
 def sensitivity_mapping_imaging(
     path_prefix: str,
-    mask,
-    psf,
-    mass_results,
-    analysis_cls,
+    mask: al.Mask2D,
+    psf: al.Kernel2D,
+    mass_results: af.ResultsCollection,
+    analysis_cls: ClassVar[al.AnalysisImaging],
     subhalo_mass: af.Model(al.mp.MassProfile) = af.Model(al.mp.SphNFWMCRLudlow),
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
@@ -408,28 +408,26 @@ def sensitivity_mapping_imaging(
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    mask : al.Mask2D
+    mask
         The Mask2D that is applied to the imaging data for model-fitting.
-    psf : al.Kernel2D
+    psf
         The Point Spread Function (PSF) used when simulating every image of the strong lens that is fitted by
         sensitivity mapping.
-    analysis_cls : Type[al.AnalysisImaging]
+    mass_results
+        The results of the SLaM MASS PIPELINE which ran before this pipeline.
+    analysis_cls
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit. A
         new instance of this class is created for every model-fit.
-    setup_hyper : SetupHyper
-        The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    mass_results : af.ResultCollection
-        The results of the SLaM MASS PIPELINE which ran before this pipeline.
-    subhalo_mass : af.Model(mp.MassProfile)
+    subhalo_mass
         The `MassProfile` used to fit the subhalo in this pipeline.
-    grid_dimension_arcsec : float
+    grid_dimension_arcsec
         the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
         all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
-    number_of_steps : int
+    number_of_steps
         The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-    number_of_cores : int
+    number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
     """
@@ -467,7 +465,7 @@ def sensitivity_mapping_imaging(
     subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
     therefore when it is detectable!).
     """
-    perturbation_model = af.Collection(al.Galaxy, redshift=0.5, mass=subhalo_mass)
+    perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
     """
     Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick
@@ -602,8 +600,8 @@ def sensitivity_mapping_interferometer(
     path_prefix: str,
     uv_wavelengths: np.ndarray,
     real_space_mask: al.Mask2D,
-    mass_results,
-    analysis_cls,
+    mass_results: af.ResultsCollection,
+    analysis_cls: ClassVar[al.AnalysisInterferometer],
     subhalo_mass: af.Model(al.mp.MassProfile) = af.Model(al.mp.SphNFWMCRLudlow),
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
@@ -615,28 +613,25 @@ def sensitivity_mapping_interferometer(
 
     Parameters
     ----------
-    path_prefix : str or None
+    path_prefix
         The prefix of folders between the output path and the search folders.
-    mask : al.Mask2D
-        The Mask2D that is applied to the imaging data for model-fitting.
-    psf : al.Kernel2D
-        The Point Spread Function (PSF) used when simulating every image of the strong lens that is fitted by
-        sensitivity mapping.
-    analysis_cls : Type[al.AnalysisImaging]
+    uv_wavelengths
+        The wavelengths of the interferometer baselines used for mapping to Fourier space.
+    real_space_mask
+        The mask in real space which defines how lensed images are computed.
+    mass_results
+        The results of the SLaM MASS PIPELINE which ran before this pipeline.
+    analysis_cls
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit. A
         new instance of this class is created for every model-fit.
-    setup_hyper : SetupHyper
-        The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    mass_results : af.ResultCollection
-        The results of the SLaM MASS PIPELINE which ran before this pipeline.
-    subhalo_mass : af.Model(mp.MassProfile)
+    subhalo_mass
         The `MassProfile` used to fit the subhalo in this pipeline.
-    grid_dimension_arcsec : float
+    grid_dimension_arcsec
         the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
         all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
-    number_of_steps : int
+    number_of_steps
         The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-    number_of_cores : int
+    number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
     """
@@ -674,7 +669,7 @@ def sensitivity_mapping_interferometer(
     subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
     therefore when it is detectable!).
     """
-    perturbation_model = af.Collection(al.Galaxy, redshift=0.5, mass=subhalo_mass)
+    perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
     """
     Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick

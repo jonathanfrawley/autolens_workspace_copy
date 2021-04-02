@@ -1,11 +1,13 @@
 import autofit as af
 import autolens as al
 
+from typing import Union
+
 
 def hyper_fit(
     setup_hyper: al.SetupHyper,
     result: af.Result,
-    analysis,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     include_hyper_image_sky: bool = False,
 ):
     """
@@ -24,14 +26,14 @@ def hyper_fit(
 
     Parameters
     ----------
-    hyper_model : Collection
-        The hyper model used by the hyper-fit, which models hyper-components like a `Pixelization` or `HyperGalaxy`'s.
-    setup_hyper : SetupHyper
+    setup_hyper
         The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    result : af.Result
+    result
         The result of a previous `Analysis` search whose maximum log likelihood model forms the basis of the hyper model.
-    analysis : Analysis
-        An analysis class used to fit imaging or interferometer data with a model.
+    analysis
+        An analysis which is used to fit imaging or interferometer data with a model.
+    include_hyper_image_sky
+        Whether to include the hyper image sky component, irrespective of the `setup_hyper`.
 
     Returns
     -------
@@ -55,11 +57,11 @@ def hyper_fit(
 
 
 def stochastic_fit(
-    result,
-    analysis,
-    include_lens_light=False,
-    include_pixelization=False,
-    include_regularization=False,
+    result: af.Result,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    include_lens_light: bool = False,
+    include_pixelization: bool = False,
+    include_regularization: bool = False,
 ):
     """
     Extend a model-fit with a stochastic model-fit, which refits a model but introduces a log likelihood cap whereby
@@ -75,10 +77,20 @@ def stochastic_fit(
 
     Parameters
     ----------
-    setup_hyper : SetupHyper
-        The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-    result : af.Result
-        The result of a previous `Analysis` search whose maximum log likelihood model forms the basis of the hyper model.
+    result
+        The result of a previous `Analysis` search whose maximum log likelihood model forms the basis of the hyper
+        model.
+    analysis
+        An analysis which is used to fit imaging or interferometer data with a model.
+    include_lens_light
+        If the lens light is included as a model component in the model with free parameters that are fitted for (if
+        `False` it is passed as an `instance`).
+    include_pixelization
+        If the source pixelization is included as a model component in the model with free parameters that are fitted
+        for (if `False` it is passed as an `instance`).
+    include_regularization
+        If the source regularization is included as a model component in the model with free parameters that are
+        fitted for (if `False` it is passed as an `instance`).
     """
 
     stochastic_model = al.util.model.stochastic_model_from(
