@@ -110,16 +110,16 @@ For example, if we want to plot the image of the source galaxy `MassProfile`, we
 different ways
 """
 tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=masked_imaging.grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=masked_imaging.grid)[1]
 plane_plotter = aplt.PlanePlotter(plane=tracer.source_plane, grid=source_plane_grid)
-plane_plotter.figures(image=True)
+plane_plotter.figures_2d(image=True)
 
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=fit.tracer.source_plane.galaxies[0], grid=source_plane_grid
 )
-galaxy_plotter.figures(image=True)
+galaxy_plotter.figures_2d(image=True)
 
 """
 As our fit and ray-tracing becomes more complex, it is useful to know how to decompose their different attributes to 
@@ -131,13 +131,13 @@ light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=fit.tracer.source_plane.galaxies[0].bulge, grid=source_plane_grid
 )
 light_profile_plotter.set_title("Bulge Image")
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=fit.tracer.source_plane.galaxies[0].disk, grid=source_plane_grid
 )
 light_profile_plotter.set_title("Disk Image")
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 """
 And, we're done, not just with the tutorial, but the chapter!

@@ -202,7 +202,7 @@ cluster_weight_power_0 = source_weight_power_0.pixelization.weight_map_from_hype
 array_plotter = aplt.Array2DPlotter(
     array=cluster_weight_power_0, visuals_2d=aplt.Visuals2D(mask=mask)
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 source_weight_power_5 = al.Galaxy(
     redshift=1.0,
@@ -221,7 +221,7 @@ cluster_weight_power_5 = source_weight_power_5.pixelization.weight_map_from_hype
 array_plotter = aplt.Array2DPlotter(
     array=cluster_weight_power_0, visuals_2d=aplt.Visuals2D(mask=mask)
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 source_weight_power_10 = al.Galaxy(
     redshift=1.0,
@@ -240,7 +240,7 @@ cluster_weight_power_10 = source_weight_power_10.pixelization.weight_map_from_hy
 array_plotter = aplt.Array2DPlotter(
     array=cluster_weight_power_0, visuals_2d=aplt.Visuals2D(mask=mask)
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 When we increase the weight-power the brightest regions of the hyper-galaxy-image become weighted higher relative 
@@ -252,21 +252,21 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_0])
 fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_5])
 
 fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_power_10])
 
 fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 So, what does the weight_floor do? Increasing the weight-power congregates pixels around the source. However, there 
@@ -294,14 +294,14 @@ cluster_weight_floor = source_weight_floor.pixelization.weight_map_from_hyper_im
 array_plotter = aplt.Array2DPlotter(
     array=cluster_weight_power_0, visuals_2d=aplt.Visuals2D(mask=mask)
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_weight_floor])
 
 fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 To end, lets think about the Bayesian log evidence which goes to significantly higher values than a magnification-based 

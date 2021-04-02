@@ -31,7 +31,7 @@ We now pass the interferometer to an `InterferometerPlotter` and call various `f
 attributes.
 """
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-interferometer_plotter.figures(
+interferometer_plotter.figures_2d(
     visibilities=True,
     noise_map=True,
     u_wavelengths=True,

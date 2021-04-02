@@ -49,7 +49,7 @@ We now pass the galaxy and grid to a `GalaxyPlotter` and call various `figure_*`
 plot different attributes.
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy, grid=grid)
-galaxy_plotter.figures(
+galaxy_plotter.figures_2d(
     image=True,
     convergence=True,
     potential=False,
@@ -93,7 +93,7 @@ include_2d = aplt.Include2D(
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=galaxy, grid=masked_grid, include_2d=include_2d
 )
-galaxy_plotter.figures(image=True)
+galaxy_plotter.figures_2d(image=True)
 
 """
 Finish.

@@ -75,7 +75,7 @@ fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 We now pass the FitImaging to an `FitImagingPlotter` and call various `figure_*` methods to plot different attributes.
 """
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
-fit_imaging_plotter.figures(
+fit_imaging_plotter.figures_2d(
     image=True,
     noise_map=True,
     signal_to_noise_map=True,
@@ -93,21 +93,21 @@ fit_imaging_plotter.subplot_fit_imaging()
 """
 It can plot of the model image of an input plane.
 """
-fit_imaging_plotter.figures_of_planes(model_image=True, plane_index=0)
-fit_imaging_plotter.figures_of_planes(model_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(model_image=True, plane_index=0)
+fit_imaging_plotter.figures_2d_of_planes(model_image=True, plane_index=1)
 
 """
 It can plot the image of a plane with all other model images subtracted.
 """
-fit_imaging_plotter.figures_of_planes(subtracted_image=True, plane_index=0)
-fit_imaging_plotter.figures_of_planes(subtracted_image=True, plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(subtracted_image=True, plane_index=0)
+fit_imaging_plotter.figures_2d_of_planes(subtracted_image=True, plane_index=1)
 
 """
 It can also plot the plane-image of a plane, that is what the source galaxy looks like without lensing (e.g.
 for `plane_index=1` this is the source-plane image)
 """
-fit_imaging_plotter.figures_of_planes(plane_index=0)
-fit_imaging_plotter.figures_of_planes(plane_index=1)
+fit_imaging_plotter.figures_2d_of_planes(plane_index=0)
+fit_imaging_plotter.figures_2d_of_planes(plane_index=1)
 
 """
 A subplot of a plane, showing the above 3 figures,can also be plotted.
@@ -153,7 +153,7 @@ include_2d = aplt.Include2D(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 In fact, via the `FitImagingPlotter` we can plot the `reconstruction` with casutics and a border, which are extracted 
@@ -169,14 +169,14 @@ include_2d = aplt.Include2D(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 We can even extract an `InversionPlotter` from the `FitImagingPlotter` and use it to plot all of its usual methods, 
 which will now include the caustic and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures(reconstruction=True, regularization_weights=True)
+inversion_plotter.figures_2d(reconstruction=True, regularization_weights=True)
 
 """
 Finish.

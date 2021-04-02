@@ -69,7 +69,7 @@ grid = al.Grid2D.from_fits(
     pixel_scales=imaging.pixel_scales,
 )
 grid_plotter = aplt.Grid2DPlotter(grid=grid)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 We now create our `InputDeflections` `MassProfile`, which represents our input deflection angle map as a 
@@ -107,7 +107,7 @@ The deflections will be computed only in the regions included on the `Grid2D`, e
 deflections_y = input_deflections.deflections_from_grid(grid=grid)
 deflections_x = input_deflections.deflections_from_grid(grid=grid)
 grid_plotter = aplt.Grid2DPlotter(grid=grid)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 aplt.Array2DPlotter(
     array=al.Array2D.manual_native(
         array=deflections_y.native[:, :, 0], pixel_scales=imaging.pixel_scales
@@ -140,11 +140,11 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
 plane_plotter = aplt.PlanePlotter(plane=tracer.source_plane, grid=source_plane_grid)
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 We also apply this mask to our `Imaging` data and fit it using the standard PyAutoLens fitting API.
@@ -205,11 +205,11 @@ Finally, lets plot:
  - The residuals of the fit to the `Imaging`.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
+inversion_plotter.figures_2d(reconstructed_image=True, reconstruction=True)
 
 residual_map = masked_imaging.image - inversion.mapped_reconstructed_image
 array_plotter = aplt.Array2DPlotter(array=residual_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 In this example, we assumed the source galaxy's true `LightProfile` or guessed a value for the `Regularization` 

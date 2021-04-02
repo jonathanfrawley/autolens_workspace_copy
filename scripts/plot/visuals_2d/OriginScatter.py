@@ -33,7 +33,7 @@ appears.
 include_2d = aplt.Include2D(origin=True)
 
 array_plotter = aplt.Array2DPlotter(array=image, include_2d=include_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The appearance of the (y,x) origin coordinates is customized using a `Scatter` object.
@@ -51,7 +51,7 @@ mat_plot_2d = aplt.MatPlot2D(origin_scatter=origin_scatter)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 To plot the origin manually, we can pass it into a` Visuals2D` object.
@@ -59,7 +59,7 @@ To plot the origin manually, we can pass it into a` Visuals2D` object.
 visuals_2d = aplt.Visuals2D(origin=al.Grid2DIrregular(grid=[(1.0, 1.0)]))
 
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

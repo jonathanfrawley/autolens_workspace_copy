@@ -37,7 +37,7 @@ visuals_2d = aplt.Visuals2D(array_overlay=arr)
 We now plot the image with the array overlaid.
 """
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We customize the overlaid array using the `ArrayOverlay` matplotlib wrapper object which wraps the following method(s):
@@ -53,7 +53,7 @@ mat_plot_2d = aplt.MatPlot2D(array_overlay=array_overlay)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

@@ -72,7 +72,7 @@ sersic_light_profile = al.lp.EllipticalExponential(
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=sersic_light_profile, grid=grid
 )
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 input(
     "\n"
@@ -98,7 +98,7 @@ isothermal_mass_profile = al.mp.EllipticalIsothermal(
 mass_profile_plotter = aplt.MassProfilePlotter(
     mass_profile=isothermal_mass_profile, grid=grid
 )
-mass_profile_plotter.figures(deflections_y=True, deflections_x=True)
+mass_profile_plotter.figures_2d(deflections_y=True, deflections_x=True)
 
 input(
     "\n"
@@ -124,7 +124,7 @@ tracer = al.Tracer.from_galaxies(
 )
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 input(
     "\n"

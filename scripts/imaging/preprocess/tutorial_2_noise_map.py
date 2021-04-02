@@ -38,7 +38,7 @@ noise_map = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 __1) Converting Noise-Map Like The Image__
@@ -87,10 +87,10 @@ weight_map = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=weight_map)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """This can be converted to a noise-map using the preprocess module."""
 noise_map = al.preprocess.noise_map_from_weight_map(weight_map=weight_map)
 
 array_plotter = aplt.Array2DPlotter(array=noise_map)
-array_plotter.figure()
+array_plotter.figure_2d()

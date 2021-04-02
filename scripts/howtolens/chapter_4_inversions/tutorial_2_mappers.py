@@ -145,7 +145,7 @@ Lets quickly confirm the annuli capture the source's light.
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 As usual, we setup our `Imaging` and `Mask2D` up as a `Imaging` object and create a `Tracer` using the (masked) 

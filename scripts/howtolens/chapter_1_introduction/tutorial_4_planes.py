@@ -85,7 +85,7 @@ print(deflections.native[0, 1, 1])
 _Plane_ mat_plot_2d exist, which work analogously to `Profile` mat_plot_2d and `Galaxy` mat_plot_2d.
 """
 plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=image_plane_grid)
-plane_plotter.figures(deflections_y=True, deflections_x=True)
+plane_plotter.figures_2d(deflections_y=True, deflections_x=True)
 
 """
 Throughout this chapter, we plotted lots of deflection angles. However, if you are not familiar with strong lensing, 
@@ -117,14 +117,14 @@ mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid2D"))
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
 )
-plane_plotter.figures(plane_grid=True)
+plane_plotter.figures_2d(plane_grid=True)
 
 mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid2D"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
 )
-plane_plotter.figures(plane_grid=True)
+plane_plotter.figures_2d(plane_grid=True)
 
 """
 We can zoom in on the `centre` of the source-plane (remembering the lens galaxy was centred at (0.1", 0.1")).
@@ -138,7 +138,7 @@ plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
 )
 
-plane_plotter.figures(plane_grid=True)
+plane_plotter.figures_2d(plane_grid=True)
 
 """
 We can also plot both `Plane`'s next to one another, and highlight specific points. This means we can see how different 
@@ -172,7 +172,7 @@ on Earth, how does the source-galaxy appear after lensing?. To do this, we simpl
 back from the source-plane grid.
 """
 plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=source_plane_grid)
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 It's a rather spectacular ring of light, but why is it a ring? Well:
@@ -198,7 +198,7 @@ include_2d = aplt.Include2D(grid=True)
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 Plotting the `Grid2D` over the plane image obscures its appearance, which isn't ideal. We can of course 
@@ -209,7 +209,7 @@ include_2d = aplt.Include2D(grid=False)
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 For `MassProfile`'s, you can also plot their 'critical curves', which for those unfamiliar with lensing are lines of 
@@ -228,7 +228,7 @@ include_2d = aplt.Include2D(critical_curves=True)
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, include_2d=include_2d
 )
-plane_plotter.figures(convergence=True)
+plane_plotter.figures_2d(convergence=True)
 
 """
 And, we're done. This is the first tutorial covering strong-lensing and I highly recommend you take a moment to really 

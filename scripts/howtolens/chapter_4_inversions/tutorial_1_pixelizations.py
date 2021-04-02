@@ -65,7 +65,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Fairly Boring Grid2D of Rectangular Pixels")
-mapper_plotter.figure()
+mapper_plotter.figure_2d()
 
 """
 However, the `Mapper` does contain lots of interesting information about our `Pixelization`, for example its 
@@ -88,7 +88,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Slightly less Boring Grid2D of Rectangular Pixels")
-mapper_plotter.figure()
+mapper_plotter.figure_2d()
 
 """
 The `Mapper` also has the (source-plane) `Grid2D` that we passed when we set it up. Lets check they`re the same.
@@ -110,7 +110,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Even less Boring Grid2D of Rectangular Pixels")
-mapper_plotter.figure()
+mapper_plotter.figure_2d()
 
 mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.3, 0.3, -0.3, 0.3]))
 
@@ -118,7 +118,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=mapper, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
 mapper_plotter.set_title("Zoomed Grid2D of Rectangular Pixels")
-mapper_plotter.figure()
+mapper_plotter.figure_2d()
 
 """
 Finally, the mapper`s pixeliation_grid has lots of information about the `Pixelization`, for example, the arc-second 

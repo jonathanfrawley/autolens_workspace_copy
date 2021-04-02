@@ -48,7 +48,7 @@ xticks = aplt.XTicks(alpha=0.5, fontsize=5, rotation="horizontal")
 mat_plot_2d = aplt.MatPlot2D(tickparams=tickparams, yticks=yticks, xticks=xticks)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

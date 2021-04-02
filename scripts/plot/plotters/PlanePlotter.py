@@ -49,7 +49,7 @@ In this script our `lens_galaxy` only had a `MassProfile` so only methods like `
 available.
 """
 plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=grid)
-plane_plotter.figures(convergence=True)
+plane_plotter.figures_2d(convergence=True)
 
 """
 We can also plot the `source_plane` by passing it with the `lensed_grid` to a `PlanePlotter`.
@@ -57,13 +57,13 @@ We can also plot the `source_plane` by passing it with the `lensed_grid` to a `P
 In this case, our `source_galaxy` only had a ` LightProfile` so only a plot of its image is available.
 """
 plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=lensed_grid)
-plane_plotter.figures(image=True)
+plane_plotter.figures_2d(image=True)
 
 """
 In addition to the lensed image of the source-plane, we can plot its unlensed image (e.g. how the source-galaxy 
 appears in the source-plane before lensing) using the `figure_plane_image` method.
 """
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 It is feasible for us to plot the caustics in the source-plane. However, to calculate the `Caustics` we must manually
@@ -73,7 +73,7 @@ visuals_2d = aplt.Visuals2D(caustics=image_plane.caustics_from_grid(grid=grid))
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=lensed_grid, visuals_2d=visuals_2d
 )
-plane_plotter.figures(plane_image=True)
+plane_plotter.figures_2d(plane_image=True)
 
 """
 For `PlanePlotter`'s, `GalaxyPlotter`'s and `LightProfilePlotter's that are plotting source-plane images, the only
@@ -113,11 +113,11 @@ source-plane has no `MassProfile`'s and plot no mass-profile centres.
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=masked_grid, include_2d=include_2d
 )
-plane_plotter.figures(image=True)
+plane_plotter.figures_2d(image=True)
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=masked_grid, include_2d=include_2d
 )
-plane_plotter.figures(image=True)
+plane_plotter.figures_2d(image=True)
 
 """
 Finish.

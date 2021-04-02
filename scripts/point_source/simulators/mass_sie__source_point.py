@@ -105,14 +105,14 @@ fluxes = al.ValuesIrregular(values=fluxes)
 visuals_2d = aplt.Visuals2D(multiple_images=positions)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals_2d)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 mat_plot_2d = aplt.MatPlot2D(
     output=aplt.Output(path=dataset_path, filename="image", format="fits")
 )
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 Output the simulated dataset to the dataset path as .fits files.

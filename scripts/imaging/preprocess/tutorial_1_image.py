@@ -48,7 +48,7 @@ However, you may not have access to the data-reduction tools that made the data,
 in PyAutoLens to convert the data to a suitable format.
 """
 array_plotter = aplt.Array2DPlotter(array=image)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 __1) Converting Data To Electrons Per Second__
@@ -67,7 +67,7 @@ image_in_counts = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_in_counts)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Converting from counts to electrons per second means we must know the exposure time of our observation, which should be
@@ -86,7 +86,7 @@ image_converted_to_eps = al.preprocess.array_counts_to_eps(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_converted_to_eps)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 If the effective exposure-time map is output as part of the data reduction, you can use this to convert the image to 
@@ -102,7 +102,7 @@ image_converted_to_eps = al.preprocess.array_counts_to_eps(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_converted_to_eps)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 PyAutoLens can also convert data from units of ADUs to electrons per second, which uses both the exposure time and
@@ -115,7 +115,7 @@ image_in_adus = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_in_adus)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 exposure_time_map = al.Array2D.full(
     fill_value=1000.0,
@@ -128,7 +128,7 @@ image_converted_to_eps = al.preprocess.array_adus_to_eps(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_converted_to_eps)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 In `autolens_workspace/notebooks/preprocess/prepare/noise_map.py` we show that a noise-map must also be in units of electrons 
@@ -149,7 +149,7 @@ image_large_stamp = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_large_stamp)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 If you have a large postage stamp you can trim it using the preprocess module. Trimming is centred on the image.
@@ -159,7 +159,7 @@ image_large_stamp_trimmed = al.preprocess.array_with_new_shape(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_large_stamp_trimmed)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The stamp may also be too small. It must have sufficient padding around the border that our mask includes all 
@@ -178,7 +178,7 @@ image_small_stamp = al.Array2D.from_fits(
 )
 
 array_plotter = aplt.Array2DPlotter(array=image_small_stamp)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 If we apply a masks to this image we get find that the data is padded, because when we try to use it to set up a 
@@ -193,7 +193,7 @@ mask = al.Mask2D.circular(
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 array_plotter = aplt.Array2DPlotter(array=image_small_stamp, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The setup of the Convolver (used to perform PSF blurring in a PyAutoLens analysis) now gives an error because the 
@@ -220,7 +220,7 @@ visuals_2d = aplt.Visuals2D(mask=mask)
 array_plotter = aplt.Array2DPlotter(
     array=image_small_stamp_padded, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 This no longer gives an error!

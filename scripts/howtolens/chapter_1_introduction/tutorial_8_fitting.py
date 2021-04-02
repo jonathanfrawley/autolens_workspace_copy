@@ -79,7 +79,7 @@ in PyAutoLens and is therefore a powerful means by which to create custom visual
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 To fit the data we create a `Imaging` object, which is a `package` of all parts of a data-set we need in order 
@@ -105,7 +105,7 @@ means that if our image is very large, we focus-in on the lens and source galaxi
 include_2d = aplt.Include2D(mask=True)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 By printing its attributes, we can see that it does indeed contain the mask, masked image, masked noise-map, psf and so 
@@ -179,7 +179,7 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 To fit the image, we pass the `Imaging` and `Tracer` to a `FitImaging` object. This performs the following:

@@ -180,7 +180,7 @@ lens_contribution_map = lens_galaxy_hyper.hyper_galaxy.contribution_map_from_hyp
 
 array_plotter = aplt.Array2DPlotter(array=lens_contribution_map)
 array_plotter.set_title("Lens Contribution Map")
-array_plotter.figure()
+array_plotter.figure_2d()
 
 source_contribution_map = source_magnification_hyper.hyper_galaxy.contribution_map_from_hyper_images(
     hyper_model_image=hyper_image, hyper_galaxy_image=hyper_image_source
@@ -188,7 +188,7 @@ source_contribution_map = source_magnification_hyper.hyper_galaxy.contribution_m
 
 array_plotter = aplt.Array2DPlotter(array=source_contribution_map)
 array_plotter.set_title("Source Contribution Map")
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The contribution maps decomposes the image into its different components. Next, we  use each contribution map to 

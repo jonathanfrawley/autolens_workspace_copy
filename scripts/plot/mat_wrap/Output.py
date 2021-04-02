@@ -37,7 +37,7 @@ output = aplt.Output(
 mat_plot_2d = aplt.MatPlot2D(output=output)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 This `Output` object does not display the figure on your computer screen, bypassing this to output the `.png`. This is
@@ -48,7 +48,7 @@ output = aplt.Output(format="show")
 mat_plot_2d = aplt.MatPlot2D(output=output)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

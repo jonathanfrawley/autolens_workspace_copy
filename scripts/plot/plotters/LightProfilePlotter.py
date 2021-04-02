@@ -35,7 +35,7 @@ plot different attributes in 1D and 2D.
 """
 light_profile_plotter = aplt.LightProfilePlotter(light_profile=bulge, grid=grid)
 light_profile_plotter.figures_1d(image=True)
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 """
 A `LightProfile` and its `Grid2D` contains the following attributes which can be plotted automatically via 
@@ -58,7 +58,7 @@ include_2d = aplt.Include2D(
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=bulge, grid=masked_grid, include_2d=include_2d
 )
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 """
 Finish.

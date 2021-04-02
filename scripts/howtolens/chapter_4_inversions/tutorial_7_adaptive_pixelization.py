@@ -120,7 +120,7 @@ We can plot this `Grid2D` over the image, to see that it is a coarse `Grid2D` ov
 visuals_2d = aplt.Visuals2D(grid=image_plane_sparse_grid, mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 """
 When we pass a `Tracer` a source galaxy with this `Pixelization` it automatically computes the ray-traced source-plane 

@@ -32,7 +32,7 @@ We now pass the mass profile and grid to a `MassProfilePlotter` and call various
 plot different attributes in 1D and 2D.
 """
 mass_profile_plotter = aplt.MassProfilePlotter(mass_profile=mass, grid=grid)
-mass_profile_plotter.figures(
+mass_profile_plotter.figures_2d(
     convergence=True,
     potential=True,
     deflections_y=True,
@@ -63,7 +63,7 @@ include_2d = aplt.Include2D(
 mass_profile_plotter = aplt.MassProfilePlotter(
     mass_profile=mass, grid=masked_grid, include_2d=include_2d
 )
-mass_profile_plotter.figures(convergence=True)
+mass_profile_plotter.figures_2d(convergence=True)
 
 """
 Finish.

@@ -38,7 +38,7 @@ cb = aplt.Colorbar(
 mat_plot_2d = aplt.MatPlot2D(colorbar=cb)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 The labels of the `Colorbar` can also be customized. 
@@ -55,7 +55,7 @@ cb = aplt.Colorbar(manual_tick_labels=[1.0, 2.0], manual_tick_values=[0.0, 0.25]
 mat_plot_2d = aplt.MatPlot2D(colorbar=cb)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

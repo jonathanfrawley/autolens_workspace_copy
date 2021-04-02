@@ -41,7 +41,7 @@ figure = aplt.Figure(
 mat_plot_2d = aplt.MatPlot2D(figure=figure)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We can also customize the aspect ratio of the image displayed in a figure by passing the `Figure` an aspect ratio. 
@@ -55,7 +55,7 @@ figure = aplt.Figure(aspect="square")
 mat_plot_2d = aplt.MatPlot2D(figure=figure)
 
 array_plotter = aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

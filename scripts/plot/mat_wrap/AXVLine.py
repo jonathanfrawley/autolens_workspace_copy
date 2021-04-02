@@ -24,7 +24,7 @@ x = [1.0, 2.0, 3.0, 4.0, 5.0]
 We now pass this y and x data to a `YX1DPlotter` and call the `figure` method.
 """
 yx_plotter = aplt.YX1DPlotter(y=y, x=x)
-yx_plotter.figure()
+yx_plotter.figure_1d()
 
 """
 We can plot a vertical line on the y vs x plot using the `AXVLine` matplotlib wrapper object which wraps the 
@@ -35,7 +35,7 @@ following method(s):
 # mat_plot_1d = aplt.MatPlot1D(axv)
 
 yx_plotter = aplt.YX1DPlotter(y=y, x=x)
-yx_plotter.figure()
+yx_plotter.figure_1d()
 
 """
 Finish.

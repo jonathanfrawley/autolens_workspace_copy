@@ -32,7 +32,7 @@ mat_plot_2d = aplt.MatPlot2D(
 )
 
 grid_plotter = aplt.Grid2DPlotter(grid=grid, mat_plot_2d=mat_plot_2d)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 We can print each coordinate of this `Grid2D`, revealing that it consists of a set of arc-second coordinates (where the 

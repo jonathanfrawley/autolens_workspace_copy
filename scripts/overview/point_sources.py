@@ -65,7 +65,7 @@ located in a cross configuration, which are the four (y,x) multiple image coordi
 to find! 
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 The image above visually illustrates where the source's light traces too in the image-plane. Lets now treat this source
@@ -98,7 +98,7 @@ source-plane coordinate (0.07", 0.07").
 positions = solver.solve(lensing_obj=tracer, source_plane_coordinate=(0.07, 0.07))
 
 grid_plotter = aplt.Grid2DPlotter(grid=positions)
-grid_plotter.figure()
+grid_plotter.figure_2d()
 
 """
 At this point, you might be wondering why don't we use the image of the lensed source to compute our multiple images?

@@ -59,7 +59,7 @@ print("etc.")
 A galaxy `Plotter` allows us to the plot the image, just like the `Profile` mat_plot_2d did for a `LightProfile`'s.
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_light_profile, grid=grid)
-galaxy_plotter.figures(image=True)
+galaxy_plotter.figures_2d(image=True)
 
 """
 We can pass galaxies as many profiles as we like. Lets create a `Galaxy` with three `LightProfile`'s.
@@ -89,7 +89,7 @@ print(galaxy_with_3_light_profiles)
 If we plot the galaxy, we see 3 blobs of light!
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_3_light_profiles, grid=grid)
-galaxy_plotter.figures(image=True)
+galaxy_plotter.figures_2d(image=True)
 
 """
 We can also plot each individual `LightProfile` using the `subplot` galaxy mat_plot_2d.
@@ -117,12 +117,12 @@ We can use a `Galaxy` `Plotter`.to plot these deflection angles. (Deflection ang
 like the `LightProfile` image's above)
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_3_mass_profiles, grid=grid)
-galaxy_plotter.figures(deflections_y=True, deflections_x=True)
+galaxy_plotter.figures_2d(deflections_y=True, deflections_x=True)
 
 """
 I wonder what 3 summed convergence maps or potential`s look like ;)
 """
-galaxy_plotter.figures(convergence=True, potential=True)
+galaxy_plotter.figures_2d(convergence=True, potential=True)
 
 """
 Finally, a `Galaxy` can take both light and mass profiles, and there is no limit to how many we pass it.
@@ -173,7 +173,7 @@ galaxy_with_many_profiles = al.Galaxy(
 Suffice to say, the `Galaxy`'s images, convergence, potential and deflections look pretty interesting.
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_many_profiles, grid=grid)
-galaxy_plotter.figures(
+galaxy_plotter.figures_2d(
     image=True, convergence=True, potential=True, deflections_y=True, deflections_x=True
 )
 

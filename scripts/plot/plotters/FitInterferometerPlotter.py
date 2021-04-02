@@ -65,7 +65,7 @@ We now pass the FitInterferometer to an `FitInterferometerPlotter` and call vari
 to plot different attributes.
 """
 fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
-fit_interferometer_plotter.figures(
+fit_interferometer_plotter.figures_2d(
     visibilities=True,
     noise_map=True,
     signal_to_noise_map=True,
@@ -86,14 +86,14 @@ fit_interferometer_plotter.subplot_fit_interferometer()
 """
 It can plot of the image of an input plane, where this image is the real-space image of the `Tracer`.
 """
-fit_interferometer_plotter.figures(image=True)
+fit_interferometer_plotter.figures_2d(image=True)
 
 """
 It can also plot the plane-image of a plane, that is what the source galaxy looks like without lensing (e.g. 
 for `plane_index=1` this is the source-plane image)
 """
-fit_interferometer_plotter.figures_of_planes(plane_image=True, plane_index=0)
-fit_interferometer_plotter.figures_of_planes(plane_image=True, plane_index=1)
+fit_interferometer_plotter.figures_2d_of_planes(plane_image=True, plane_index=0)
+fit_interferometer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
 These can be combined to plot the appearance of the galaxy in real-space.

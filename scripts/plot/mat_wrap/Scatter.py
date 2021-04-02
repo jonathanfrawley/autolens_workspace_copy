@@ -36,7 +36,7 @@ mat_plot_2d = aplt.MatPlot2D(origin_scatter=origin_scatter)
 array_plotter = aplt.Array2DPlotter(
     array=image, include_2d=aplt.Include2D(origin=True), mat_plot_2d=mat_plot_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 There are numerous (y,x) grids of coordinates that PyAutoLens plots. For example, in addition to the origin,

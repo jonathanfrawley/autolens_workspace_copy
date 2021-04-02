@@ -84,7 +84,7 @@ We can use a `ProfilePlotter` to plot this image.
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=sersic_light_profile, grid=grid
 )
-light_profile_plotter.figures(image=True)
+light_profile_plotter.figures_2d(image=True)
 
 """
 To perform ray-tracing, create a `MassProfile` from the `mass_profiles` module, which is imported as `mp` for 
@@ -134,7 +134,7 @@ a later tutorial.)
 mass_profile_plottter = aplt.MassProfilePlotter(
     mass_profile=sis_mass_profile, grid=grid
 )
-mass_profile_plottter.figures(deflections_y=True, deflections_x=True)
+mass_profile_plottter.figures_2d(deflections_y=True, deflections_x=True)
 
 """
 `MassProfile`'s have a range of other properties that are used for lensing calculations, a couple of which we've plotted 
@@ -156,7 +156,7 @@ mass_profile_magnification = sis_mass_profile.magnification_from_grid(grid=grid)
 """
 Plotting them is equally straight forward.
 """
-mass_profile_plottter.figures(convergence=True, potential=True, magnification=True)
+mass_profile_plottter.figures_2d(convergence=True, potential=True, magnification=True)
 
 """
 Congratulations, you`ve completed your second **PyAutoLens** tutorial! Before moving on to the next one, experiment with 

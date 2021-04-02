@@ -72,7 +72,7 @@ inversion = tracer.inversion_imaging_from_grid_and_data(
 We now pass the inversion to a `InversionPlotter` and call various `figure_*` methods to plot different attributes.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures(
+inversion_plotter.figures_2d(
     reconstructed_image=True,
     reconstruction=True,
     errors=True,
@@ -103,7 +103,7 @@ include_2d = aplt.Include2D(
 )
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, include_2d=include_2d)
-inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
+inversion_plotter.figures_2d(reconstructed_image=True, reconstruction=True)
 
 """
 Finish.

@@ -268,7 +268,7 @@ method that is able to plot this attribute of the `Inversion`. However, the `Fit
 manually set up an `InversionPlotter` as we did in previous tutorials.
 """
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures(regularization_weights=True)
+inversion_plotter.figures_2d(regularization_weights=True)
 
 """
 As you can see, all pixels are regularized with our input regularization_coefficient value of 3.6.

@@ -34,7 +34,7 @@ To plot the vector field manually, we can pass it into a` Visuals2D` object.
 visuals_2d = aplt.Visuals2D(vector_field=vector_field)
 
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 We can customize the appearance of the vectors using the `VectorFieldQuiver matplotlib wrapper object which wraps 
@@ -60,7 +60,7 @@ mat_plot_2d = aplt.MatPlot2D(vector_field_quiver=quiver)
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d
 )
-array_plotter.figure()
+array_plotter.figure_2d()
 
 """
 Finish.

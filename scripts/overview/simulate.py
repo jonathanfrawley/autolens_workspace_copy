@@ -47,7 +47,7 @@ tracer = al.Tracer.from_galaxies(
 )
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 Simulating strong lens images uses a `SimulatorImaging` object, which models the process that an instrument like the

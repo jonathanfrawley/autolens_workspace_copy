@@ -111,7 +111,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_
 Lets look at the tracer`s image, this is the image we'll be simulating.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-tracer_plotter.figures(image=True)
+tracer_plotter.figures_2d(image=True)
 
 """
 We can now pass this simulator a tracer, which creates the ray-traced image plotted above and simulates it as an
@@ -143,7 +143,7 @@ mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png")
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
 imaging_plotter.subplot_imaging()
-imaging_plotter.figures(image=True)
+imaging_plotter.figures_2d(image=True)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()
