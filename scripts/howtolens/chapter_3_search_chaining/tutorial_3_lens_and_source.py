@@ -36,9 +36,9 @@ import autolens.plot as aplt
 """
 we'll use strong lensing data, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
  
 This image was fitted throughout chapter 2.
 """
@@ -72,24 +72,25 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters].
+ - The lens galaxy's light is a parametric `EllSersic` bulge [7 parameters].
  
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllipticalSersic)
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic)
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
-    name="search[1]_light[bulge]", n_live_points=30, evidence_tolerance=5.0
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_3_lens_and_source"),
+    name="search[1]_light[bulge]",
+    n_live_points=30,
+    evidence_tolerance=5.0,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -99,11 +100,11 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 In search 2 we fit a lens model where:
 
- - The lens galaxy's light is an `EllipticalSersic` bulge [Parameters fixed to results of search 1].
+ - The lens galaxy's light is an `EllSersic` bulge [Parameters fixed to results of search 1].
  
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
@@ -120,26 +121,27 @@ Thus, search 2 includes the lens light model from search 1, but it is completely
 
 We also use the centre of the `bulge` to initialize the priors on the lens's `mass`.
 """
-mass = af.Model(al.mp.EllipticalIsothermal)
+mass = af.Model(al.mp.EllIsothermal)
 mass.centre_0 = result_1.model.galaxies.lens.bulge.centre_0
 mass.centre_1 = result_1.model.galaxies.lens.bulge.centre_1
 
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy,
-                redshift=0.5,
-                bulge=result_1.instance.galaxies.lens.bulge,
-                mass=mass,
-            ),
-            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            bulge=result_1.instance.galaxies.lens.bulge,
+            mass=mass,
+        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 
 search = af.DynestyStatic(
-    name="search[2]_mass[sie]_source[bulge]", n_live_points=50, evidence_tolerance=5.0
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_3_lens_and_source"),
+    name="search[2]_mass[sie]_source[bulge]",
+    n_live_points=50,
+    evidence_tolerance=5.0,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)
@@ -149,12 +151,12 @@ __Model + Search + Analysis + Model-Fit (Search 3)__
 
 In search 2 we fit a lens model where:
 
- - The lens galaxy's light is an `EllipticalSersic` bulge [7 Parameters: priors initialized from search 1].
+ - The lens galaxy's light is an `EllSersic` bulge [7 Parameters: priors initialized from search 1].
  
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters: priors
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters: priors
  initalized from search 2].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters: priors initalized from search 2].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters: priors initalized from search 2].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
 
@@ -162,24 +164,24 @@ There isn't a huge amount to say about this search, we have no initialized the p
 and the only thing that is left to do is fit for all model components simultaneously, with slower Dynesty settings
 that will give us more accurate parameter values and errors.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy,
-                redshift=0.5,
-                bulge=result_1.model.galaxies.lens.bulge,
-                mass=result_2.model.galaxies.lens.mass,
-            ),
-            source=af.Model(
-                al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
-            ),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            bulge=result_1.model.galaxies.lens.bulge,
+            mass=result_2.model.galaxies.lens.mass,
+        ),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
+        ),
     )
 )
 
 search = af.DynestyStatic(
-    name="search[3]_light[bulge]_mass[sie]_source[bulge]", n_live_points=100
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_3_lens_and_source"),
+    name="search[3]_light[bulge]_mass[sie]_source[bulge]",
+    n_live_points=100,
 )
 
 result_3 = search.fit(model=model, analysis=analysis)

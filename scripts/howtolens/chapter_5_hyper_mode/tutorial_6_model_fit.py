@@ -21,9 +21,9 @@ from . import extensions
 """
 we'll use strong lensing data, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic``.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic``.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -84,8 +84,8 @@ or regularization pattern to the source's unlensed morphology.
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllExponential)
 
 bulge.centre = disk.centre
 
@@ -96,7 +96,9 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="hyper[1]_light[parametric]", n_live_points=50
+    path_prefix=path.join("howtolens", "chapter_5"),
+    name="hyper[1]_light[parametric]",
+    n_live_points=50,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -108,15 +110,15 @@ model = af.Collection(
             redshift=0.5,
             bulge=result_1.instance.galaxies.lens.bulge,
             disk=result_1.instance.galaxies.lens.disk,
-            mass=al.mp.EllipticalIsothermal,
+            mass=al.mp.EllIsothermal,
             shear=al.mp.ExternalShear,
         ),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[2]_light[fixed]_mass[sie]_source[parametric]",
     n_live_points=75,
 )
@@ -140,7 +142,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[3]_light[parametric]_mass[total]_source[parametric]",
     n_live_points=100,
 )
@@ -186,7 +188,7 @@ Hyper-mode is now scaling the lens and source noise-maps and fitting for the bac
 which adapts the pixelization and regularization to the source's morphology. However, our hyper-model images are not
 yet sufficently accurate to do this. 
 
-This is because there are two distinct components of the source in the source plane, which the single `EllipticalSersic`
+This is because there are two distinct components of the source in the source plane, which the single `EllSersic`
 fit above will have failed to capture in detail. If we attempted to use its hyper image to adapt to the source 
 morphology, we would only adapt to the single component that we fitted!
 
@@ -227,7 +229,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[4]_light[fixed]_mass[fixed]_source[inversion_initialization]",
     n_live_points=20,
 )
@@ -258,7 +260,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[5]_light[fixed]_mass[total]_source[inversion_magnification]",
     n_live_points=50,
 )
@@ -274,7 +276,7 @@ model-fit above will give us reliable hyper images.
 analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_5)
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[6]_light[fixed]_mass[fixed]_source[inversion_initialization]",
     n_live_points=30,
     evidence_tolerance=setup_hyper.evidence_tolerance,
@@ -331,7 +333,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[7]_light[fixed]_mass[total]_source[inversion]",
     n_live_points=50,
 )
@@ -363,11 +365,11 @@ Searches 1-7 were the steps we had to go through to properly initialize every as
 The most notable challenges were ensuring that our source hyper image could fully account for an irregular source
 with multiple components.
 
-The final search in this hyper-pipeline fits an `EllipticalPowerLaw` mass model, which benefits a lot from hyper-mode
+The final search in this hyper-pipeline fits an `EllPowerLaw` mass model, which benefits a lot from hyper-mode
 as the `slope` is a difficult parameter to infer which relies heavily on the intricacies of how the source is 
 reconstructed. 
 """
-mass = af.Model(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllPowerLaw)
 mass.take_attributes(result_7.model.galaxies.lens.mass)
 
 model = af.Collection(
@@ -392,7 +394,7 @@ model = af.Collection(
 analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_7)
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_5"),
     name="hyper[8]_light[parametric]_mass[total]_source[inversion]",
     n_live_points=50,
 )
@@ -406,7 +408,7 @@ It took us 7 searches to set up hyper-mode, just so that we could fit a complex 
 this is what is unfortunately what is necessary to fit the most complex lens models accurately, as they really are
 trying to extract a signal that is contained in the intricate detailed surfaceness brightness of the source itself.
 
-The final search in this example fitting an `EllipticalPowerLaw`, but it really could have been any of the complex
+The final search in this example fitting an `EllPowerLaw`, but it really could have been any of the complex
 models that are illustrated throughout the workspace (e.g., decomposed light_dark models, more complex lens light
 models, etc.). You may therefore wish to adapt this pipeline to fit the complex model you desire for your science-case,
 by simplying swapping out the model used in search 8.

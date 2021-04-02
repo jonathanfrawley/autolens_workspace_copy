@@ -16,7 +16,7 @@ import autolens.plot as aplt
 """
 First, lets create a simple `MassProfile` which we'll plot.
 """
-mass = al.mp.EllipticalIsothermal(
+mass = al.mp.EllIsothermal(
     centre=(0.0, 0.0),
     einstein_radius=1.6,
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),

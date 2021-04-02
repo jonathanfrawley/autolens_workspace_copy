@@ -25,9 +25,9 @@ import autofit as af
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -126,17 +126,14 @@ Lets perform two fits, where:
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
-            al.Galaxy,
-            redshift=0.5,
-            bulge=al.lp.EllipticalSersic,
-            mass=al.mp.EllipticalIsothermal,
+            al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic, mass=al.mp.EllIsothermal
         ),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_slow",
     n_live_points=150,
     evidence_tolerance=0.8,
@@ -150,27 +147,27 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# This code (and the lines of code after) is commented out to signify the analysis runs slow, so it is optional for
-# you to run this part of the tutorials.
-
-# result_slow = search.fit(model=model, analysis=analysis)
+result_slow = search.fit(model=model, analysis=analysis)
 
 """
 Lets check that we get a good model and fit to the data.
 """
-# aplt.FitImaging.subplot_fit_imaging(fit=result_slow.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_slow.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 """
 We can use the result to tell us how many iterations Dynesty took to convergence on the solution.
 """
 print("Total Dynesty Iterations (If you skip running the search, this is ~ 500000):")
-# print(result_slow.samples.total_samples)
+print(result_slow.samples.total_samples)
 
 """
 Now lets run the search with fast setting, so we can compare the total number of iterations required.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_6_fast", n_live_points=30
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_6_fast",
+    n_live_points=30,
 )
 
 print(
@@ -179,22 +176,23 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result_fast = search.fit(model=model, analysis=analysis)
+result_fast = search.fit(model=model, analysis=analysis)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
 """
 Lets check that this search, despite its faster sampling settings, still gives us the global maxima solution.
 """
-# aplt.FitImaging.subplot_fit_imaging(fit=result_fast.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_fast.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 """
 And now lets confirm it uses significantly fewer iterations.
 """
 print("Total Dynesty Iterations:")
 print("Slow settings: ~500000")
-# print(result_slow.samples.total_samples)
-# print("Fast settings: ", result_fast.samples.total_samples)
+print(result_slow.samples.total_samples)
+print("Fast settings: ", result_fast.samples.total_samples)
 
 """
 __Optimizers__
@@ -224,7 +222,10 @@ maxima solutions. Here, an iteration is the number of samples performed by every
 iterations is n_particles * iters. Lets try a total of 50000 iterations, a factor 10 less than our Dynesty runs above. 
 """
 search = af.PySwarmsLocal(
-    path_prefix="howtolens", name="tutorial_6_pso", n_particles=50, iters=1000
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_6_pso",
+    n_particles=50,
+    iters=1000,
 )
 
 print(
@@ -233,11 +234,12 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result_pso = search.fit(model=model, analysis=analysis)
+result_pso = search.fit(model=model, analysis=analysis)
 
 print("PySwarms has finished run - you may now continue the notebook.")
 
-# aplt.FitImaging.subplot_fit_imaging(fit=result_pso.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_pso.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 """
 It worked, and was much faster than Dynesty!
@@ -265,7 +267,10 @@ search *Emcee* (af.Emcee). We have found this to be less effective at lens model
 but it is sill pretty successful. I've included an example run of Emcee below.
 """
 search = af.Emcee(
-    path_prefix="howtolens", name="tutorial_6_mcmc", nwalkers=50, nsteps=1000
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_6_mcmc",
+    nwalkers=50,
+    nsteps=1000,
 )
 
 print(
@@ -274,8 +279,9 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result_mcmc = search.fit(model=model, analysis=analysis)
+result_mcmc = search.fit(model=model, analysis=analysis)
 
 print("Emcee has finished run - you may now continue the notebook.")
 
-# aplt.FitImaging.subplot_fit_imaging(fit=result_mcmc.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_mcmc.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()

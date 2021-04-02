@@ -4,8 +4,8 @@ Simulator: Intervening Objects
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's total mass distribution is an EllipticalBrokenPowerLaw.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an EllPowerLawBroken.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
  - There are a number of intervening objects whose light nearly obscures that of the strong lens.
 
 This dataset is used in the preprocess script:
@@ -89,13 +89,13 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    intervene_0=al.lp.SphericalExponential(
+    intervene_0=al.lp.SphExponential(
         centre=(1.0, 3.5), intensity=0.8, effective_radius=0.5
     ),
-    intervene_1=al.lp.SphericalExponential(
+    intervene_1=al.lp.SphExponential(
         centre=(-2.0, -3.5), intensity=0.5, effective_radius=0.8
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=45.0),
@@ -105,7 +105,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.1, 0.1),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,

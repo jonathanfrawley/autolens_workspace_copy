@@ -17,7 +17,7 @@ search. A higher resolution grid (i.e. lower pixel scale) will give more precise
 of longer calculation times. In this example we will use an interpolation pixel scale of 0.05", which balances run-time
 and precision.
 
-In this example, we fit the lens's mass using an `EllipticalSersic` bulge and `EllipticalNFW` dark matter mass model.
+In this example, we fit the lens's mass using an `EllSersic` bulge and `EllNFW` dark matter mass model.
 These are some of the slowest mass profiles in **PyAutoLens**, thus the use of interpolation should provide a nice
 speed up.
 
@@ -81,12 +81,12 @@ __Model + Search + Analysis__
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
 """
-bulge = af.Model(al.lmp.EllipticalSersic)
-dark = af.Model(al.mp.EllipticalNFW)
+bulge = af.Model(al.lmp.EllSersic)
+dark = af.Model(al.mp.EllNFW)
 bulge.centre = dark.centre
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

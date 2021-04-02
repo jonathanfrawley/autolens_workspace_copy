@@ -19,21 +19,21 @@ A `Tracer` object is a good example of an object with many `MassProfiles`, so le
 """
 lens_galaxy_0 = al.Galaxy(
     redshift=0.25,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 1.0), einstein_radius=0.8, elliptical_comps=(0.2, 0.2)
     ),
 )
 
 lens_galaxy_1 = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, -1.0), einstein_radius=0.8, elliptical_comps=(0.2, 0.2)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SphericalSersic(
+    bulge=al.lp.SphSersic(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )

@@ -62,22 +62,17 @@ fitting procedure.
 
 We will fit our strong lens data with two galaxies:
 
-- A lens galaxy with a `EllipticalSersic` `LightProfile` representing a bulge and
-  `EllipticalIsothermal` `MassProfile` representing its mass.
-- A source galaxy with an `EllipticalExponential` `LightProfile` representing a disk.
+- A lens galaxy with a `EllSersic` `LightProfile` representing a bulge and
+  `EllIsothermal` `MassProfile` representing its mass.
+- A source galaxy with an `EllExponential` `LightProfile` representing a disk.
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 """
 lens_galaxy_model = af.Model(
-    al.Galaxy,
-    redshift=0.5,
-    bulge=al.lp.EllipticalSersic,
-    mass=al.mp.EllipticalIsothermal,
+    al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic, mass=al.mp.EllIsothermal
 )
 
-source_galaxy_model = af.Model(
-    al.Galaxy, redshift=1.0, disk=al.lp.EllipticalExponential
-)
+source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
 """
 We now choose the non-linear search, which is the fitting method used to determine the set of `LightProfile`

@@ -18,8 +18,8 @@ import autolens.plot as aplt
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -89,7 +89,7 @@ def perform_fit_with_source_galaxy_mask_and_border(
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.0, 0.0),
             einstein_radius=1.6,
             elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -165,7 +165,7 @@ mapper_plotter = aplt.MapperPlotter(
 mapper_plotter.subplot_image_and_mapper(image=fit.imaging.image)
 
 """
-So, whats happening physically? Towards the centre of our `EllipticalIsothermal` `MassProfile`.the density profile 
+So, whats happening physically? Towards the centre of our `EllIsothermal` `MassProfile`.the density profile 
 becomes extremely cuspy (rising very sharply). This cause extremely large deflection angles to be computed, lets have 
 a quick look.
 """
@@ -251,8 +251,8 @@ centre of mask, but anywhere in the mask, trace beyond the source-plane border.
 we'll use new strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is omitted.
- - There are two lens galaxies whose `MassProfile`'s are `EllipticalIsothermal``..
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - There are two lens galaxies whose `MassProfile`'s are `EllIsothermal``..
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "mass_sie_x2__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -295,14 +295,14 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(1.1, 0.51), elliptical_comps=(0.0, 0.15), einstein_radius=1.07
         ),
     )
 
     lens_galaxy_1 = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(-0.20, -0.35), elliptical_comps=(0.06, 0.1053), einstein_radius=0.71
         ),
     )

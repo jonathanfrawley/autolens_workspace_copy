@@ -24,9 +24,9 @@ import autolens.plot as aplt
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -69,14 +69,14 @@ lens `LightProfile`. The source will use a magnification based grid.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=0.8,
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -137,14 +137,14 @@ hyper_image_source = fit.model_images_of_planes[
 
 lens_galaxy_hyper = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=0.8,
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.6
     ),
     hyper_galaxy=al.HyperGalaxy(

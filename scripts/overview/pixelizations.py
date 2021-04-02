@@ -61,11 +61,11 @@ First, lets use a *Rectangular* `Pixelization` with resolution 40 x 40 and *Cons
 relatitvely high regularization-coefficient. The higher this coefficient, the more our source reconstruction will be
 smoothed.
 
-The lens galaxy's `EllipticalIsothermal` mass model is the true model used to simulate the data.
+The lens galaxy's `EllIsothermal` mass model is the true model used to simulate the data.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     ),
 )

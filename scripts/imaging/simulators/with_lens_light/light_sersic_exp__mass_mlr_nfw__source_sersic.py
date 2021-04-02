@@ -4,10 +4,10 @@ Simulator: Sersic x2 + Dark
 
 This script simulates `Imaging` of a strong lens using decomposed light and dark matter profiles where:
 
- - The lens galaxy's light matter mass distribution is an `EllipticalSersic` + EllipticalExponential representing a
+ - The lens galaxy's light matter mass distribution is an `EllSersic` + EllExponential representing a
       bulge + disk system.
- - The lens galaxy's dark `MassProfile` is a `SphericalNFW`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's dark `MassProfile` is a `SphNFW`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -70,8 +70,8 @@ simulator = al.SimulatorImaging(
 )
 
 """
-Setup the lens galaxy's light (EllipticalSersic + EllipticalExponential), mass (LTM + NFW +Shear) and source galaxy light
-(EllipticalSersic) for this simulated lens.
+Setup the lens galaxy's light (EllSersic + EllExponential), mass (LTM + NFW +Shear) and source galaxy light
+(EllSersic) for this simulated lens.
 
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
 
@@ -83,7 +83,7 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lmp.EllipticalSersic(
+    bulge=al.lmp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=4.0,
@@ -91,20 +91,20 @@ lens_galaxy = al.Galaxy(
         sersic_index=3.0,
         mass_to_light_ratio=0.05,
     ),
-    disk=al.lmp.EllipticalExponential(
+    disk=al.lmp.EllExponential(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=30.0),
         intensity=2.0,
         effective_radius=1.6,
         mass_to_light_ratio=0.05,
     ),
-    dark=al.mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=0.12, scale_radius=20.0),
+    dark=al.mp.SphNFW(centre=(0.0, 0.0), kappa_s=0.12, scale_radius=20.0),
     shear=al.mp.ExternalShear(elliptical_comps=(-0.02, 0.005)),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,

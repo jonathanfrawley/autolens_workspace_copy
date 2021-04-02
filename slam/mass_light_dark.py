@@ -12,10 +12,10 @@ def with_lens_light(
     setup_hyper: al.SetupHyper,
     source_results: af.ResultsCollection,
     light_results: af.ResultsCollection,
-    lens_bulge: af.Model(al.lp.LightProfile) = af.Model(al.lp.EllipticalSersic),
+    lens_bulge: af.Model(al.lp.LightProfile) = af.Model(al.lp.EllSersic),
     lens_disk: af.Model(al.lp.LightProfile) = None,
     lens_envelope: af.Model(al.lp.LightProfile) = None,
-    dark: af.Model(al.mp.MassProfile) = af.Model(al.mp.EllipticalNFWMCRLudlow),
+    dark: af.Model(al.mp.MassProfile) = af.Model(al.mp.EllNFWMCRLudlow),
     einstein_mass_range: Optional[Tuple[float, float]] = (0.01, 5.0),
     end_with_hyper_extension: bool = False,
 ):

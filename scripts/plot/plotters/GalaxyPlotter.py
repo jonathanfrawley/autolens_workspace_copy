@@ -16,7 +16,7 @@ import autolens.plot as aplt
 """
 First, lets create a `Galaxy` with multiple `LightProfile`'s and a `MassProfile`.
 """
-bulge = al.lp.EllipticalSersic(
+bulge = al.lp.EllSersic(
     centre=(0.0, -0.05),
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
     intensity=4.0,
@@ -24,14 +24,14 @@ bulge = al.lp.EllipticalSersic(
     sersic_index=3.0,
 )
 
-disk = al.lp.EllipticalExponential(
+disk = al.lp.EllExponential(
     centre=(0.0, 0.05),
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=30.0),
     intensity=2.0,
     effective_radius=1.6,
 )
 
-mass = al.mp.EllipticalIsothermal(
+mass = al.mp.EllIsothermal(
     centre=(0.0, 0.0),
     einstein_radius=0.8,
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),

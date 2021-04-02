@@ -30,15 +30,15 @@ def simulate_imaging(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -79,15 +79,15 @@ def simulate_imaging_in_counts(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -134,15 +134,15 @@ def simulate_imaging_in_adus(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -189,15 +189,15 @@ def simulate_imaging_with_large_stamp(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -228,15 +228,15 @@ def simulate_imaging_with_small_stamp(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -267,15 +267,15 @@ def simulate_imaging_with_offset_centre(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(1.0, 1.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(1.0, 1.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(1.0, 1.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -306,15 +306,15 @@ def simulate_imaging_noise_map_wht(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -349,15 +349,15 @@ def simulate_imaging_with_large_psf(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -388,15 +388,15 @@ def simulate_imaging_with_even_psf(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -433,15 +433,15 @@ def simulate_imaging_with_unnormalized_psf(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )
@@ -474,15 +474,15 @@ def simulate_imaging_with_psf_with_offset_centre(dataset_path):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0, sersic_index=2.0
         ),
-        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
+        mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.SphericalSersic(
+        bulge=al.lp.SphSersic(
             centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0, sersic_index=1.5
         ),
     )

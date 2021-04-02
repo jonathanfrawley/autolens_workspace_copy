@@ -25,9 +25,9 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
  
 All the usual steps for setting up a model fit (masking, analysis, etc.) are included below.
 """
@@ -61,8 +61,8 @@ imaging_plotter.subplot_imaging()
 We are going to use the same result of search 1 from the previous tutorial. Thus, we set up an identical model such 
 that we instantly load the result from hard-disk.
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-mass = af.Model(al.mp.EllipticalIsothermal)
+bulge = af.Model(al.lp.EllSersic)
+mass = af.Model(al.mp.EllIsothermal)
 
 bulge.centre_0 = 0.0
 bulge.centre_1 = 0.0
@@ -75,7 +75,7 @@ bulge.sersic_index = 4.0
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -83,7 +83,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 We also create the same search as previous, using the same name to ensure we use the same results, and run it.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_1_search_chaining_1", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_3"),
+    name="tutorial_1_search_chaining_1",
+    n_live_points=40,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -93,7 +95,7 @@ We are now going to use the prior passing API to pass these results, in a way wh
 manually write out the inferred parameter values of each component. The details of how prior passing is performed
 will be expanded upon at the end of the tutorial.
 
-We start with the bulge, which in the previous search was an `EllipticalSersic` with its centre fixed to (0.0, 0.0) 
+We start with the bulge, which in the previous search was an `EllSersic` with its centre fixed to (0.0, 0.0) 
 and its `sersic_index` fixed to 4.0. The API for passing priors is shown below, with there two things worth noting:
 
  1) We pass the priors using the `model` attribute of the result. This informs **PyAutoLens** to pass the result as a
@@ -105,7 +107,7 @@ and its `sersic_index` fixed to 4.0. The API for passing priors is shown below, 
  the first search. By omitting the centre, it uses the default priors on a lens galaxy, whereas we manually tell the 
  Sersic index to use a `GaussianPrior` centred on 4.0. 
 """
-bulge = af.Model(al.lp.EllipticalSersic)
+bulge = af.Model(al.lp.EllSersic)
 
 bulge.elliptical_comps = result_1.model.galaxies.lens.bulge.elliptical_comps
 bulge.intensity = result_1.model.galaxies.lens.bulge.intensity
@@ -118,24 +120,24 @@ bulge.sersic_index = af.GaussianPrior(
 For the mass, we again must account for how its centre was fixed to (0.0", 0.0") and therefore not pass the centre.
 Passing the other parameters is the same as how we passed the bulge parameters.
 """
-mass = af.Model(al.mp.EllipticalIsothermal)
-mass.einstein_radius = result_1.model.galaxies.lens.einstein_radius
-mass.elliptical_comps = result_1.model.galaxies.lens.elliptical_comps
+mass = af.Model(al.mp.EllIsothermal)
+mass.einstein_radius = result_1.model.galaxies.lens.mass.einstein_radius
+mass.elliptical_comps = result_1.model.galaxies.lens.mass.elliptical_comps
 
 """
-For the source's bulge, we are passing the result of an `EllipticalExponential` to an `EllipticalSersic`. 
+For the source's bulge, we are passing the result of an `EllExponential` to an `EllSersic`. 
 
-We can use a special prior passing method to do this, called `take_attributes`. This scans the `EllipticalExponential`
-passed to the `take_attributes` method for all parameters which have the same name as the `EllipticalSersic` model,
+We can use a special prior passing method to do this, called `take_attributes`. This scans the `EllExponential`
+passed to the `take_attributes` method for all parameters which have the same name as the `EllSersic` model,
 and if their names are the same it passes their prior as a `model` (like we did above). Thus, it will locate all 6
 parameters in common between the two profiles (centres, elliptical_comps, intensity, effective_radius) and pass those,
 leaving the `sersic_index`'s priors as the default values.
 
 The `take_attributes` method is used in many examples of prior passing, when we pass a simpler parameterization of a
-model to a more complex model. Another good example would be passing the result of a `SphericalIsothermal` to an
-`EllipticalIsothermal`.
+model to a more complex model. Another good example would be passing the result of a `SphIsothermal` to an
+`EllIsothermal`.
 """
-source_bulge = af.Model(al.lp.EllipticalSersic)
+source_bulge = af.Model(al.lp.EllSersic)
 source_bulge.take_attributes(result_1.model.galaxies.source.bulge)
 
 """
@@ -152,7 +154,9 @@ Lets setup and run the search. I have given it a different name to the previous 
 that were passed.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_2_search_chaining_2", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_3"),
+    name="tutorial_2_search_chaining_2",
+    n_live_points=40,
 )
 
 print(

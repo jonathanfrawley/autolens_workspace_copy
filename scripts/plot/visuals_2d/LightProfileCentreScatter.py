@@ -23,24 +23,24 @@ source-plane that are plotted.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=1.0,
         effective_radius=0.6,
         sersic_index=3.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.2, 0.2)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge_0=al.lp.SphericalSersic(
+    bulge_0=al.lp.SphSersic(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
-    bulge_1=al.lp.SphericalSersic(
+    bulge_1=al.lp.SphSersic(
         centre=(0.4, 0.3), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )

@@ -28,16 +28,16 @@ image_plane_grid = al.Grid2D.uniform(
 """
 For our lens galaxy, we'll use the same SIS `MassProfile` as before.
 """
-sis_mass_profile = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
+sis_mass_profile = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 
 lens_galaxy = al.Galaxy(redshift=0.5, mass=sis_mass_profile)
 
 print(lens_galaxy)
 
 """
-And for our source galaxy, the same `SphericalSersic` `LightProfile`
+And for our source galaxy, the same `SphSersic` `LightProfile`
 """
-sersic_light_profile = al.lp.SphericalSersic(
+sersic_light_profile = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 
@@ -216,7 +216,7 @@ Caustics also mark the regions in the source-plane where the multiplicity of the
 if a source crosses a caustic, it goes from 2 images to 1 image. Try and show this yourself by changing the (y,x) 
 centre of the source-plane galaxy's light profile!
 """
-sersic_light_profile = al.lp.SphericalSersic(
+sersic_light_profile = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 source_galaxy = al.Galaxy(redshift=1.0, light=sersic_light_profile)

@@ -27,14 +27,14 @@ grid = al.Grid2D.uniform(
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.0), einstein_radius=1.6
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalExponential(
+    bulge=al.lp.EllExponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.1, 0.0),
         intensity=0.1,

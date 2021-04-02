@@ -25,9 +25,9 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -77,7 +77,7 @@ giving these searches a good starting point will increase the chances of us find
 In the previous tutorial, we customized the priors of a model by creating a `Galaxy` as a `Model` and customizing each
 prior:
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal)
 lens.mass.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
 """
@@ -86,8 +86,8 @@ creating the overall model. These two approaches are equivalent, but this does p
 We will therefore switch to this API in this tutorial, but may swap back and forth between the two depending on what is
 more readable for the specific example.
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-mass = af.Model(al.mp.EllipticalIsothermal)
+bulge = af.Model(al.lp.EllSersic)
+mass = af.Model(al.mp.EllIsothermal)
 
 """
 By default, the prior on the $(y,x)$ coordinates of a `LightProfile` / `MassProfile` is a GaussianPrior with mean 0.0" and 
@@ -160,13 +160,10 @@ strong lens and often tell you roughly where the source-galaxy is located (in th
 form. Furthermore, the source's morphology can be pretty complex, making it difficult to come up with a good source prior!
 """
 lens = af.Model(
-    al.Galaxy,
-    redshift=0.5,
-    bulge=al.lp.EllipticalSersic,
-    mass=al.mp.EllipticalIsothermal,
+    al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic, mass=al.mp.EllIsothermal
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -175,7 +172,9 @@ We can now create this custom search and run it. Our non-linear search will now 
 regions of parameter space, given our improved and more informed priors.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_4_custom_priors", n_live_points=50
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_4_custom_priors",
+    n_live_points=50,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
@@ -225,8 +224,8 @@ is, that our `LightProfile`'s centre, and elliptical components are perfectly al
 not, be a reasonable assumption, but it`ll remove 4 parameters from the lens model (the `MassProfile`'s y, x, and 
 elliptical components), so its worth trying!
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-mass = af.Model(al.mp.EllipticalIsothermal)
+bulge = af.Model(al.lp.EllSersic)
+mass = af.Model(al.mp.EllIsothermal)
 
 """
 In the pass priors function we can `pair` any two parameters by setting them equal to one another. This removes the 
@@ -245,13 +244,10 @@ Compose the model using the bulge and mass `Model` components that now have thei
 tied together.
 """
 lens = af.Model(
-    al.Galaxy,
-    redshift=0.5,
-    bulge=al.lp.EllipticalSersic,
-    mass=al.mp.EllipticalIsothermal,
+    al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic, mass=al.mp.EllIsothermal
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -259,7 +255,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 Again, we create this search and run it. The non-linear search now has a less complex parameter space to search.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_4_light_traces_mass", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_4_light_traces_mass",
+    n_live_points=40,
 )
 
 print(

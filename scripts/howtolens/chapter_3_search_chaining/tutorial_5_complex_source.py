@@ -27,8 +27,8 @@ import autolens.plot as aplt
 we'll use new strong lensing data, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is four `EllipticalSersic``..
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is four `EllSersic``..
 """
 dataset_name = "mass_sie__source_sersic_x4"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -62,24 +62,23 @@ keep the number of parameters down and the searches running fast, but we wouldn'
 
 __Model + Search + Analysis + Model-Fit (Search 1)__
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` [5 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` [5 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
  
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=af.Model(al.Galaxy, redshift=1.0, bulge_0=al.lp.EllipticalSersic),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge_0=al.lp.EllSersic),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_5_complex_source"),
     name="search[1]__mass[sie]__source_x1[bulge]",
     n_live_points=40,
     evidence_tolerance=5.0,
@@ -90,33 +89,30 @@ result_1 = search.fit(model=model, analysis=analysis)
 """
 __Model + Search + Analysis + Model-Fit (Search 2)__
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` [5 parameters: priors initialized from 
+ - The lens galaxy's total mass distribution is an `EllIsothermal` [5 parameters: priors initialized from 
  search 1].
 
- - The source galaxy's light is two parametric `EllipticalSersic` [14 parameters: first Sersic initialized from 
+ - The source galaxy's light is two parametric `EllSersic` [14 parameters: first Sersic initialized from 
  search 1].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy, redshift=0.5, mass=result_1.model.galaxies.lens.mass
-            ),
-            source=af.Model(
-                al.Galaxy,
-                redshift=1.0,
-                bulge_0=result_1.model.galaxies.source.bulge_0,
-                bulge_1=al.lp.EllipticalSersic,
-            ),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=result_1.model.galaxies.lens.mass),
+        source=af.Model(
+            al.Galaxy,
+            redshift=1.0,
+            bulge_0=result_1.model.galaxies.source.bulge_0,
+            bulge_1=al.lp.EllSersic,
+        ),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_5_complex_source"),
     name="search[2]_mass[sie]_source_x2[bulge]",
     n_live_points=40,
     evidence_tolerance=5.0,
@@ -127,34 +123,31 @@ result_2 = search.fit(model=model, analysis=analysis)
 """
 __Model + Search + Analysis + Model-Fit (Search 3)__
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` [5 parameters: priors initialized from 
+ - The lens galaxy's total mass distribution is an `EllIsothermal` [5 parameters: priors initialized from 
  search 2].
 
- - The source galaxy's light is three parametric `EllipticalSersic` [21 parameters: first two Sersic's initialized from 
+ - The source galaxy's light is three parametric `EllSersic` [21 parameters: first two Sersic's initialized from 
  search 2].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy, redshift=0.5, mass=result_2.model.galaxies.lens.mass
-            ),
-            source=af.Model(
-                al.Galaxy,
-                redshift=1.0,
-                bulge_0=result_2.model.galaxies.source.bulge_0,
-                bulge_1=result_2.model.galaxies.source.bulge_1,
-                bulge_2=al.lp.EllipticalSersic,
-            ),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=result_2.model.galaxies.lens.mass),
+        source=af.Model(
+            al.Galaxy,
+            redshift=1.0,
+            bulge_0=result_2.model.galaxies.source.bulge_0,
+            bulge_1=result_2.model.galaxies.source.bulge_1,
+            bulge_2=al.lp.EllSersic,
+        ),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_5_complex_source"),
     name="search[3]_mass[sie]_source_x3[bulge]",
     n_live_points=50,
     evidence_tolerance=5.0,
@@ -165,35 +158,32 @@ result_3 = search.fit(model=model, analysis=analysis)
 """
 __Model + Search + Analysis + Model-Fit (Search 4)__
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` [5 parameters: priors initialized from 
+ - The lens galaxy's total mass distribution is an `EllIsothermal` [5 parameters: priors initialized from 
  search 4].
 
- - The source galaxy's light is four parametric `EllipticalSersic` [28 parameters: first three Sersic's initialized from 
+ - The source galaxy's light is four parametric `EllSersic` [28 parameters: first three Sersic's initialized from 
  search 2].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=26.
 """
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy, redshift=0.5, mass=result_3.model.galaxies.lens.mass
-            ),
-            source=af.Model(
-                al.Galaxy,
-                redshift=1.0,
-                bulge_0=result_3.model.galaxies.source.bulge_0,
-                bulge_1=result_3.model.galaxies.source.bulge_1,
-                bulge_2=result_3.model.galaxies.source.bulge_2,
-                bulge_3=al.lp.EllipticalSersic,
-            ),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=result_3.model.galaxies.lens.mass),
+        source=af.Model(
+            al.Galaxy,
+            redshift=1.0,
+            bulge_0=result_3.model.galaxies.source.bulge_0,
+            bulge_1=result_3.model.galaxies.source.bulge_1,
+            bulge_2=result_3.model.galaxies.source.bulge_2,
+            bulge_3=al.lp.EllSersic,
+        ),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_5_complex_source"),
     name="search[4]_mass[sie]_source_x4[bulge]",
     n_live_points=50,
     evidence_tolerance=0.3,
@@ -210,44 +200,43 @@ that we unfortunately missed using the pipeline above.
 
 Lets confirm this, by manually fitting the `Imaging` data with the true input model.
 """
-masked_imaging = al.Imaging(
-    imaging=imaging,
+masked_imaging = imaging.apply_mask(
     mask=al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
-    ),
+    )
 )
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    light_0=al.lp.EllipticalSersic(
+    light_0=al.lp.EllSersic(
         centre=(0.1, 0.1),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.1,
         effective_radius=1.0,
         sersic_index=2.5,
     ),
-    light_1=al.lp.EllipticalSersic(
+    light_1=al.lp.EllSersic(
         centre=(0.8, 0.6),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.5, phi=30.0),
         intensity=0.2,
         effective_radius=0.3,
         sersic_index=3.0,
     ),
-    light_2=al.lp.EllipticalSersic(
+    light_2=al.lp.EllSersic(
         centre=(-0.3, 0.6),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.3, phi=120.0),
         intensity=0.6,
         effective_radius=0.5,
         sersic_index=1.5,
     ),
-    light_3=al.lp.EllipticalSersic(
+    light_3=al.lp.EllSersic(
         centre=(-0.3, -0.3),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=85.0),
         intensity=0.4,

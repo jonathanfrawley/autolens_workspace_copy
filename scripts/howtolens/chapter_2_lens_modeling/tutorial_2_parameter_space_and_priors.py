@@ -70,7 +70,7 @@ The default priors on all parameters can be found by navigating to the `autolens
 and inspecting config files like light_profiles.json. The convention is as follow:
 
 {
-    "SphericalIsothermal": { <- The name of the `Profile` we are defining the default priors of.
+    "SphIsothermal": { <- The name of the `Profile` we are defining the default priors of.
         "einstein_radius": { <- The parameter of the `Profile` we are defining the default priors of.
             "type": "Gaussian", <- The type of prior, in this case a GaussianPrior (other priors are Uniform, LogUniform, etc.)
             "lower_limit": 0.0, <- The lower physical limit allowed for values of this parameter.
@@ -100,8 +100,8 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's total mass distribution is a `SphericalIsothermal`.
- - The source galaxy's `LightProfile` is a `SphericalExponential`.
+ - The lens galaxy's total mass distribution is a `SphIsothermal`.
+ - The source galaxy's `LightProfile` is a `SphExponential`.
 """
 dataset_name = "mass_sis__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -130,8 +130,8 @@ imaging_plotter.subplot_imaging()
 """
 To change the priors on specific parameters, we create our galaxy models and then, simply, customize their priors.
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphericalExponential)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential)
 
 """
 To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors chain our `Model` to the 
@@ -167,7 +167,9 @@ We can now fit this custom model with a search like we did before. If you look a
 of the non-linear search, you'll see that the priors have indeed been changed.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_2_custom_priors", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_2_custom_priors",
+    n_live_points=40,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)

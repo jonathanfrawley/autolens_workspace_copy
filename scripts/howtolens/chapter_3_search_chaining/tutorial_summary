@@ -20,7 +20,7 @@ A second set of template pipelines, called the **SLaM** (Source, Light and Mass)
 `chaining/slam`. These are similar in design to the `pipelines`, but are composed of the following specific pipelines:
 
  - `Source`: A pipeline that focuses on producing a robust model for the source's light, using simpler models for the
-   lens's light (e.g. a `bulge` + `disk`) and mass (e.g. an `EllipticalSersic`).
+   lens's light (e.g. a `bulge` + `disk`) and mass (e.g. an `EllSersic`).
 
  - `Light`: A pipeline that fits a complex lens light model (e.g. one with many components), using the initialized
    source model to cleanly deblend the lens and source light.

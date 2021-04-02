@@ -47,8 +47,8 @@ __Model + Analysis__
 The code below performs the normal steps to set up a model and analysis class. We omit comments of this code as you 
 should be familiar with it and it is not specific to this example!
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

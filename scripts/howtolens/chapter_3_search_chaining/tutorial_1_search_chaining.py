@@ -53,9 +53,9 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -89,8 +89,8 @@ As we've eluded to before, one can look at an image and immediately identify the
 that bright blob of light in the middle! Given that we know we're going to make the lens model more complex in the 
 next search, lets take a more liberal approach than before and fix the lens centre to $(y,x)$ = (0.0", 0.0").
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-mass = af.Model(al.mp.EllipticalIsothermal)
+bulge = af.Model(al.lp.EllSersic)
+mass = af.Model(al.mp.EllIsothermal)
 
 """
 You haven't actually seen a line like this one before. By setting a parameter to a number (and not a prior) it is be 
@@ -121,12 +121,12 @@ bulge.sersic_index = 4.0
 """
 We now compose the model with these components that have had their priors customized. 
 
-We have not done anything to the source model, but use an `EllipticalExponential` which will become the more complex
-`EllipticalSersic` in the second search.
+We have not done anything to the source model, but use an `EllExponential` which will become the more complex
+`EllSersic` in the second search.
 """
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -134,7 +134,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 Now lets create the search and analysis.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_1_search_chaining_1", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_3"),
+    name="tutorial_1_search_chaining_1",
+    n_live_points=40,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
@@ -167,9 +169,9 @@ GaussianPriors are a nice way to do this. They tell the non-linear search where 
 possibility that there might be a better solution nearby. In contrast, UniformPriors put hard limits on what values a 
 parameter can or can`t take. It makes it more likely we'll accidently cut-out the global maxima solution.
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-mass = af.Model(al.mp.EllipticalIsothermal)
-source_bulge = af.Model(al.lp.EllipticalSersic)
+bulge = af.Model(al.lp.EllSersic)
+mass = af.Model(al.mp.EllIsothermal)
+source_bulge = af.Model(al.lp.EllSersic)
 
 """
 What I've done below is looked at the results of search 1 and manually specified a prior for every parameter. If a 
@@ -240,7 +242,7 @@ source_bulge.intensity = af.GaussianPrior(
 source_bulge.effective_radius = af.GaussianPrior(
     mean=0.14, sigma=0.2, lower_limit=0.0, upper_limit=np.inf
 )
-source_bulge.sersic_indez = af.GaussianPrior(
+source_bulge.sersic_index = af.GaussianPrior(
     mean=1.0, sigma=3.0, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -258,7 +260,9 @@ Lets setup and run the search. As expected, it gives us the correct lens model. 
 faster than we're used to!
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_1_search_chaining_2", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_3"),
+    name="tutorial_1_search_chaining_2",
+    n_live_points=40,
 )
 
 print(

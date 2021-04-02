@@ -21,11 +21,11 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 """
 Next, lets create a `LightProfile` using the `light_profiles` module, which in **PyAutoLens** is imported as `lp` for 
-conciseness. we'll use an `EllipticalSersic` function, which is an analytic function often use to depict galaxies.
+conciseness. we'll use an `EllSersic` function, which is an analytic function often use to depict galaxies.
 
 (If you are unsure what the `elliptical_comps` are, I'll give a description of them at the end of the tutorial.)
 """
-sersic_light_profile = al.lp.EllipticalSersic(
+sersic_light_profile = al.lp.EllSersic(
     centre=(0.0, 0.0),
     elliptical_comps=(0.0, 0.111111),
     intensity=1.0,
@@ -95,7 +95,7 @@ can be used to derive its surface-density, gravitational potential and most impo
 those unfamiliar with lensing, the deflection angles describe how light is bent by the `MassProfile` due to the 
 curvature of space-time.
 """
-sis_mass_profile = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
+sis_mass_profile = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 
 print(sis_mass_profile)
 
@@ -165,9 +165,9 @@ Congratulations, you`ve completed your second **PyAutoLens** tutorial! Before mo
 1) Change the `LightProfile`'s effective radius and Sersic index - how does the image's appearance change?
 2) Change the `MassProfile`'s einstein radius - what happens to the deflection angles, potential and convergence?
 3) Experiment with different `LightProfile`'s and `MassProfile`'s in the light_profiles and mass_profiles modules. 
-In particular, use the `EllipticalIsothermal` `Profile`.to introduce ellipticity into a `MassProfile`.
+In particular, use the `EllIsothermal` `Profile`.to introduce ellipticity into a `MassProfile`.
 
-___Elliptical Components___
+___Ell Components___
 
 The `elliptical_comps` describe the ellipticity of the geometry of the light and mass profiles. You may be more 
 familiar with a coordinate system where the ellipse is defined in terms of:

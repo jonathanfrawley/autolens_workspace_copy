@@ -17,9 +17,9 @@ from astropy import cosmology as cosmo
 
 
 """
-Lets set up an `EllipticalIsothermal` `MassProfile`.
+Lets set up an `EllIsothermal` `MassProfile`.
 """
-sie = al.mp.EllipticalIsothermal(einstein_radius=2.0, elliptical_comps=(0.0, 0.333333))
+sie = al.mp.EllIsothermal(einstein_radius=2.0, elliptical_comps=(0.0, 0.333333))
 
 """
 We can compute its Einstein Radius and Mass, which are defined as the area within the tangential critical curve. 

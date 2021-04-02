@@ -4,7 +4,7 @@ Pipelines: Light Parametric + Mass Light Dark + Source Inversion
 
 By chaining together five searches this script fits strong lens `Imaging`, where in the final model:
 
- - The lens galaxy's light is a parametric bulge+disk `EllipticalSersic` and `EllipticalExponential`.
+ - The lens galaxy's light is a parametric bulge+disk `EllSersic` and `EllExponential`.
  - The lens galaxy's stellar mass distribution is a bulge+disk tied to the light model above.
  - The source galaxy is modeled using an `Inversion`.
 """
@@ -69,15 +69,15 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge and `EllipticalExponential` disk, the centres of 
+ - The lens galaxy's light is a parametric `EllSersic` bulge and `EllExponential` disk, the centres of 
  which are aligned [11 parameters].
 
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllExponential)
 
 bulge.centre = disk.centre
 
@@ -100,15 +100,15 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is an `EllipticalSersic` bulge and `EllipticalExponential` disk [Parameters 
+ - The lens galaxy's light and stellar mass is an `EllSersic` bulge and `EllExponential` disk [Parameters 
  fixed to results of search 1].
 
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFWMCRLudlow` whose centre is aligned with the 
- `EllipticalSersic` bulge and stellar mass model above [3 parameters].
+ - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` whose centre is aligned with the 
+ `EllSersic` bulge and stellar mass model above [3 parameters].
 
  - The lens mass model also includes an `ExternalShear` [2 parameters].
 
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 
@@ -120,7 +120,7 @@ NOTES:
 bulge = result_1.instance.galaxies.lens.bulge
 disk = result_1.instance.galaxies.lens.disk
 
-dark = af.Model(al.mp.EllipticalNFWMCRLudlow)
+dark = af.Model(al.mp.EllNFWMCRLudlow)
 dark.centre = bulge.centre
 dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e15)
 dark.redshift_object = redshift_lens
@@ -133,10 +133,10 @@ model = af.Collection(
             redshift=0.5,
             bulge=bulge,
             disk=disk,
-            dark=af.Model(al.mp.EllipticalNFW),
+            dark=af.Model(al.mp.EllNFW),
             shear=al.mp.ExternalShear,
         ),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 
@@ -155,15 +155,15 @@ __Model + Search + Analysis + Model-Fit (Search 3)__
 
 We use the results of searches 1 and 2 to create the lens model fitted in search 3, where:
 
- - The lens galaxy's light and stellar mass is a parametric `EllipticalSersic` bulge and `EllipticalExponential` disk 
+ - The lens galaxy's light and stellar mass is a parametric `EllSersic` bulge and `EllExponential` disk 
  [8 parameters: priors initialized from search 1].
 
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFWMCRLudlow` whose centre is aligned with the 
- `EllipticalSersic` bulge and stellar mass model above [3 parameters: priors initialized from search 2].
+ - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` whose centre is aligned with the 
+ `EllSersic` bulge and stellar mass model above [3 parameters: priors initialized from search 2].
 
  - The lens mass model also includes an `ExternalShear` [2 parameters: priors initialized from search 2].
 
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters: priors initialized from search 2].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters: priors initialized from search 2].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -207,10 +207,10 @@ __Model + Search + Analysis + Model-Fit (Search 4)__
 
 We use the results of searches 3 to create the lens model fitted in search 4, where:
 
- - The lens galaxy's light and stellar mass is an `EllipticalSersic` bulge and `EllipticalExponential` 
+ - The lens galaxy's light and stellar mass is an `EllSersic` bulge and `EllExponential` 
  disk [Parameters fixed to results of search 3].
 
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFWMCRLudlow` [Parameters fixed to results of 
+ - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` [Parameters fixed to results of 
  search 3].
 
  - The lens mass model also includes an `ExternalShear` [Parameters fixed to results of search 3].
@@ -260,10 +260,10 @@ __Model +  Search (Search 5)__
 
 We use the results of searches 3 and 4 to create the lens model fitted in search 5, where:
 
- - The lens galaxy's light and stellar mass is an `EllipticalSersic` bulge and `EllipticalExponential` 
+ - The lens galaxy's light and stellar mass is an `EllSersic` bulge and `EllExponential` 
  disk [11 parameters: priors initialized from search 3].
 
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFWMCRLudlow` [8 parameters: priors initialized 
+ - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` [8 parameters: priors initialized 
  from search 3].
 
 The lens mass model also includes an `ExternalShear` [2 parameters: priors initialized from search 3].

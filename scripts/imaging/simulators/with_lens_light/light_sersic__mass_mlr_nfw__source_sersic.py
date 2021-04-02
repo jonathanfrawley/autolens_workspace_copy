@@ -4,9 +4,9 @@ Simulator: Sersic + Dark
 
 This script simulates `Imaging` of a strong lens using decomposed light and dark matter profiles where:
 
- - The lens galaxy's light matter mass distribution is an `EllipticalSersic`.
- - The lens galaxy's dark `MassProfile` is a `SphericalNFW`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's light matter mass distribution is an `EllSersic`.
+ - The lens galaxy's dark `MassProfile` is a `SphNFW`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -73,7 +73,7 @@ this simulated lens.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lmp.EllipticalSersic(
+    bulge=al.lmp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=1.0,
@@ -81,13 +81,13 @@ lens_galaxy = al.Galaxy(
         sersic_index=4.0,
         mass_to_light_ratio=0.2,
     ),
-    dark=al.mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=20.0),
+    dark=al.mp.SphNFW(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=20.0),
     shear=al.mp.ExternalShear(elliptical_comps=(-0.02, 0.005)),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,

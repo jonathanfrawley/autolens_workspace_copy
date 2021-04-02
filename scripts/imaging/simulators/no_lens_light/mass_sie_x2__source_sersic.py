@@ -4,8 +4,8 @@ Simulator: SIE x2
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's mass distribution is two `EllipticalIsothermal`'s.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's mass distribution is two `EllIsothermal`'s.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -79,21 +79,21 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(1.1, 0.51), elliptical_comps=(0.0, 0.15), einstein_radius=1.07
     ),
 )
 
 lens_galaxy_1 = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(-0.20, -0.35), elliptical_comps=(0.06, 0.1053), einstein_radius=0.71
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.05, 0.05),
         elliptical_comps=(0.1, 0.0),
         intensity=0.2,

@@ -18,7 +18,7 @@ First, lets create a image-plane `Grid2D` and ray-trace it via `MassProfile` to 
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
-mass_profile = al.mp.EllipticalIsothermal(
+mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.2), einstein_radius=1.0
 )
 deflections = mass_profile.deflections_from_grid(grid=grid)
@@ -29,7 +29,7 @@ lensed_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
 """
 We create a `Plane` representing a source-plane containing a `Galaxy` with a `LightProfile`.
 """
-bulge = al.lp.EllipticalSersic(
+bulge = al.lp.EllSersic(
     centre=(0.1, 0.1),
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
     intensity=0.3,

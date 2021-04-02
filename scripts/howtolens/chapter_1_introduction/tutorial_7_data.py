@@ -32,14 +32,14 @@ Now, lets setup our lens galaxy, source galaxy and `Tracer`.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.111111),
         intensity=1.0,

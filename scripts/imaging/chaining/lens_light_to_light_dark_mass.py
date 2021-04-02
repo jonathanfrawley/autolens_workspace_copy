@@ -4,18 +4,18 @@ Chaining: Chaining Lens Light To Mass
 
 In this script, we chain two searches to fit `Imaging` with a strong lens model where:
 
- - The lens galaxy's light is a bulge+disk `EllipticalSersic` and `EllipticalSersic`.
+ - The lens galaxy's light is a bulge+disk `EllSersic` and `EllSersic`.
  - The lens galaxy's stellar mass distribution is a bulge+disk tied to the light model above.
- - The lens galaxy's dark matter mass distribution is a `SphericalNFW`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's dark matter mass distribution is a `SphNFW`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 
 The two searches break down as follows:
 
- 1) Models the lens galaxy's light using an `EllipticalSersic` bulge and `EllipticalSersic` disk. The source is
+ 1) Models the lens galaxy's light using an `EllSersic` bulge and `EllSersic` disk. The source is
  present in the image, but modeling it is omitted.
 
  2) Models the lens galaxy's mass using a stellar mass distriubtion which is initialized using the bulge and disk light
- models inferred by search 1, alongside a dark matter profile. The source is again modeled using an `EllipticalSersic`
+ models inferred by search 1, alongside a dark matter profile. The source is again modeled using an `EllSersic`
 
 __Why Chain?__
 
@@ -78,14 +78,14 @@ __Model (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge and `EllipticalSersic` disk, the centres of 
+ - The lens galaxy's light is a parametric `EllSersic` bulge and `EllSersic` disk, the centres of 
  which are aligned [11 parameters].
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalSersic)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllSersic)
 
 bulge.centre = disk.centre
 
@@ -115,12 +115,12 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is a parametric `EllipticalSersic` bulge and `EllipticalSersic` 
+ - The lens galaxy's light and stellar mass is a parametric `EllSersic` bulge and `EllSersic` 
  disk [8 parameters: priors initialized from search 1].
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFW` whose centre is aligned with the 
- `EllipticalSersic` bulge and stellar mass model above [5 parameters].
+ - The lens galaxy's dark matter mass distribution is a `EllNFW` whose centre is aligned with the 
+ `EllSersic` bulge and stellar mass model above [5 parameters].
  - The lens mass model also includes an `ExternalShear` [2 parameters].
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -129,20 +129,20 @@ the bulge+disk above use a `LightProfile` (e.g. via `al.lp`), whereas the model 
 (e.g. via `al.lmp`). 
 
 The `take_attributes` method is used when we pass parameters from two different models. In the example below it finds
-all parameters in the `EllipticalSersic` and `EllipticalSersic` light models that share the same names
-as parameters in the ``EllipticalSersic` and `EllipticalSersic` light and mass models and passes their priors 
+all parameters in the `EllSersic` and `EllSersic` light models that share the same names
+as parameters in the ``EllSersic` and `EllSersic` light and mass models and passes their priors 
 (in this case, the `centre`, `elliptical_comps`, `intensity`, `effective_radius` and `sersic_index`).
 """
-bulge = af.Model(al.lmp.EllipticalSersic)
+bulge = af.Model(al.lmp.EllSersic)
 bulge.take_attributes(source=result_1.model)
 
-disk = af.Model(al.lmp.EllipticalSersic)
+disk = af.Model(al.lmp.EllSersic)
 disk.take_attributes(source=result_1.model)
 
 lens = af.Model(
-    al.Galaxy, redshift=0.5, bulge=bulge, disk=disk, dark=af.Model(al.mp.EllipticalNFW)
+    al.Galaxy, redshift=0.5, bulge=bulge, disk=disk, dark=af.Model(al.mp.EllNFW)
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens))
 

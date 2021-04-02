@@ -4,7 +4,7 @@ Simulator: Point Source
 
 This script simulates `Positions` data of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
  - The source `Galaxy` is a `PointSource`.
 """
 # %matplotlib inline
@@ -48,7 +48,7 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -57,9 +57,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalExponential(
-        centre=(0.0, 0.0), intensity=0.1, effective_radius=0.02
-    ),
+    light=al.lp.EllExponential(centre=(0.0, 0.0), intensity=0.1, effective_radius=0.02),
     point=al.ps.PointSource(centre=(0.0, 0.0)),
 )
 

@@ -76,8 +76,8 @@ __Model + Search + Analysis__
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllExponential)
 bulge.centre = disk.centre
 
 lens = af.Model(
@@ -85,10 +85,10 @@ lens = af.Model(
     redshift=0.5,
     bulge=bulge,
     disk=disk,
-    mass=al.mp.EllipticalIsothermal,
+    mass=al.mp.EllIsothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

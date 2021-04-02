@@ -16,7 +16,7 @@ import autolens.plot as aplt
 """
 First, lets create a simple `LightProfile` which we'll plot.
 """
-bulge = al.lp.EllipticalSersic(
+bulge = al.lp.EllSersic(
     centre=(0.0, 0.0),
     elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
     intensity=1.0,

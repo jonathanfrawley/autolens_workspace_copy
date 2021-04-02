@@ -4,10 +4,10 @@ Modeling: Light Parametric + Mass Light Dark + Source Parametric
 
 In this script, we fit `Imaging` with a strong lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic`.
+ - The lens galaxy's light is a parametric `EllSersic`.
  - The lens galaxy's stellar mass distribution is tied to the light model above.
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFW`.
- - The source galaxy's light is a parametric `EllipticalSersic`.
+ - The lens galaxy's dark matter mass distribution is a `EllNFW`.
+ - The source galaxy's light is a parametric `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -57,14 +57,14 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a lens model where:
 
- - The lens galaxy's light and stellar mass is a parametric `EllipticalSersic` [8 parameters].
+ - The lens galaxy's light and stellar mass is a parametric `EllSersic` [8 parameters].
  
- - The lens galaxy's dark matter mass distribution is a `EllipticalNFW` whose centre is aligned with the 
- `EllipticalSersic` bulge of the light and stellar mass mdoel above [5 parameters].
+ - The lens galaxy's dark matter mass distribution is a `EllNFW` whose centre is aligned with the 
+ `EllSersic` bulge of the light and stellar mass mdoel above [5 parameters].
  
  - The lens mass model also includes an `ExternalShear` [2 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -77,14 +77,14 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-bulge = af.Model(al.lmp.EllipticalSersic)
-dark = af.Model(al.mp.EllipticalNFW)
+bulge = af.Model(al.lmp.EllSersic)
+dark = af.Model(al.mp.EllNFW)
 bulge.centre = dark.centre
 
 lens = af.Model(
     al.Galaxy, redshift=0.5, bulge=bulge, dark=dark, shear=al.mp.ExternalShear
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

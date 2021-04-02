@@ -53,11 +53,11 @@ image_plane_grid = al.Grid2D.uniform(
 Whereas before we called our `Galaxy`'s things like `galaxy_with_light_profile`, lets now refer to them by their role 
 in lensing, e.g. `lens_galaxy` and `source_galaxy`.
 """
-mass_profile = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
+mass_profile = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 
 lens_galaxy = al.Galaxy(redshift=0.5, mass=mass_profile)
 
-light_profile = al.lp.SphericalSersic(
+light_profile = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 
@@ -239,7 +239,7 @@ In particular, try:
 
  1) Changing the lens galaxy's einstein radius - what happens to the source-plane`s image?
 
- 2) Change the SphericalIsothermal `MassProfile` to an `EllipticalIsothermal` `MassProfile`.and set its axis_ratio to 0.8. 
+ 2) Change the SphIsothermal `MassProfile` to an `EllIsothermal` `MassProfile`.and set its axis_ratio to 0.8. 
  What happens to the number of source images?
 
  3) As discussed at the beginning, `Plane`'s can be composed of multiple galaxies. Make an the image-plane with two 

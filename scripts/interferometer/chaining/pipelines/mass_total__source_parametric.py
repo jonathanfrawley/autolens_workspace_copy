@@ -5,8 +5,8 @@ Pipelines: Mass Total + Source Parametric
 By chaining together two searches this script fits `Interferometer` data of a strong lens system, where in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
- - The source galaxy's light is a bulge+disk parametric `EllipticalSersic`'s.
+ - The lens galaxy's total mass distribution is an `EllIsothermal`.
+ - The source galaxy's light is a bulge+disk parametric `EllSersic`'s.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -64,21 +64,18 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
-            al.Galaxy,
-            redshift=0.5,
-            mass=al.mp.EllipticalIsothermal,
-            shear=al.mp.ExternalShear,
+            al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal, shear=al.mp.ExternalShear
         ),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 
@@ -97,19 +94,19 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's total mass distribution is an `EllipticalPowerLaw` with `ExternalShear` [8 parameters: priors 
+ - The lens galaxy's total mass distribution is an `EllPowerLaw` with `ExternalShear` [8 parameters: priors 
  initialized from search 1].
  
- - The source galaxy's light is a bulge+disk using two parametric `EllipticalSersic`'s whose centres are shared
+ - The source galaxy's light is a bulge+disk using two parametric `EllSersic`'s whose centres are shared
  [12 parameters: priors of bulge initialized from search 1].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=20.
 """
-mass = af.Model(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllPowerLaw)
 mass.take_attributes(result_1.model.galaxies.lens.mass)
 
 bulge = result_1.model.galaxies.source.bulge
-disk = af.Model(al.lp.EllipticalSersic)
+disk = af.Model(al.lp.EllSersic)
 
 bulge.centre = disk.centre
 

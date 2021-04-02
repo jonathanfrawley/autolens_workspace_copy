@@ -4,8 +4,8 @@ Simulator: Broken Power Law
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's total mass distribution is an EllipticalBrokenPowerLaw.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an EllPowerLawBroken.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -74,7 +74,7 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalBrokenPowerLaw(
+    mass=al.mp.EllPowerLawBroken(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.3, phi=45.0),
         einstein_radius=1.3,
@@ -86,7 +86,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.03, 0.03),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,

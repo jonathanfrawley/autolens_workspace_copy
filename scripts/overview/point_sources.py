@@ -28,8 +28,8 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-To begin, we will create an image of strong lens using a simple `EllipticalIsothermal` mass model and source with an
-`EllipticalExponential` light profile. Although we are going to show how **PyAutoLens**`s positional analysis tools 
+To begin, we will create an image of strong lens using a simple `EllIsothermal` mass model and source with an
+`EllExponential` light profile. Although we are going to show how **PyAutoLens**`s positional analysis tools 
 model point-sources, showing the tools using an extended source will make it visibly clearer where the multiple 
 images of the point source are!
 
@@ -42,11 +42,11 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-isothermal_mass_profile = al.mp.EllipticalIsothermal(
+isothermal_mass_profile = al.mp.EllIsothermal(
     centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
 )
 
-exponential_light_profile = al.lp.EllipticalExponential(
+exponential_light_profile = al.lp.EllExponential(
     centre=(0.07, 0.07),
     elliptical_comps=(0.2, 0.0),
     intensity=0.05,

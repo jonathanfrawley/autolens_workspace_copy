@@ -4,9 +4,9 @@ Simulator: Light x2 + SIE x2
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's light is two `EllipticalSersic`'s.
- - The lens galaxy's mass distribution is two `EllipticalIsothermal`'s.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's light is two `EllSersic`'s.
+ - The lens galaxy's mass distribution is two `EllIsothermal`'s.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 
 This dataset is used in chapter 3 of the **HowToLens** lectures.
 """
@@ -82,35 +82,35 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, -1.0),
         elliptical_comps=(0.25, 0.1),
         intensity=0.1,
         effective_radius=0.8,
         sersic_index=2.5,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, -1.0), elliptical_comps=(0.17647, 0.0), einstein_radius=1.0
     ),
 )
 
 lens_galaxy_1 = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 1.0),
         elliptical_comps=(0.0, 0.1),
         intensity=0.1,
         effective_radius=0.6,
         sersic_index=3.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 1.0), elliptical_comps=(0.0, -0.111111), einstein_radius=0.8
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SphericalExponential(
+    bulge=al.lp.SphExponential(
         centre=(0.05, 0.15), intensity=0.2, effective_radius=0.5
     ),
 )

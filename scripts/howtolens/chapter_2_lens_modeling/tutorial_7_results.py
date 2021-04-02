@@ -38,13 +38,15 @@ masked_imaging = imaging.apply_mask(mask=mask)
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphericalExponential),
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential),
     )
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_1_non_linear_search", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_1_non_linear_search",
+    n_live_points=40,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)

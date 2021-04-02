@@ -27,7 +27,7 @@ grid_plotter.figure_2d()
 """
 We can easily ray-trace grids using a `MassProfile` and plot them with a `Grid2DPlotter`.
 """
-mass_profile = al.mp.EllipticalIsothermal(
+mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.2), einstein_radius=1.0
 )
 deflections = mass_profile.deflections_from_grid(grid=grid)

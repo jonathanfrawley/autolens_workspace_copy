@@ -19,8 +19,8 @@ import autofit as af
 """
 we'll use the same strong lensing data as tutorials 1 & 2, where:
 
- - The lens galaxy's total mass distribution is a `SphericalIsothermal`.
- - The source galaxy's `LightProfile` is a `SphericalExponential`.
+ - The lens galaxy's total mass distribution is a `SphIsothermal`.
+ - The source galaxy's `LightProfile` is a `SphExponential`.
 """
 dataset_name = "mass_sis__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -74,13 +74,15 @@ Now we create our search as usual, using the mask above in the analysis to make 
 """
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphericalExponential),
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential),
     )
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_7_with_custom_mask", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_7_with_custom_mask",
+    n_live_points=40,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
@@ -150,7 +152,9 @@ analysis = al.AnalysisImaging(
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_7_with_positions", n_live_points=40
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_7_with_positions",
+    n_live_points=40,
 )
 
 print(

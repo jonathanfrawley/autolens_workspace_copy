@@ -23,8 +23,8 @@ import autolens.plot as aplt
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -61,7 +61,7 @@ def perform_fit_with_source_galaxy(imaging, source_galaxy):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.0, 0.0),
             einstein_radius=1.6,
             elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),

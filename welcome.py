@@ -65,7 +65,7 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.1,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-sersic_light_profile = al.lp.EllipticalExponential(
+sersic_light_profile = al.lp.EllExponential(
     centre=(0.3, 0.2), elliptical_comps=(0.2, 0.0), intensity=0.05, effective_radius=1.0
 )
 
@@ -91,7 +91,7 @@ input(
     """
 )
 
-isothermal_mass_profile = al.mp.EllipticalIsothermal(
+isothermal_mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.0), einstein_radius=1.6
 )
 

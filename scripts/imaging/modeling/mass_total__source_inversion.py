@@ -5,7 +5,7 @@ Modeling: Mass Total + Source Inversion
 In this script, we fit `Imaging` with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
  - The source galaxy's surface-brightness is an `Inversion`.
 
 An `Inversion` reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
@@ -74,7 +74,7 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data.  In this 
 example we fit a lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear` [7 parameters].
  
  - The source-galaxy's light uses a `Rectangular` pixelization with fixed resolution 30 x 30 pixels (0 parameters).
  
@@ -95,7 +95,7 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
 lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+    al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal, shear=al.mp.ExternalShear
 )
 source = af.Model(
     al.Galaxy,

@@ -12,8 +12,8 @@ again to create the results.
 
 This model-fit fits the strong lens `Imaging` data with:
 
- - An `EllipticalIsothermal` `MassProfile` for the lens galaxy's mass.
- - An `EllipticalSersic` `LightProfile` for the source galaxy's light.
+ - An `EllIsothermal` `MassProfile` for the lens galaxy's mass.
+ - An `EllSersic` `LightProfile` for the source galaxy's light.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -49,8 +49,8 @@ masked_imaging = imaging.apply_mask(mask=mask)
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
     )
 )
 

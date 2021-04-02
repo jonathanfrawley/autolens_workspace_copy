@@ -11,9 +11,9 @@ In this example, we'll start using a more realistic lens model.
 In my experience, the simplest lens model (e.g. that has the fewest parameters) that provides a good fit to real
 strong lenses is as follows:
 
- 1) An _EllipticalSersic `LightProfile` for the lens galaxy's light.
- 2) A `EllipticalIsothermal` (SIE) `MassProfile` for the lens galaxy's mass.
- 3) An `EllipticalExponential` `LightProfile` for the source-`Galaxy`'s light (to be honest, this is too simple,
+ 1) An _EllSersic `LightProfile` for the lens galaxy's light.
+ 2) A `EllIsothermal` (SIE) `MassProfile` for the lens galaxy's mass.
+ 3) An `EllExponential` `LightProfile` for the source-`Galaxy`'s light (to be honest, this is too simple,
  but lets worry about that later).
 
 This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
@@ -33,9 +33,9 @@ import autofit as af
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy's light is an `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's light is an `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
 """
 dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -70,17 +70,16 @@ Now lets fit the dataset using a search.
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
-            al.Galaxy,
-            redshift=0.5,
-            bulge=al.lp.EllipticalSersic,
-            mass=al.mp.EllipticalIsothermal,
+            al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic, mass=al.mp.EllIsothermal
         ),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential),
     )
 )
 
 search = af.DynestyStatic(
-    path_prefix="howtolens", name="tutorial_3_realism_and_complexity", n_live_points=80
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_3_realism_and_complexity",
+    n_live_points=80,
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
@@ -119,7 +118,7 @@ we're going to use so few that it has no hope of locating the global maxima, ult
 maxima instead.
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_3_realism_and_complexity__local_maxima",
     n_live_points=5,
 )

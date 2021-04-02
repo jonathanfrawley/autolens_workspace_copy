@@ -73,13 +73,13 @@ __Model (Search 1)__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
- - An `EllipticalSersic` `LightProfile` for the source galaxy's light [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
+ - An `EllSersic` `LightProfile` for the source galaxy's light [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """

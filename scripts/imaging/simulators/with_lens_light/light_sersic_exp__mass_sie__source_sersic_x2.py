@@ -4,9 +4,9 @@ Simulator: Light x2 + SIE
 
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's light's are an `EllipticalSersic` and `EllipticalExponential`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's light's are an `EllSersic` and `EllExponential`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -81,20 +81,20 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=4.0,
         effective_radius=0.6,
         sersic_index=3.0,
     ),
-    disk=al.lp.EllipticalExponential(
+    disk=al.lp.EllExponential(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=30.0),
         intensity=2.0,
         effective_radius=1.6,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -104,7 +104,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.25, 0.15),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=120.0),
         intensity=0.7,
@@ -115,7 +115,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.7, -0.5),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=60.0),
         intensity=0.2,

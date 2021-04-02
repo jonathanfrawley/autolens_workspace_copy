@@ -18,14 +18,14 @@ First, lets create a `Tracer`.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.2, 0.2)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SphericalSersic(
+    bulge=al.lp.SphSersic(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )

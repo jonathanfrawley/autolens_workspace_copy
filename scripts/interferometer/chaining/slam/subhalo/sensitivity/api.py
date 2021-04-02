@@ -74,8 +74,8 @@ likelihood model.
 We perform this fit using the lens model we will use to perform sensitivity mapping, which we call the `base_model`.
 """
 base_model = af.Collection(
-    lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal),
-    source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic),
+    lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
+    source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
 )
 
 search_base = af.DynestyStatic(
@@ -101,7 +101,7 @@ base_model = result.model
 
 """
 We now define the `perturbation_model`, which is the model component whose parameters we iterate over to perform 
-sensitivity mapping. In this case, this model is a `SphericalNFWMCRLudlow` model and we will iterate over its
+sensitivity mapping. In this case, this model is a `SphNFWMCRLudlow` model and we will iterate over its
 `centre` and `mass_at_200`. We set it up as a `Model` so it has an associated redshift and can be directly
 passed to the tracer in the simulate function below.
 
@@ -115,7 +115,7 @@ dataset. Sensitivity mapping therefore maps out for what values of `centre` and 
 subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
 therefore when it is detectable!).
 """
-perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalNFWMCRLudlow)
+perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphNFWMCRLudlow)
 
 """
 Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick
@@ -143,7 +143,7 @@ We now write the `simulate_function`, which takes the `simulation_instance` of o
 simulate a dataset which is subsequently fitted.
 
 Note that when this dataset is simulated, the quantity `instance.perturbation` is used in the `simulate_function`.
-This is an instance of the `SphericalNFWMCRLudlow`, and it is different every time the `simulate_function` is called
+This is an instance of the `SphNFWMCRLudlow`, and it is different every time the `simulate_function` is called
 based on the value of sensitivity being computed. 
 
 In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
@@ -232,10 +232,10 @@ it is a lens model that does not include a subhalo, which was inferred by fittin
 mapping on.
 
 - `base_model`: This is the lens model that is fitted to every simulated dataset, which does not include a subhalo. In 
-this example is composed of an `EllipticalIsothermal` lens and `EllipticalSersic` source.
+this example is composed of an `EllIsothermal` lens and `EllSersic` source.
 
 - `perturbation_model`: This is the extra model component that alongside the `base_model` is fitted to every simulated 
-dataset. In this example it is a `SphericalNFWMCRLudlow` dark matter subhalo.
+dataset. In this example it is a `SphNFWMCRLudlow` dark matter subhalo.
 
 - `simulate_function`: This is the function that uses the `simulation_instance` and many instances of the `perturbation_model` 
 to simulate many datasets that are fitted with the `base_model` and `base_model` + `perturbation_model`.

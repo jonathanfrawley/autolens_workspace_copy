@@ -50,10 +50,10 @@ we'll also give the lens galaxy some attributes we didn`t in the last tutorial:
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.SphericalSersic(
+    bulge=al.lp.SphSersic(
         centre=(0.0, 0.0), intensity=2.0, effective_radius=0.5, sersic_index=2.5
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.0, -0.111111), einstein_radius=1.6
     ),
     shear=al.mp.ExternalShear(elliptical_comps=(0.05, 0.0)),
@@ -66,10 +66,10 @@ Lets also create a small satellite galaxy nearby the lens galaxy and at the same
 """
 lens_satellite = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.SphericalDevVaucouleurs(
+    bulge=al.lp.SphDevVaucouleurs(
         centre=(1.0, 0.0), intensity=2.0, effective_radius=0.2
     ),
-    mass=al.mp.SphericalIsothermal(centre=(1.0, 0.0), einstein_radius=0.4),
+    mass=al.mp.SphIsothermal(centre=(1.0, 0.0), einstein_radius=0.4),
 )
 
 print(lens_satellite)
@@ -126,10 +126,10 @@ and `disk`).
 """
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SphericalDevVaucouleurs(
+    bulge=al.lp.SphDevVaucouleurs(
         centre=(0.1, 0.2), intensity=0.3, effective_radius=0.3
     ),
-    disk=al.lp.EllipticalExponential(
+    disk=al.lp.EllExponential(
         centre=(0.1, 0.2),
         elliptical_comps=(0.111111, 0.0),
         intensity=3.0,
@@ -139,7 +139,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=1.0,
-    disk=al.lp.EllipticalExponential(
+    disk=al.lp.EllExponential(
         centre=(-0.3, -0.5),
         elliptical_comps=(0.1, 0.0),
         intensity=8.0,

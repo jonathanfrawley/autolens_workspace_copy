@@ -4,9 +4,9 @@ Modeling: Light Parametric + Mass Total + Source Parametric
 
 In this script, we fit `Imaging` with a strong lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge and `EllipticalExponential` disk.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `EllipticalSersic`.
+ - The lens galaxy's light is a parametric `EllSersic` bulge and `EllExponential` disk.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's light is a parametric `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -59,12 +59,12 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge and `EllipticalExponential` disk, the centres of 
+ - The lens galaxy's light is a parametric `EllSersic` bulge and `EllExponential` disk, the centres of 
  which are aligned [11 parameters].
  
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
 
@@ -77,8 +77,8 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Reduce your data so that the centre is (`autolens_workspace/notebooks/preprocess`). 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllExponential)
 bulge.centre = disk.centre
 
 lens = af.Model(
@@ -86,10 +86,10 @@ lens = af.Model(
     redshift=0.5,
     bulge=bulge,
     disk=disk,
-    mass=al.mp.EllipticalIsothermal,
+    mass=al.mp.EllIsothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

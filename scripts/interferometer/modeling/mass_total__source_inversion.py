@@ -5,7 +5,7 @@ Modeling: Mass Total + Source Inversion
 In this script, we fit `Interferometer` data with a strong lens model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
  - The source galaxy's light is a parametric `VoronoiMagnification` `Pixelization` and `Constant`
    regularization.
 """
@@ -65,8 +65,8 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
- - An `EllipticalSersic` `LightProfile` for the source galaxy's light [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
+ - An `EllSersic` `LightProfile` for the source galaxy's light [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 
@@ -80,9 +80,9 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
  - Manually override the lens model priors (`autolens_workspace/notebooks/imaging/modeling/customize/priors.py`).
 """
 lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+    al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal, shear=al.mp.ExternalShear
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

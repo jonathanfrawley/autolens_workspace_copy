@@ -4,9 +4,9 @@ Pipelines: Light Parametric + Mass Total + Source Parametric
 
 By chaining together three searches this script fits strong lens `Imaging`, where in the final model:
 
- - The lens galaxy's light is a parametric `EllipticalSersic`.
- - The lens galaxy's total mass distribution is an `EllipticalPowerLaw`.
- - The source galaxy is a parametric `EllipticalSersic`.
+ - The lens galaxy's light is a parametric `EllSersic`.
+ - The lens galaxy's total mass distribution is an `EllPowerLaw`.
+ - The source galaxy is a parametric `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -66,7 +66,7 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters].
+ - The lens galaxy's light is a parametric `EllSersic` bulge [7 parameters].
  
  - The lens galaxy's mass and source galaxy are omitted.
 
@@ -74,7 +74,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 """
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, bulge=af.Model(al.lp.EllipticalSersic))
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=af.Model(al.lp.EllSersic))
     )
 )
 
@@ -91,11 +91,11 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 In search 2 we fit a lens model where:
 
- - The lens galaxy's light is an `EllipticalSersic` bulge [Parameters fixed to results of search 1].
+ - The lens galaxy's light is an `EllSersic` bulge [Parameters fixed to results of search 1].
  
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
@@ -104,10 +104,10 @@ model = af.Collection(
         al.Galaxy,
         redshift=redshift_lens,
         bulge=result_1.instance.galaxies.lens.bulge,
-        mass=al.mp.EllipticalIsothermal,
+        mass=al.mp.EllIsothermal,
         shear=al.mp.ExternalShear,
     ),
-    source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic),
+    source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllSersic),
 )
 
 search = af.DynestyStatic(
@@ -125,13 +125,13 @@ __Model + Search + Analysis + Model-Fit (Search 3)__
 
 In search 2 we fit a lens model where:
 
- - The lens galaxy's light is an `EllipticalSersic` bulge [7 Parameters: we do not use the results of search 1 to 
+ - The lens galaxy's light is an `EllSersic` bulge [7 Parameters: we do not use the results of search 1 to 
  initialize priors].
  
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters: priors
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters: priors
  initalized from search 2].
  
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters: priors initalized from search 2].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters: priors initalized from search 2].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
 
@@ -143,7 +143,7 @@ model = af.Collection(
     lens=af.Model(
         al.Galaxy,
         redshift=redshift_lens,
-        bulge=af.Model(al.lp.EllipticalSersic),
+        bulge=af.Model(al.lp.EllSersic),
         mass=result_2.model.galaxies.lens.mass,
         shear=result_2.model.galaxies.lens.shear,
     ),

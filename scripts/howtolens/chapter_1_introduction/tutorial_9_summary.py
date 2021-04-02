@@ -55,21 +55,21 @@ masked_imaging = imaging.apply_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     ),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.111111),
         intensity=1.0,
         effective_radius=1.0,
         sersic_index=4.0,
     ),
-    disk=al.lp.EllipticalSersic(
+    disk=al.lp.EllSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.111111),
         intensity=1.0,

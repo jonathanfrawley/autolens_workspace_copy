@@ -19,8 +19,8 @@ Hyper mode is also built into the SLaM pipelines by default.
 
 By chaining together five searches this script fits strong lens `Imaging`, where in the final model:
 
- - The lens galaxy's light is a parametric `EllipticalSersic` and `EllipticalExponential`.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal`.
+ - The lens galaxy's light is a parametric `EllSersic` and `EllExponential`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal`.
  - The source galaxy is modeled using an `Inversion`, in particular the `VoronoiBrightnessImage` pixelization and
  `AdaptiveBrightness` regularization schemes which require hyper-mode.
 """
@@ -115,8 +115,8 @@ or regularization pattern to the source's unlensed morphology.
 """
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-bulge = af.Model(al.lp.EllipticalSersic)
-disk = af.Model(al.lp.EllipticalExponential)
+bulge = af.Model(al.lp.EllSersic)
+disk = af.Model(al.lp.EllExponential)
 
 bulge.centre = disk.centre
 
@@ -139,12 +139,10 @@ model = af.Collection(
             redshift=redshift_lens,
             bulge=result_1.instance.galaxies.lens.bulge,
             disk=result_1.instance.galaxies.lens.disk,
-            mass=al.mp.EllipticalIsothermal,
+            mass=al.mp.EllIsothermal,
             shear=al.mp.ExternalShear,
         ),
-        source=af.Model(
-            al.Galaxy, redshift=redshift_source, bulge=al.lp.EllipticalSersic
-        ),
+        source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllSersic),
     )
 )
 
@@ -221,7 +219,7 @@ Hyper-mode is now scaling the lens and source noise-maps and fitting for the bac
 which adapts the pixelization and regularization to the source's morphology. However, our hyper-model images are not
 yet sufficently accurate to do this. 
 
-This is because there are two distinct components of the source in the source plane, which the single `EllipticalSersic`
+This is because there are two distinct components of the source in the source plane, which the single `EllSersic`
 fit above will have failed to capture in detail. If we attempted to use its hyper image to adapt to the source 
 morphology, we would only adapt to the single component that we fitted!
 
@@ -398,11 +396,11 @@ Searches 1-7 were the steps we had to go through to properly initialize every as
 The most notable challenges were ensuring that our source hyper image could fully account for an irregular source
 with multiple components.
 
-The final search in this hyper-pipeline fits an `EllipticalPowerLaw` mass model, which benefits a lot from hyper-mode
+The final search in this hyper-pipeline fits an `EllPowerLaw` mass model, which benefits a lot from hyper-mode
 as the `slope` is a difficult parameter to infer which relies heavily on the intricacies of how the source is 
 reconstructed. 
 """
-mass = af.Model(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllPowerLaw)
 mass.take_attributes(result_7.model.galaxies.lens.mass)
 
 model = af.Collection(
@@ -441,7 +439,7 @@ It took us 7 searches to set up hyper-mode, just so that we could fit a complex 
 this is what is unfortunately what is necessary to fit the most complex lens models accurately, as they really are
 trying to extract a signal that is contained in the intricate detailed surfaceness brightness of the source itself.
 
-The final search in this example fitting an `EllipticalPowerLaw`, but it really could have been any of the complex
+The final search in this example fitting an `EllPowerLaw`, but it really could have been any of the complex
 models that are illustrated throughout the workspace (e.g., decomposed light_dark models, more complex lens light
 models, etc.). You may therefore wish to adapt this pipeline to fit the complex model you desire for your science-case,
 by simplying swapping out the model used in search 8.

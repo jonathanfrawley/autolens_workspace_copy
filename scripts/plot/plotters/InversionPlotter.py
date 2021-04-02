@@ -46,7 +46,7 @@ Lets create a `Tracer` which we will use to create the `Inversion`.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.6
     ),
 )

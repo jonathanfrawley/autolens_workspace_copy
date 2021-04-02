@@ -28,8 +28,8 @@ import autolens.plot as aplt
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -84,7 +84,7 @@ might sample at the beginning of a model-fit.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=0.8,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -122,7 +122,7 @@ the correct solution.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -211,14 +211,14 @@ As I said above, performing this fit is the same as usual, we just give the lens
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=1.0,
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.0), einstein_radius=1.6
     ),
 )
@@ -254,14 +254,14 @@ lens galaxy's light accurately (below, I've increased the lens galaxy intensity 
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
         intensity=0.5,
         effective_radius=0.8,
         sersic_index=4.0,
     ),
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.0), einstein_radius=1.6
     ),
 )

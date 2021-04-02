@@ -29,8 +29,8 @@ import autolens.plot as aplt
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -66,7 +66,7 @@ def fit_masked_imaging_with_source_galaxy(masked_imaging, source_galaxy):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.0, 0.0),
             einstein_radius=1.5,
             elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
@@ -160,7 +160,7 @@ actually modeled this image with **PyAutoLens** it wouldn't go to this solution 
 Einstein radius of 1.6? That`s true.
 
 However, for *real* strong gravitational lenses, there is no such thing as a `correct mass model`. Real galaxies are 
-not `EllipticalIsothermal` profiles_, or power-laws, or NFW`s, or any of the symmetric and smooth analytic profiles we 
+not `EllIsothermal` profiles_, or power-laws, or NFW`s, or any of the symmetric and smooth analytic profiles we 
 assume to model their mass. For real strong lenses our mass model will pretty much always lead to source-reconstruction 
 residuals, producing these skewed chi-squared distributions. **PyAutoLens** can`t remove them by simply improving the 
 mass model.

@@ -4,9 +4,9 @@ Simulator: Subhalo
 
 This script simulates `Interferometer` data of a strong lens where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The subhalo`s `MassProfile` is a `SphericalNFW`.
- - The source galaxy's `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The subhalo`s `MassProfile` is a `SphNFW`.
+ - The source galaxy's `LightProfile` is an `EllSersic`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -86,20 +86,18 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(
+    mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
     ),
-    subhalo=al.mp.SphericalTruncatedNFWMCRLudlow(
-        centre=(1.601, 0.0), mass_at_200=1.0e10
-    ),
+    subhalo=al.mp.SphNFWTruncatedMCRLudlow(centre=(1.601, 0.0), mass_at_200=1.0e10),
     shear=al.mp.ExternalShear(elliptical_comps=(0.0, 0.05)),
 )
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,

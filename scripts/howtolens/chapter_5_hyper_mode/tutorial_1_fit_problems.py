@@ -58,7 +58,7 @@ we'll use 3 sources whose effective radius and Sersic index are changed such tha
 """
 source_galaxy_flat = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=(0.0, 0.15),
         intensity=0.2,
@@ -69,7 +69,7 @@ source_galaxy_flat = al.Galaxy(
 
 source_galaxy_compact = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=(0.0, 0.15),
         intensity=0.2,
@@ -80,7 +80,7 @@ source_galaxy_compact = al.Galaxy(
 
 source_galaxy_super_compact = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.EllipticalSersic(
+    bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=(0.0, 0.15),
         intensity=0.2,
@@ -105,7 +105,7 @@ def simulate_for_source_galaxy(source_galaxy):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.6
         ),
     )
@@ -160,7 +160,7 @@ def fit_imaging_with_voronoi_magnification_pixelization(
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.6
         ),
     )

@@ -29,9 +29,9 @@ import autolens.plot as aplt
 """
 we'll use new strong lensing data, where:
 
- - There are two lens galaxy's whose `LightProfile`'s are both `EllipticalSersic``..
- - There are two lens galaxy's whose `MassProfile`'s are both `EllipticalIsothermal``..
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - There are two lens galaxy's whose `LightProfile`'s are both `EllSersic``..
+ - There are two lens galaxy's whose `MassProfile`'s are both `EllIsothermal``..
+ - The source galaxy's `LightProfile` is an `EllExponential`.
 """
 dataset_name = "light_sersic_x2__mass_sie_x2__source_sersic"
 dataset_path = path.join("dataset", "imaging", "with_lens_light", dataset_name)
@@ -84,7 +84,7 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The left lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters].
+ - The left lens galaxy's light is a parametric `EllSersic` bulge [7 parameters].
 
  - The lens galaxy's mass and source galaxy are omitted.
 
@@ -92,16 +92,19 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 We fix the centre of its light to (0.0, -1.0), the pixel we know the left galaxy's light centre peaks.
 """
-left_lens = af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllipticalSersic)
+left_lens = af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic)
 left_lens.bulge.centre_0 = 0.0
 left_lens.bulge.centre_1 = -1.0
 
-model = af.Model(af.Collection(galaxies=af.Collection(left_lens=left_lens)))
+model = af.Collection(af.Collection(galaxies=af.Collection(left_lens=left_lens)))
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
-    name="search[1]__left_lens_light[bulge]", n_live_points=30, evidence_tolerance=5.0
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_4_x2_lens_galaxies"),
+    name="search[1]__left_lens_light[bulge]",
+    n_live_points=30,
+    evidence_tolerance=5.0,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -112,9 +115,9 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 In search 2 we fit a lens model where:
 
- - The left lens galaxy's light is a parametric `EllipticalSersic` bulge [0 parameters: fixed from search 1].
+ - The left lens galaxy's light is a parametric `EllSersic` bulge [0 parameters: fixed from search 1].
 
- - The right lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters].
+ - The right lens galaxy's light is a parametric `EllSersic` bulge [7 parameters].
 
  - The lens galaxy's mass and source galaxy are omitted.
 
@@ -125,22 +128,23 @@ We fix the centre of the right lens's light to (0.0, 1.0), the pixel we know the
 We also pass the result of the `left_lens` from search ` as an `instance`, which should improve the fitting of the
 right lens.
 """
-right_lens = af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllipticalSersic)
+right_lens = af.Model(al.Galaxy, redshift=0.5, bulge=al.lp.EllSersic)
 right_lens.bulge.centre_0 = 0.0
 right_lens.bulge.centre_1 = 1.0
 
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            left_lens=result_1.instance.galaxies.left_lens, right_lens=right_lens
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        left_lens=result_1.instance.galaxies.left_lens, right_lens=right_lens
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
-    name="search[2]__right_lens_light[bulge]", n_live_points=30, evidence_tolerance=5.0
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_4_x2_lens_galaxies"),
+    name="search[2]__right_lens_light[bulge]",
+    n_live_points=30,
+    evidence_tolerance=5.0,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)
@@ -150,14 +154,14 @@ __Model + Search + Analysis + Model-Fit (Search 3)__
 
 In search 3 we fit a lens model where:
 
- - The left lens galaxy's light is a parametric `EllipticalSersic` bulge [0 parameters: fixed from search 1].
+ - The left lens galaxy's light is a parametric `EllSersic` bulge [0 parameters: fixed from search 1].
 
- - The right lens galaxy's light is a parametric `EllipticalSersic` bulge [0 parameters: fixed from search 2].
+ - The right lens galaxy's light is a parametric `EllSersic` bulge [0 parameters: fixed from search 2].
 
- - The lens galaxy's mass is modeled using two `EllipticalIsothermal` profiles whose centres are fixed to (0.0, -1.0)
+ - The lens galaxy's mass is modeled using two `EllIsothermal` profiles whose centres are fixed to (0.0, -1.0)
   and (0.0, 1.0) [6 parameters].
   
- - The source galaxy's light is a parametric `EllipticalExponential` [6 parameters].
+ - The source galaxy's light is a parametric `EllExponential` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 """
@@ -165,14 +169,14 @@ left_lens = af.Model(
     al.Galaxy,
     redshift=0.5,
     bulge=result_1.instance.galaxies.left_lens.bulge,
-    mass=al.mp.EllipticalIsothermal,
+    mass=al.mp.EllIsothermal,
 )
 
 right_lens = af.Model(
     al.Galaxy,
     redshift=0.5,
     bulge=result_2.instance.galaxies.right_lens.bulge,
-    mass=al.mp.EllipticalIsothermal,
+    mass=al.mp.EllIsothermal,
 )
 
 left_lens.mass.centre_0 = 0.0
@@ -180,19 +184,18 @@ left_lens.mass.centre_1 = -1.0
 right_lens.mass.centre_0 = 0.0
 right_lens.mass.centre_1 = 1.0
 
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            left_lens=left_lens,
-            right_lens=right_lens,
-            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalExponential),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        left_lens=left_lens,
+        right_lens=right_lens,
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_4_x2_lens_galaxies"),
     name="search[3]__mass_x2[sie]__source[exp]",
     n_live_points=50,
     evidence_tolerance=5.0,
@@ -205,14 +208,14 @@ __Model + Search + Analysis + Model-Fit (Search 4)__
 
 In search43 we fit a lens model where:
 
- - The left lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters: priors initialized from search 1].
+ - The left lens galaxy's light is a parametric `EllSersic` bulge [7 parameters: priors initialized from search 1].
 
- - The right lens galaxy's light is a parametric `EllipticalSersic` bulge [7 parameters: priors initialized from search 2].
+ - The right lens galaxy's light is a parametric `EllSersic` bulge [7 parameters: priors initialized from search 2].
 
- - The lens galaxy's mass is modeled using two `EllipticalIsothermal` profiles whose centres are fixed to (0.0, -1.0)
+ - The lens galaxy's mass is modeled using two `EllIsothermal` profiles whose centres are fixed to (0.0, -1.0)
   and (0.0, 1.0) [6 parameters: priors initialized from search 3].
 
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters: priors initialized from search 3].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters: priors initialized from search 3].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=27.
 """
@@ -230,23 +233,22 @@ right_lens = af.Model(
     mass=result_3.model.galaxies.right_lens.mass,
 )
 
-source_bulge = af.Model(al.lp.EllipticalSersic)
+source_bulge = af.Model(al.lp.EllSersic)
 
 source_bulge.take_attributes(result_3.model.galaxies.source.bulge)
 
-model = af.Model(
-    af.Collection(
-        galaxies=af.Collection(
-            left_lens=left_lens,
-            right_lens=right_lens,
-            source=af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge),
-        )
+model = af.Collection(
+    galaxies=af.Collection(
+        left_lens=left_lens,
+        right_lens=right_lens,
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge),
     )
 )
 
 analysis = al.AnalysisImaging(dataset=masked_imaging)
 
 search = af.DynestyStatic(
+    path_prefix=path.join("howtolens", "chapter_3", "tutorial_4_x2_lens_galaxies"),
     name="search[4]_light_x2[bulge]_mass_x2[sie]_source[exp]",
     n_live_points=60,
     evidence_tolerance=0.3,

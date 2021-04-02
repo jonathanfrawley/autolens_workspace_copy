@@ -170,7 +170,7 @@ agg.map(func=print_max_log_likelihood_mass)
 
 """
 Lets next do something a bit more ambitious. Lets create a plot of the einstein_radius vs axis_ratio of each 
-`EllipticalIsothermal` `MassProfile`.
+`EllIsothermal` `MassProfile`.
 
 These plots don't use anything too memory intensive (like a tracer) so we are fine to go back to lists for this.
 """

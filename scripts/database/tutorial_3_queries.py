@@ -68,7 +68,7 @@ print(
 """
 We can also query based on the model fitted. 
 
-For example, we can load all results which fitted an `EllipticalIsothermal` model-component, which in this simple 
+For example, we can load all results which fitted an `EllIsothermal` model-component, which in this simple 
 example is all 3 model-fits.
 
 The ability to query via the model is extremely powerful. It enables a user to fit many lens models to large samples 
@@ -79,17 +79,17 @@ of lenses efficiently load and inspect the results.
 Models with multiple galaxies are therefore easily accessed via the database.]
 """
 mass = agg.galaxies.lens.mass
-agg_query = agg.query(mass == al.mp.EllipticalIsothermal)
+agg_query = agg.query(mass == al.mp.EllIsothermal)
 samples_gen = agg_query.values("samples")
 print(
-    "Total Samples Objects via `EllipticalIsothermal` model query = ",
+    "Total Samples Objects via `EllIsothermal` model query = ",
     len(list(samples_gen)),
     "\n",
 )
 
 """
 Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the 
-inferred value of `sersic_index` for the `EllipticalSersic` of the source's bulge is less than 3.0 (which returns only 
+inferred value of `sersic_index` for the `EllSersic` of the source's bulge is less than 3.0 (which returns only 
 the first of the three model-fits).
 """
 bulge = agg.galaxies.source.bulge
@@ -103,14 +103,14 @@ print(
 
 """
 Advanced queries can be constructed using logic, for example we below we combine the two queries above to find all
-results which fitted an `EllipticalIsothermal` mass model AND (using the & symbol) inferred a value of sersic index of 
+results which fitted an `EllIsothermal` mass model AND (using the & symbol) inferred a value of sersic index of 
 less than 3.0 for the source's bulge. 
 
 The OR logical clause is also supported via the symbol |.
 """
 mass = agg.galaxies.lens.mass
 bulge = agg.galaxies.source.bulge
-agg_query = agg.query((mass == al.mp.EllipticalIsothermal) & (bulge.sersic_index < 3.0))
+agg_query = agg.query((mass == al.mp.EllIsothermal) & (bulge.sersic_index < 3.0))
 samples_gen = agg_query.values("samples")
 print(
     "Total Samples Objects In Query `Gaussian & sigma < 3.0` = ",

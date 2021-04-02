@@ -116,10 +116,10 @@ input_deflections = al.mp.InputDeflections(
 """
 __Model__
 
-We now compose the lens and source `Model`, where the source is an `EllipticalSersic`.
+We now compose the lens and source `Model`, where the source is an `EllSersic`.
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=input_deflections)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

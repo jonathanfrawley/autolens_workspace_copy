@@ -5,17 +5,17 @@ Chaining: SIE to Power-law
 In this script, we chain two searches to fit `Imaging` with a strong lens model where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalPowerLaw`.
- - The source galaxy's light is a parametric `EllipticalSersic`.
+ - The lens galaxy's total mass distribution is an `EllPowerLaw`.
+ - The source galaxy's light is a parametric `EllSersic`.
 
 The two searches break down as follows:
 
- 1) Models the lens galaxy's mass as an `EllipticalIsothermal` and the source galaxy's light as an `EllipticalSersic`.
- 2) Models the lens galaxy's mass an an `EllipticalPowerLaw` and the source galaxy's light as an `EllipticalSersic`.
+ 1) Models the lens galaxy's mass as an `EllIsothermal` and the source galaxy's light as an `EllSersic`.
+ 2) Models the lens galaxy's mass an an `EllPowerLaw` and the source galaxy's light as an `EllSersic`.
 
 __Why Chain?__
 
-The `EllipticalPower` is a general form of the `EllipticalIsothermal` which has one additional parameter, the `slope`,
+The `EllPower` is a general form of the `EllIsothermal` which has one additional parameter, the `slope`,
 which controls the inner mass distribution as follows:
 
  - A higher slope concentrates more mass in the central regions of the mass profile relative to the outskirts.
@@ -26,11 +26,11 @@ significantly more complex and a notable degeneracy appears between the mass mod
 components and slope. This is challenging to sample in an efficient and robust manner, especially when the non-linear
 search's initial samples use broad uniform priors on the lens and source parameters.
 
-Search chaining allows us to begin by fitting an `EllipticalIsothermal` model and therefore estimate the lens's mass
+Search chaining allows us to begin by fitting an `EllIsothermal` model and therefore estimate the lens's mass
 model and the source parameters via a non-linear parameter space that does not have a strong of a parameter degeneracy
 present. This makes the model-fit more efficient and reliable.
 
-The second search then fits the `EllipticalPowerLaw`, using prior passing to initialize the mass and elliptical
+The second search then fits the `EllPowerLaw`, using prior passing to initialize the mass and elliptical
 components of the lens galaxy as well as the source galaxy's light profile.
 """
 # %matplotlib inline
@@ -80,15 +80,15 @@ __Model (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` with `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` with `ExternalShear` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
 lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+    al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal, shear=al.mp.ExternalShear
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -113,9 +113,9 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's total mass distribution is an `EllipticalPowerLaw` with `ExternalShear` [8 parameters: priors 
+ - The lens galaxy's total mass distribution is an `EllPowerLaw` with `ExternalShear` [8 parameters: priors 
  initialized from search 1].
- - The source galaxy's light is again a parametric `EllipticalSersic` [7 parameters: priors initialized from search 1].
+ - The source galaxy's light is again a parametric `EllSersic` [7 parameters: priors initialized from search 1].
  
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=15.
 
@@ -125,20 +125,20 @@ Because the source model does not change we can pass its priors by simply using 
 source = result_1.model.galaxies.source
 
 """
-However, we cannot use this to pass the lens galaxy, because its mass model must change from an `EllipticalIsothermal` 
-to an `EllipticalPowerLaw`. The following code would not change the mass model to an `EllipticalPowerLaw`:
+However, we cannot use this to pass the lens galaxy, because its mass model must change from an `EllIsothermal` 
+to an `EllPowerLaw`. The following code would not change the mass model to an `EllPowerLaw`:
  
  `lens = result.model.galaxies.lens`
  
 We can instead use the `take_attributes` method to pass the priors. Below, we pass the lens of the result above to a
-new `EllipticalPowerLaw`, which will find all parameters in the `EllipticalIsothermal` model that share the same name
-as parameters in the `EllipticalPowerLaw` and pass their priors (in this case, the `centre`, `elliptical_comps` 
+new `EllPowerLaw`, which will find all parameters in the `EllIsothermal` model that share the same name
+as parameters in the `EllPowerLaw` and pass their priors (in this case, the `centre`, `elliptical_comps` 
 and `einstein_radius`).
 
-This leaves the `slope` parameter of the `EllipticalPowerLaw` with its default `UniformPrior` which has a 
+This leaves the `slope` parameter of the `EllPowerLaw` with its default `UniformPrior` which has a 
 `lower_limit=1.5` and `upper_limit=3.0`.
 """
-mass = af.Model(al.mp.EllipticalPowerLaw)
+mass = af.Model(al.mp.EllPowerLaw)
 mass.take_attributes(result_1.model.galaxies.lens.mass)
 shear = result_1.model.galaxies.lens.shear
 
@@ -165,8 +165,8 @@ result_2 = search.fit(model=model, analysis=analysis)
 """
 __Wrap Up__
 
-In this example, we passed used prior passing to initialize a lens mass model as an `EllipticalIsothermal` and 
-passed its priors to then fit the more complex `EllipticalPowerLaw` model. 
+In this example, we passed used prior passing to initialize a lens mass model as an `EllIsothermal` and 
+passed its priors to then fit the more complex `EllPowerLaw` model. 
 
 This removed difficult-to-fit degeneracies from the non-linear parameter space in search 1, providing a more robust 
 and efficient model-fit.
@@ -177,7 +177,7 @@ Advanced search chaining uses `pipelines` that chain together multiple searches 
 in a robust and efficient way. 
 
 The following example pipelines fits a power-law, using the same approach demonstrated in this script of first 
-fitting an `EllipticalIsothermal`:
+fitting an `EllIsothermal`:
 
  `autolens_workspace/imaging/chaining/pipelines/no_lens_light/mass_total__source_parametric.py`
  
@@ -187,6 +187,6 @@ An even more advanced approach which uses search chaining are the SLaM pipelines
 processing into a series of fits that first perfect the source model, then the lens light model and finally the lens
 mass model. 
 
-The SLaM pipelines assume an `EllipticalIsothermal` throughout the Source and Light pipelines, and only switch to a
-more complex mass model (like the `EllipticalPowerLaw`) in the final Mass pipeline.
+The SLaM pipelines assume an `EllIsothermal` throughout the Source and Light pipelines, and only switch to a
+more complex mass model (like the `EllPowerLaw`) in the final Mass pipeline.
 """

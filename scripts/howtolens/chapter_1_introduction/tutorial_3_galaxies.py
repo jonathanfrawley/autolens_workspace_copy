@@ -26,10 +26,10 @@ Lets use an identical `Grid2D` to the previous example.
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 """
-Lets make a `Galaxy` with an `EllipticalSersic` `LightProfile`, by making an `EllipticalSersic` `LightProfile`.and 
+Lets make a `Galaxy` with an `EllSersic` `LightProfile`, by making an `EllSersic` `LightProfile`.and 
 passing it to a `Galaxy` object.
 """
-sersic_light_profile = al.lp.EllipticalSersic(
+sersic_light_profile = al.lp.EllSersic(
     centre=(0.0, 0.0),
     elliptical_comps=(0.0, 0.111111),
     intensity=1.0,
@@ -64,15 +64,15 @@ galaxy_plotter.figures_2d(image=True)
 """
 We can pass galaxies as many profiles as we like. Lets create a `Galaxy` with three `LightProfile`'s.
 """
-light_profile_1 = al.lp.SphericalSersic(
+light_profile_1 = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=2.5
 )
 
-light_profile_2 = al.lp.SphericalSersic(
+light_profile_2 = al.lp.SphSersic(
     centre=(1.0, 1.0), intensity=1.0, effective_radius=2.0, sersic_index=3.0
 )
 
-light_profile_3 = al.lp.SphericalSersic(
+light_profile_3 = al.lp.SphSersic(
     centre=(1.0, -1.0), intensity=1.0, effective_radius=2.0, sersic_index=2.0
 )
 
@@ -98,13 +98,13 @@ galaxy_plotter.subplot_of_light_profiles(image=True)
 
 """
 `MassProfile`'s interact with `Galaxy` objects in the exact same way as `LightProfile`'s. Lets create a `Galaxy` with three 
-`SphericalIsothermal` `MassProfile`'s. 
+`SphIsothermal` `MassProfile`'s. 
 """
-mass_profile_1 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+mass_profile_1 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-mass_profile_2 = al.mp.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
+mass_profile_2 = al.mp.SphIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
 
-mass_profile_3 = al.mp.SphericalIsothermal(centre=(1.0, -1.0), einstein_radius=1.0)
+mass_profile_3 = al.mp.SphIsothermal(centre=(1.0, -1.0), einstein_radius=1.0)
 
 galaxy_with_3_mass_profiles = al.Galaxy(
     redshift=0.5, mass_1=mass_profile_1, mass_2=mass_profile_2, mass_3=mass_profile_3
@@ -127,19 +127,19 @@ galaxy_plotter.figures_2d(convergence=True, potential=True)
 """
 Finally, a `Galaxy` can take both light and mass profiles, and there is no limit to how many we pass it.
 """
-light_profile_1 = al.lp.SphericalSersic(
+light_profile_1 = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 
-light_profile_2 = al.lp.SphericalSersic(
+light_profile_2 = al.lp.SphSersic(
     centre=(1.0, 1.0), intensity=1.0, effective_radius=2.0, sersic_index=2.0
 )
 
-light_profile_3 = al.lp.SphericalSersic(
+light_profile_3 = al.lp.SphSersic(
     centre=(2.0, 2.0), intensity=1.0, effective_radius=3.0, sersic_index=3.0
 )
 
-light_profile_4 = al.lp.EllipticalSersic(
+light_profile_4 = al.lp.EllSersic(
     centre=(1.0, -1.0),
     elliptical_comps=(0.3, 0.0),
     intensity=1.0,
@@ -147,13 +147,13 @@ light_profile_4 = al.lp.EllipticalSersic(
     sersic_index=1.0,
 )
 
-mass_profile_1 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+mass_profile_1 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-mass_profile_2 = al.mp.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=2.0)
+mass_profile_2 = al.mp.SphIsothermal(centre=(1.0, 1.0), einstein_radius=2.0)
 
-mass_profile_3 = al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=3.0)
+mass_profile_3 = al.mp.SphIsothermal(centre=(2.0, 2.0), einstein_radius=3.0)
 
-mass_profile_4 = al.mp.EllipticalIsothermal(
+mass_profile_4 = al.mp.EllIsothermal(
     centre=(1.0, -1.0), elliptical_comps=(0.333333, 0.0), einstein_radius=2.0
 )
 

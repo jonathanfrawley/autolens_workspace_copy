@@ -5,20 +5,20 @@ Chaining: Parametric To Inversion
 In this script, we chain two searches to fit `Interferometer` with a strong lens model where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is an `EllipticalExponential`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
+ - The source galaxy's `LightProfile` is an `EllExponential`.
 
 The two searches break down as follows:
 
- 1) Model the source galaxy using a parametric `EllipticalSersic` and lens galaxy mass as an `EllipticalIsothermal`.
- 2) Models the source galaxy using an `Inversion` and lens galaxy mass as an `EllipticalIsothermal`.
+ 1) Model the source galaxy using a parametric `EllSersic` and lens galaxy mass as an `EllIsothermal`.
+ 2) Models the source galaxy using an `Inversion` and lens galaxy mass as an `EllIsothermal`.
 
 __Why Chain?__
 
 There are a number of benefits of chaining a parametric source model and `Inversion`, as opposed to fitting the
 `Inversion` in one search:
 
- - Parametric sources are computationally faster to fit. Therefore, even though the `EllipticalSersic` has more
+ - Parametric sources are computationally faster to fit. Therefore, even though the `EllSersic` has more
  parameters for the search to fit than an `Inversion`, the model-fit is faster overall.
 
  - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalizations and the source
@@ -71,13 +71,13 @@ __Model (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=13.
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllipticalSersic)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -104,13 +104,13 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's total mass distribution is again an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is again an `EllIsothermal` and `ExternalShear` [7 parameters].
  - The source-galaxy's light uses a `VoronoiMagnification` pixelization [2 parameters].
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
 
-The priors of the majority of the `EllipticalIsothermal` and `ExternalShear` initialized using the results of search 1.
+The priors of the majority of the `EllIsothermal` and `ExternalShear` initialized using the results of search 1.
 
 The term `model` below passes the source model as model-components that are to be fitted for by the 
 non-linear search. We pass the `lens` as a `model`, so that we can use the mass model inferred by search 1. The source
@@ -165,7 +165,7 @@ result_2 = search.fit(model=model, analysis=analysis)
 """
 __Wrap Up__
 
-In this example, we passed used prior passing to initialize an `EllipticalIsothermal` + `ExternalShear` lens mass model 
+In this example, we passed used prior passing to initialize an `EllIsothermal` + `ExternalShear` lens mass model 
 using a parametric source and pass this model to a second search which modeled the source using an `Inversion`. 
 
 This was more computationally efficient than just fitting the `Inversion` by itself and helped to ensure that the 

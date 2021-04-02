@@ -12,8 +12,8 @@ To begin, we have to choose the parametrization of our lens model. We don't need
 and mass profiles (e.g. the centre, einstein_radius, etc.) - only the profiles themselves. In this example,
 we'll use the following lens model:
 
- 1) A `SphericalIsothermal` Sphere (SIS) for the lens galaxy's mass.
- 2) A `SphericalExponential` `LightProfile` for the source-`Galaxy`'s light.
+ 1) A `SphIsothermal` Sphere (SIS) for the lens galaxy's mass.
+ 2) A `SphExponential` `LightProfile` for the source-`Galaxy`'s light.
 
 I'll let you into a secret - this is the same lens model used to simulate the `Imaging` data we're going to fit and
 we're going to infer the actual parameters I used!
@@ -69,8 +69,8 @@ we simulate strong lens data, checkout the scripts in the folder `autolens_works
 
 The strong lens in this image was generated using:
 
- - The lens galaxy's total mass distribution is a `SphericalIsothermal`.
- - The source galaxy's `LightProfile` is a `SphericalExponential`.
+ - The lens galaxy's total mass distribution is a `SphIsothermal`.
+ - The source galaxy's `LightProfile` is a `SphExponential`.
 
 This dataset (and all datasets used in tutorials from here are on) are stored and loaded from the 
 `autolens_workspace/dataset/imaging` folder.
@@ -104,16 +104,14 @@ To compose a lens model, we set up a `Galaxy` as a `Model`. Whereas previous, we
 every parameter of a `Galaxy`'s `LightProfile`'s and  `MassProfile`'s, when it is a `Model` these only the class of each
 profile is passed and its parameters are fitted for and inferred by the non-linear search.
 
-Lets model the lens galaxy with an `SphericalIsothermal` `MassProfile`.(which is what it was simulated with).
+Lets model the lens galaxy with an `SphIsothermal` `MassProfile`.(which is what it was simulated with).
 """
-lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphericalIsothermal)
+lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal)
 
 """
 Lets model the source galaxy with a spherical exponential `LightProfile` (again, what it was simulated with).
 """
-source_galaxy_model = af.Model(
-    al.Galaxy, redshift=1.0, bulge=al.lp.SphericalExponential
-)
+source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential)
 
 """
 We now have multiple `Model` components, which we bring together into a final model via the `Collection` object.
@@ -144,7 +142,7 @@ sampling algorithm dynesty. We pass the `DynestyStatic` object the following:
 
 """
 search = af.DynestyStatic(
-    path_prefix="howtolens",
+    path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_1_non_linear_search",
     n_live_points=40,
     walks=10,

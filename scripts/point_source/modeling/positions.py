@@ -4,7 +4,7 @@ Modeling: Point-Source Position
 
 In this script, we fit a `PointSourceDataset` with a strong lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
  - The source `Galaxy` is a `PointSource`.
 """
 # %matplotlib inline
@@ -103,15 +103,15 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a lens model where:
 
- - The lens galaxy's total mass distribution is an `EllipticalIsothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `EllipticalSersic` [7 parameters].
+ - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear` [7 parameters].
+ - The source galaxy's light is a parametric `EllSersic` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
 NOTE: The name of the `PointSoruce` model in the source galaxy is `point_0`, which is paired to the name of the
 `PointSourceDataset`.
 """
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllipticalIsothermal)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
 source = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.PointSource)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
