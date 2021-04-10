@@ -45,7 +45,7 @@ __Dataset + Masking__
 
 Load, plot and mask the `Imaging` data.
 """
-dataset_name = "mass_sie__source_sersic"
+dataset_name = "mass_sie__source_sersic_x2"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
 
 imaging = al.Imaging.from_fits(
@@ -59,9 +59,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -69,7 +69,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", "mass_total__source_inversion")
+path_prefix = path.join("imaging", "slam", dataset_name)
 
 """
 __Redshifts__
@@ -106,7 +106,7 @@ __Settings__:
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
  PIPELINE).
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
@@ -144,7 +144,7 @@ settings_lens = al.SettingsLens(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=source_parametric_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
@@ -195,7 +195,7 @@ preloads = al.Preloads.setup(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     hyper_result=source_inversion_results.last,
     positions=source_inversion_results.last.image_plane_multiple_image_positions,
     settings_lens=settings_lens,

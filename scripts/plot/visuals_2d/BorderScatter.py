@@ -35,7 +35,6 @@ mask = al.Mask2D.circular_annular(
     pixel_scales=image.pixel_scales,
     inner_radius=0.3,
     outer_radius=3.0,
-    sub_size=image.sub_size,
 )
 masked_image = al.Array2D.manual_mask(array=image.native, mask=mask)
 

@@ -77,7 +77,7 @@ Now create the mask in 2ll pixels where the signal to noise is above some thresh
 mask = np.where(
     blurred_signal_to_noise_map.native > signal_to_noise_threshold, False, True
 )
-mask = al.Mask2D.manual(mask=mask, pixel_scales=image.pixel_scales, sub_size=1)
+mask = al.Mask2D.manual(mask=mask, pixel_scales=image.pixel_scales)
 
 visuals_2d = aplt.Visuals2D(mask=mask)
 array_plotter = aplt.Array2DPlotter(array=image, visuals_2d=visuals_2d)

@@ -61,9 +61,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 
 imaging_plotter.subplot_imaging()
 
@@ -103,7 +103,7 @@ search = af.DynestyStatic(
     path_prefix=path_prefix, name="search[1]__parametric", n_live_points=50
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -155,7 +155,7 @@ settings_lens = al.SettingsLens(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=result_1.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )

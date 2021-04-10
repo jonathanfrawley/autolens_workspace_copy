@@ -206,7 +206,7 @@ for fit in fit_gen:
     )
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, mat_plot_2d=mat_plot_2d)
-    fit_imaging_plotter.figures(normalized_residual_map=True)
+    fit_imaging_plotter.figures_2d(normalized_residual_map=True)
 
 """
 Making this plot for a paper? You can output it to hard disk.
@@ -225,7 +225,7 @@ for fit in fit_gen:
     )
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, mat_plot_2d=mat_plot_2d)
-    fit_imaging_plotter.figures(normalized_residual_map=True)
+    fit_imaging_plotter.figures_2d(normalized_residual_map=True)
 
 """
 Finished.

@@ -61,7 +61,6 @@ other options you might want to use (feel free to experiment!)
 mask = al.Mask2D.circular_annular(
     shape_native=image.shape_native,
     pixel_scales=image.pixel_scales,
-    sub_size=1,
     inner_radius=0.5,
     outer_radius=2.5,
     centre=(0.0, 0.0),
@@ -70,7 +69,6 @@ mask = al.Mask2D.circular_annular(
 # mask = al.Mask2D.circular(
 #     shape_native=image.shape_native,
 #     pixel_scales=image.pixel_scales,
-#     sub_size=1,
 #     radius=2.5,
 #     centre=(0.0, 0.0),
 # )
@@ -78,17 +76,15 @@ mask = al.Mask2D.circular_annular(
 # mask = al.Mask2D.elliptical(
 #     shape_native=image.shape_native,
 #     pixel_scales=image.pixel_scales,
-#     sub_size=1,
 #     major_axis_radius=2.5,
 #     axis_ratio=0.7,
-#     phi=45.0,
+#     angle=45.0,
 #     centre=(0.0, 0.0),
 # )
 
 # mask = al.Mask2D.elliptical_annular(
 #     shape_native=image.shape_native,
 #     pixel_scales=image.pixel_scales,
-#     sub_size=1,
 #     inner_major_axis_radius=0.5,
 #     inner_axis_ratio=0.7,
 #     inner_phi=45.0,

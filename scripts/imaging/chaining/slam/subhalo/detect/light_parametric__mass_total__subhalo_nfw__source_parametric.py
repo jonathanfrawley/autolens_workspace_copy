@@ -48,7 +48,7 @@ __Dataset + Masking__
 Load, plot and mask the `Imaging` data.
 """
 dataset_name = "light_sersic_exp__mass_sie__subhalo_nfw__source_sersic"
-dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
+dataset_path = path.join("dataset", "imaging", "subhalo", dataset_name)
 
 imaging = al.Imaging.from_fits(
     image_path=path.join(dataset_path, "image.fits"),
@@ -61,9 +61,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -71,9 +71,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join(
-    "imaging", "slam", "light_parametric__mass_total__source_parametric"
-)
+path_prefix = path.join("imaging", "slam", dataset_name)
 
 """
 __Redshifts__
@@ -111,7 +109,7 @@ source galaxy's light, which in this example:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 bulge = af.Model(al.lp.EllSersic)
 disk = af.Model(al.lp.EllExponential)
@@ -157,6 +155,7 @@ light_results = slam.light_parametric.with_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
+    source_results=source_parametric_results,
     lens_bulge=bulge,
     lens_disk=disk,
 )
@@ -179,7 +178,7 @@ model of the LIGHT PARAMETRIC PIPELINE. In this example it:
  
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 mass_results = slam.mass_total.with_lens_light(
     path_prefix=path_prefix,
@@ -206,7 +205,7 @@ For this runner the SUBHALO PIPELINE customizes:
  - The `number_of_cores` used for the gridsearch, where `number_of_cores > 1` performs the model-fits in paralle using
  the Python multiprocessing module.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 subhalo_results = slam.subhalo.detection_single_plane(
     path_prefix=path_prefix,

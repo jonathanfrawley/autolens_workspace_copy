@@ -2,9 +2,9 @@
 Tutorial 6: Hyper Pipeline
 ==========================
 
-To end, lets illustrate the use of hyper-mode in a model-fit.
+To end, lets perform hyper-mode model-fit.
 
-You can find many more example pipelines in the folder `autolens_workspace/advanced/hyper`.
+You can find many more example pipelines in the folder `autolens_workspace/chaining` packages.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -16,9 +16,11 @@ from os import path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
-from . import extensions
+import extensions
 
 """
+__Initial Seutp__
+
 we'll use strong lensing data, where:
 
  - The lens galaxy's light is an `EllSersic`.
@@ -39,7 +41,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -82,7 +84,7 @@ We can only use hyper-model once we have a good model for the lens and source ga
 images of both of these components to effectively perform tasks like scaling their noise or adapting a pixelization
 or regularization pattern to the source's unlensed morphology.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 bulge = af.Model(al.lp.EllSersic)
 disk = af.Model(al.lp.EllExponential)
@@ -147,7 +149,7 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_3 = search.fit(model=model, analysis=analysis)
 
@@ -204,7 +206,7 @@ after its hyper-model image is created via an `Inversion`.
 You'll note that all hyper-mode examples and the SLaM pipelines use this trick, as using parametric sources to adapt 
 to the source morphology can lead to poor results for complex sources.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_3)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_3)
 
 model = af.Collection(
     galaxies=af.Collection(
@@ -223,9 +225,9 @@ model = af.Collection(
             pixelization=al.pix.VoronoiMagnification,
             regularization=al.reg.Constant,
         ),
-        hyper_image_sky=result_3.hyper.instance.hyper_image_sky,
-        hyper_background_noise=result_3.hyper.instance.hyper_background_noise,
-    )
+    ),
+    hyper_image_sky=result_3.hyper.instance.hyper_image_sky,
+    hyper_background_noise=result_3.hyper.instance.hyper_background_noise,
 )
 
 search = af.DynestyStatic(
@@ -240,16 +242,16 @@ model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
             al.Galaxy,
-            redshift=result_4.instance.galaxies.lens.redshift,
+            redshift=0.5,
             bulge=result_4.instance.galaxies.lens.bulge,
             disk=result_4.instance.galaxies.lens.disk,
             mass=result_3.model.galaxies.lens.mass,
-            shear=result_3.last.model.galaxies.lens.shear,
+            shear=result_3.model.galaxies.lens.shear,
             hyper_galaxy=result_4.instance.galaxies.lens.hyper_galaxy,
         ),
         source=af.Model(
             al.Galaxy,
-            redshift=result_4.instance.galaxies.source.redshift,
+            redshift=1.0,
             pixelization=result_4.instance.galaxies.source.pixelization,
             regularization=result_4.instance.galaxies.source.regularization,
             hyper_galaxy=result_4.instance.galaxies.source.hyper_galaxy,
@@ -273,7 +275,7 @@ __Model-Fits via Searches 6 & 7__
 We are now ready to use hyper-model to adapt the `Inversion` to the source's unlensed morphology, given that the 
 model-fit above will give us reliable hyper images.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_5)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5)
 
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_5"),
@@ -287,17 +289,16 @@ model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
             al.Galaxy,
-            redshift=result_5.instance.galaxies.lens.redshift,
+            redshift=0.5,
             bulge=result_5.instance.galaxies.lens.bulge,
             disk=result_5.instance.galaxies.lens.disk,
-            envelope=result_5.instance.galaxies.lens.envelope,
             mass=result_5.instance.galaxies.lens.mass,
             shear=result_5.instance.galaxies.lens.shear,
             hyper_galaxy=result_5.instance.galaxies.lens.hyper_galaxy,
         ),
         source=af.Model(
             al.Galaxy,
-            redshift=result_5.instance.galaxies.source.redshift,
+            redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage,
             regularization=al.reg.AdaptiveBrightness,
             hyper_galaxy=result_5.instance.galaxies.source.hyper_galaxy,
@@ -313,7 +314,7 @@ model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(
             al.Galaxy,
-            redshift=result_6.instance.galaxies.lens.redshift,
+            redshift=0.5,
             bulge=result_6.instance.galaxies.lens.bulge,
             disk=result_6.instance.galaxies.lens.disk,
             mass=result_5.model.galaxies.lens.mass,
@@ -322,7 +323,7 @@ model = af.Collection(
         ),
         source=af.Model(
             al.Galaxy,
-            redshift=result_6.instance.galaxies.source.redshift,
+            redshift=1.0,
             pixelization=result_6.instance.galaxies.source.pixelization,
             regularization=result_6.instance.galaxies.source.regularization,
             hyper_galaxy=result_6.instance.galaxies.source.hyper_galaxy,
@@ -391,7 +392,7 @@ model = af.Collection(
     )
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_7)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_7)
 
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_5"),

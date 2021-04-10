@@ -31,9 +31,7 @@ imaging = al.Imaging.from_fits(
 Now, lets set up a `Grid2D` (using the image of this imaging).
 """
 grid = al.Grid2D.uniform(
-    shape_native=imaging.shape_native,
-    pixel_scales=imaging.pixel_scales,
-    sub_size=imaging.image.sub_size,
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales
 )
 
 """

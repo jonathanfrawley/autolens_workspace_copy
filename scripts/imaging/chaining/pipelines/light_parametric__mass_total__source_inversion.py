@@ -38,9 +38,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -48,9 +48,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join(
-    "imaging", "chaining", "light_parametric__mass_total__source_parametric"
-)
+path_prefix = path.join("imaging", "pipelines", dataset_name)
 
 """
 __Redshifts__
@@ -88,7 +86,7 @@ search = af.DynestyStatic(
     path_prefix=path_prefix, name="search[1]_light[parametric]", n_live_points=50
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -126,7 +124,7 @@ search = af.DynestyStatic(
     n_live_points=75,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_2 = search.fit(model=model, analysis=analysis)
 
@@ -180,7 +178,7 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_3 = search.fit(model=model, analysis=analysis)
 
@@ -231,7 +229,7 @@ search = af.DynestyStatic(
     n_live_points=20,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_4 = search.fit(model=model, analysis=analysis)
 
@@ -287,13 +285,13 @@ We update the positions and positions threshold using the previous model-fitting
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    positions_threshold=result_4.last.positions_threshold_from(
+    positions_threshold=result_4.positions_threshold_from(
         factor=3.0, minimum_threshold=0.2
     )
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=result_4.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )

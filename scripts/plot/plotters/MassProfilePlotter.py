@@ -19,7 +19,7 @@ First, lets create a simple `MassProfile` which we'll plot.
 mass = al.mp.EllIsothermal(
     centre=(0.0, 0.0),
     einstein_radius=1.6,
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=45.0),
 )
 
 """
@@ -32,14 +32,15 @@ We now pass the mass profile and grid to a `MassProfilePlotter` and call various
 plot different attributes in 1D and 2D.
 """
 mass_profile_plotter = aplt.MassProfilePlotter(mass_profile=mass, grid=grid)
-mass_profile_plotter.figures_2d(
-    convergence=True,
-    potential=True,
-    deflections_y=True,
-    deflections_x=True,
-    magnification=True,
-)
+# mass_profile_plotter.figures_2d(
+#     convergence=True,
+#     potential=True,
+#     deflections_y=True,
+#     deflections_x=True,
+#     magnification=True,
+# )
 mass_profile_plotter.figures_1d(convergence=True, potential=True)
+stop
 
 """
 A `MassProfile` and its `Grid2D` contains the following attributes which can be plotted automatically via 
@@ -53,7 +54,6 @@ mask = al.Mask2D.circular_annular(
     pixel_scales=grid.pixel_scales,
     inner_radius=0.3,
     outer_radius=2.0,
-    sub_size=grid.sub_size,
 )
 masked_grid = al.Grid2D.from_mask(mask=mask)
 

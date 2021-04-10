@@ -73,7 +73,7 @@ grid_plotter.figure_2d()
 
 """
 We now create our `InputDeflections` `MassProfile`, which represents our input deflection angle map as a 
-`MassProfile` in PyAutoLens so that it can be used with objects like `Galaxy`'s and `Tracer``..
+`MassProfile` in PyAutoLens so that it can be used with objects like `Galaxy`'s and `Tracer`.
 
 This takes as input both the input deflection angles and their corresponding image-plane grid, with the latter used to
 compute new sets of deflection angles from the input deflections via interpolation.
@@ -130,7 +130,7 @@ source_galaxy = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllSersic(
         centre=(0.1, 0.1),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.3,
         effective_radius=1.0,
         sersic_index=2.5,
@@ -154,8 +154,8 @@ our input deflection angle map fit the image of a strong lens we are comparing t
 
 In this case, it gives a good fit, because we are using the true deflection angle map and source model!
 """
-masked_imaging = imaging.apply_mask(mask=mask)
-fit_imaging = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+imaging = imaging.apply_mask(mask=mask)
+fit_imaging = al.FitImaging(imaging=imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit_imaging)
 fit_imaging_plotter.subplot_fit_imaging()
@@ -192,9 +192,7 @@ source galaxy's light. Try increasing / decreasing the coefficient value to see 
 regularization = al.reg.Constant(coefficient=1.0)
 
 inversion = al.Inversion(
-    dataset=masked_imaging,
-    mapper=mapper,
-    regularization=al.reg.Constant(coefficient=1.0),
+    dataset=imaging, mapper=mapper, regularization=al.reg.Constant(coefficient=1.0)
 )
 
 """
@@ -207,7 +205,7 @@ Finally, lets plot:
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 inversion_plotter.figures_2d(reconstructed_image=True, reconstruction=True)
 
-residual_map = masked_imaging.image - inversion.mapped_reconstructed_image
+residual_map = imaging.image - inversion.mapped_reconstructed_image
 array_plotter = aplt.Array2DPlotter(array=residual_map)
 array_plotter.figure_2d()
 

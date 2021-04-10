@@ -31,19 +31,16 @@ imaging = al.Imaging.from_fits(
 We now mask the data and fit it with a `Tracer` to create a `FitImaging` object.
 """
 mask = al.Mask2D.circular(
-    shape_native=imaging.shape_native,
-    pixel_scales=imaging.pixel_scales,
-    sub_size=1,
-    radius=3.0,
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
         intensity=1.0,
         effective_radius=0.8,
         sersic_index=4.0,
@@ -51,7 +48,7 @@ lens_galaxy = al.Galaxy(
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     ),
     shear=al.mp.ExternalShear(elliptical_comps=(0.05, 0.05)),
 )
@@ -60,7 +57,7 @@ source_galaxy = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.3,
         effective_radius=0.1,
         sersic_index=1.0,
@@ -69,7 +66,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=imaging, tracer=tracer)
 
 """
 We now pass the FitImaging to an `FitImagingPlotter` and call various `figure_*` methods to plot different attributes.
@@ -142,7 +139,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=imaging, tracer=tracer)
 
 """
 The `plane_image_from_plane` method now plots the the reconstructed source on the Voronoi pixel-grid. It can use the

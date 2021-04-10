@@ -58,10 +58,7 @@ the `Include2D` object.
 plotting its mask and border below).
 """
 mask = al.Mask2D.circular(
-    shape_native=grid.shape_native,
-    pixel_scales=grid.pixel_scales,
-    radius=2.0,
-    sub_size=grid.sub_size,
+    shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, radius=2.0
 )
 masked_grid = al.Grid2D.from_mask(mask=mask)
 

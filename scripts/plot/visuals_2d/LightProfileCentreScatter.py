@@ -25,7 +25,7 @@ lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.EllSersic(
         centre=(0.0, 0.0),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
         intensity=1.0,
         effective_radius=0.6,
         sersic_index=3.0,

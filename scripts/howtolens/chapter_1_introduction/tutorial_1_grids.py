@@ -2,8 +2,13 @@
 Tutorial 1: Grids
 =================
 
-In this example, we'll create `Grid2D`'s of Cartesian $(y,x)$ coordinates, representing the arc-second coordinate `Grid2D`
-of an observed data-set (e.g. imaging).
+In this tutorial, we introduce two-dimensional grids of Cartesian $(y,x)$ coordinates, which represent the coordinates
+of an observed data-set (e.g. imaging). In subsequent tutorials, we will use these grids to perform gravitational
+lensing ray-tracing calculations.
+
+Grids are defined in units of 'arc-seconds', if you are not familiar with this term it is the distance unit commonly
+used by Astronomers. **PyAutoLens** automatically converts all grids from units of pixels to arc-seconds, so you should
+simply get used to seeing distances displayed in arc seconds.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -15,11 +20,13 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__Grids__
+
 In **PyAutoLens**, a `Grid2D` is a set of two-dimensional $(y,x)$ coordinates (in arc-seconds) that are deflected and 
 traced by a strong lensing system.
 
 The $(y,x)$ coordinates on the `Grid2D` are aligned with the image we analyze, such that each coordinate maps to the 
-centre  of each image-pixel. Lets make a `Grid2D` using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel 
+centre of each image-pixel. Lets make a `Grid2D` on a grid of 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel 
 conversion factor) of 0.05", giving us a 5" x 5" grid.
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
@@ -49,13 +56,17 @@ print(grid.native[1, 0])
 print("etc.")
 
 """
-The `Grid2D``s is accessible as ndarrays of two different shapes:
+__Data Structure__
+
+Above, you may have noted that we use the `native` attribute of the grid to print its $(y,x)$ coordinates. Every 
+`Grid2D` object is accessible via two attributes, `native` and `slim`, which store the grid as NumPy ndarrays of two 
+different shapes:
  
- - native: an ndarray of shape [total_y_image_pixel, total_x_image_pixels, 2] which is therefore the 'native' shape and 
- resolution of the data we analyse.
+ - `native`: an ndarray of shape [total_y_image_pixels, total_x_image_pixels, 2], which is the native shape of the 
+ 2D grid and corresponds to the resolution of the image datasets we pair with a grid.
  
- - slim: an ndarray of shape [total_y_image_pixels*total_x_image_pixels, 2] which is therefore a slimmed-down 
- representation the grid.
+ - `slim`: an ndarray of shape [total_y_image_pixels*total_x_image_pixels, 2] which is a slimmed-down representation 
+ the grid which collapses the inner two dimensions of the native ndarray to a single dimension.
 """
 print("(y,x) pixel 0 (accessed via native):")
 print(grid.native[0, 0])
@@ -63,8 +74,9 @@ print("(y,x) pixel 0 (accessed via slim 1D):")
 print(grid.slim[0])
 
 """
-The details of why there are `native` and `slim`  structures available will become apparent throughout 
-the **HowToLens** tutorials. For now, don't worry about it! 
+Currently, it is unclear where there is a need for a `slim` representation of the grid (as the native representation 
+contains all the information about the grid in a structure that is more representative of the grid itself). This will 
+become apparent  throughout the **HowToLens** lectures, so for now don't worry about it! 
 
 The shapes of the `Grid2D` in its `native` and `slim` formats are also available, confirming that this grid has a 
 `native` resolution of (100 x 100) and a `slim` resolution of 10000 coordinates.
@@ -86,92 +98,11 @@ print(grid.native)
 print(grid.slim)
 
 """
-A `Grid2D` can also have a sub-grid, which splits each pixel on the `Grid2D` into sub-pixels of 
-size (sub_size x sub_size). These additional pixels are used to perform calculations more accurately.
-"""
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
+__Wrap Up__
 
-"""
-We specified a sub_size of 2 above, therefore we expect 4 (2 x 2) times more sub-pixels than pixels. We can see this 
-is the case by inspecting the `Grid2D` sub_shape attributes.
-"""
-print(grid.sub_shape_slim)
-print(grid.sub_shape_native)
-
-"""
-The first four pixels of our sub-grid correspond to the first four sub-pixels, which form a sub-grid inside the
-first `Grid2D` pixel, as follows:
-
-pixel 1
-
-                 ______
-              
-              I         I
-              
-              I         I  o = $(y,x)$ centre of
-              
- y = 2.475"   I    o    I       Grid2D coordinate.
- 
-              I         I
-              
-              I_________I
-              
-              x = -2.475
-
-
-Sub-pixels 1, 2, 3 & 4
-
-                 ______
-               
-              I         I
-              
-              I  o   o  I  o = $(y,x)$ centre of sub
-              
- y = 2.475"   I         I       Grid2D coordinates.
- 
-              I  o   o  I
-              
-              I_________I
-              
-              x = -2.475
-
-The sub-pixels coordinate are spaced uniformly between the pixel`s edges
-(which are at y = (2.45", 2.5") and x = (-2.5". -2.45") )
-
-By default, a `Grid2D` is stored in 1D, and we can access its elements without specifying `slim`
-"""
-print("(y,x) sub-pixel 0 (of pixel 0):")
-print(grid[0])
-print("(y,x) sub-pixel 1 (of pixel 0):")
-print(grid[1])
-print("(y,x) sub-pixel 2 (of pixel 0):")
-print(grid[2])
-print("(y,x) sub-pixel 3 (of pixel 0):")
-print(grid[3])
-
-"""
-The sub-grid then continues on to the next `Grid2D` pixels (and so on)
-"""
-print("(y,x) sub-pixel 0 (of pixel 1):")
-print(grid[4])
-print("(y,x) sub-pixel 0 (of pixel 1):")
-print(grid[5])
-print("etc.")
-
-"""
-We can again access these coordinates via `native`.
-"""
-print("(y,x) sub-pixel 0 (of pixel 1):")
-print(grid.native[0, 2])
-print("(y,x) sub-pixel 1 (of pixel 1):")
-print(grid.native[0, 3])
-print("etc.")
-
-"""
 Congratulations, you`ve completed your first **PyAutoLens** tutorial! Before moving on to the next one, experiment with 
 **PyAutoLens** by doing the following:
 
-1) Change the pixel-scale of the `Grid2D`'s - what happens to the Cartesian coordinates?
-2) Change the resolution of the `Grid2D`'s - what happens Cartesian coordinates?
-3) Change the sub-grid size - what do you note about the pixel-scale of sub pixels?
+1) Change the pixel-scale of the `Grid2D`'s: what happens to the arc-second's grid of coordinates?
+2) Change the resolution of the `Grid2D`'s: what happens to the arc-second's grid of coordinates?
 """

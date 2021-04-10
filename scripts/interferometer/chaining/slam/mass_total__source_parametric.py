@@ -57,7 +57,9 @@ interferometer = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
-    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
+)
+interferometer = interferometer.apply_settings(
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT)
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -68,7 +70,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("interferometer", "slam", "mass_total__source_parametric")
+path_prefix = path.join("interferometer", "slam", dataset_name)
 
 """
 __Redshifts__

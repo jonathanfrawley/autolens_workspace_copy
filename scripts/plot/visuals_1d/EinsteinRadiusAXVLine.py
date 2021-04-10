@@ -18,7 +18,7 @@ First, lets create a simple `MassProfile` which we'll plot.
 """
 mass = al.mp.EllIsothermal(
     centre=(0.0, 0.0),
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     einstein_radius=1.0,
 )
 

@@ -1,5 +1,5 @@
 """
-__Settings__: Signal To Noise Limit
+Settings: Signal To Noise Limit
 ===============================
 
 This example demonstrates how to use set a signal-to-noise limit on the `Imaging` that is used to perform a
@@ -35,14 +35,14 @@ When the `Imaging` object is created, this will rescale the noise-map such that 
 the central pixel are increased so as to produce a signal-to-noise value in the data of 10.0. Image-pixels with a S/N
 value below 10.0 do not have their noise-map value changed.
 """
-settings_masked_imaging = al.SettingsImaging(
+settings_imaging = al.SettingsImaging(
     signal_to_noise_limit=10.0, signal_to_noise_limit_radii=0.5
 )
 
 """
 __Dataset__ 
 
-For signal-to-noise limiting to be used in the model-fit, we must pass the `settings_masked_imaging` to the 
+For signal-to-noise limiting to be used in the model-fit, we must pass the `settings_imaging` to the 
 `Imaging` object, which will rescale its noise-map accordingly.
 """
 dataset_name = "light_sersic_exp__mass_sie__source_sersic"
@@ -55,19 +55,26 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+imaging = imaging.apply_settings(
+    settings=settings_imaging
+)  # <----- The `SettingsImaging` above is used here!
+
+"""
+__Masking__
+
+The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data, which we define
+and use to set up the `Imaging` object that the lens model fits.
+"""
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(
-    mask=mask,
-    settings=settings_masked_imaging,  # <----- The `SettingsImaging` above is used here!
-)
+imaging = imaging.apply_mask(mask=mask)
 
 """
 A plot of the `Imaging` object reveals how the noise-map and signal-to-noise map have been rescaled.
 """
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -99,7 +106,7 @@ search = af.DynestyStatic(
     walks=10,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 __Model-Fit__

@@ -47,8 +47,8 @@ __Dataset + Masking__
 
 Load, plot and mask the `Imaging` data.
 """
-dataset_name = "mass_sie__source_sersic"
-dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
+dataset_name = "mass_sie__subhalo_nfw__source_sersic"
+dataset_path = path.join("dataset", "imaging", "subhalo", dataset_name)
 
 imaging = al.Imaging.from_fits(
     image_path=path.join(dataset_path, "image.fits"),
@@ -61,9 +61,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -77,8 +77,10 @@ likelihood model.
 We perform this fit using the lens model we will use to perform sensitivity mapping, which we call the `base_model`.
 """
 base_model = af.Collection(
-    lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
-    source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
+    )
 )
 
 search_base = af.DynestyStatic(
@@ -87,7 +89,7 @@ search_base = af.DynestyStatic(
     n_live_points=50,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result = search_base.fit(model=base_model, analysis=analysis)
 

@@ -69,17 +69,17 @@ Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (x2 elliptical 
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
 
 However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
+axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and phi.
+We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=90.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=90.0),
     ),
     shear=al.mp.ExternalShear(elliptical_comps=(0.0, 0.05)),
 )
@@ -88,7 +88,7 @@ source_galaxy_0 = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllSersic(
         centre=(0.25, 0.15),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=120.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=120.0),
         intensity=0.7,
         effective_radius=0.7,
         sersic_index=1.0,
@@ -99,7 +99,7 @@ source_galaxy_1 = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllSersic(
         centre=(0.7, -0.5),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=60.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=60.0),
         intensity=0.2,
         effective_radius=1.6,
         sersic_index=3.0,

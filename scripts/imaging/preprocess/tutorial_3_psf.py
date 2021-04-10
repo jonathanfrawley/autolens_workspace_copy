@@ -101,10 +101,10 @@ __PSF Normalization__
 The PSF should also be normalized to unity. That is, the sum of all values in the kernel used by PyAutoLens should sum 
 to 1. This ensures that the PSF convolution does not change the overall normalization of the image.
 
-PyAutoLens automatically renormalized PSF when they are passed into a Imaging or SimulatedImaging object, so you 
-do not actually need to renormalize your PSF. However, it is better to do it now, just in case.
+PyAutoLens automatically normalized PSF when they are passed into a Imaging or SimulatedImaging object, so you 
+do not actually need to normalize your PSF. However, it is better to do it now, just in case.
 
-Lets look at a PSF which is not normalized to unity, which is the default case corresponding to the `renormalize` flag 
+Lets look at a PSF which is not normalized to unity, which is the default case corresponding to the `normalize` flag 
 being False.
 """
 imaging_path = path.join(dataset_path, "imaging_with_unnormalized_psf")
@@ -113,20 +113,20 @@ unnormalized_psf = al.Kernel2D.from_fits(
     file_path=path.join(imaging_path, "psf.fits"),
     hdu=0,
     pixel_scales=0.1,
-    renormalize=False,
+    normalize=False,
 )
 
 array_plotter = aplt.Array2DPlotter(array=unnormalized_psf)
 array_plotter.figure_2d()
 
 """
-The PSF is renormaized if the renormalize=True.
+The PSF is renormaized if the normalize=True.
 """
 normalized_psf = al.Kernel2D.from_fits(
     file_path=path.join(imaging_path, "psf.fits"),
     hdu=0,
     pixel_scales=0.1,
-    renormalize=True,
+    normalize=True,
 )
 
 array_plotter = aplt.Array2DPlotter(array=normalized_psf)

@@ -1,5 +1,5 @@
 """
-__Settings__: Sub Gridding
+Settings: Sub Gridding
 ======================
 
 This example demonstrates how to change the sub-grid used by a parametric `LightProfile` to compute the surface
@@ -29,12 +29,12 @@ To customize the sub-grid used by the model-fit, we create a `SettingsImaging` o
 This increases the sub grid size of the `Grid2D` used to evaluate the lens galaxy and source galaxy `LightProfiles` 
 from the default value of 2 to 4.
 """
-settings_masked_imaging = al.SettingsImaging(grid_class=al.Grid2D, sub_size=4)
+settings_imaging = al.SettingsImaging(grid_class=al.Grid2D, sub_size=4)
 
 """
 __Dataset + Masking__ 
 
-For this sub-grid to be used in the model-fit, we must pass the `settings_masked_imaging` to the `Imaging` object,
+For this sub-grid to be used in the model-fit, we must pass the `settings_imaging` to the `Imaging` object,
 which will be created using a `Grid2D` with a `sub-size value` of 4 (instead of the default of 2).
 """
 dataset_name = "mass_sie__source_sersic"
@@ -47,14 +47,21 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+imaging = imaging.apply_settings(
+    settings=settings_imaging
+)  # <----- The `SettingsImaging` above is used here!
+
+"""
+__Masking__
+
+The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data, which we define
+and use to set up the `Imaging` object that the lens model fits.
+"""
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(
-    mask=mask,
-    settings=settings_masked_imaging,  # <----- The `SettingsImaging` above is used here!
-)
+imaging = imaging.apply_mask(mask=mask)
 
 """
 __Model + Search + Analysis__ 
@@ -71,7 +78,7 @@ search = af.DynestyStatic(
     path_prefix=path.join("imaging", "settings"), name="sub_grid_size"
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 __Model-Fit__

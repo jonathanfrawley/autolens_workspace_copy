@@ -2,12 +2,16 @@
 Tutorial 5: Ray Tracing
 =======================
 
-In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid2D`'s to trace them, and keep
-track of which `Grid2D`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
+In the previous tutorial, we used planes to perform strong lens calculations. The use of planes was a bit cumbersome:
+we had to set up each galaxy, pass them to each plane and manually use each plane to perform every ray-tracing
+calculation ourselves. It was easy to make a mistake!
 
-Fortunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you'll
-primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
-same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
+However, remember how the `Galaxy` objects contains its `redshift` as an attribute? Given a list of galaxies, there
+should be no need for us to manually specify each plane setup and manually perform each ray-tracing calculations
+ourself. All of the information required to do this is contained in the galaxies!
+
+In this tutorial, we introduce potentially the most important object in **PyAutoLens**, the `Tracer`. This exploits the
+redshift information of galaxies to automatically perform ray-tracing calculations.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -19,14 +23,14 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Let use the same `Grid2D` we've all grown to know and love by now!
+__Initial Setup__
+
+Let use the same grid we've grown love by now!
 """
-image_plane_grid = al.Grid2D.uniform(
-    shape_native=(100, 100), pixel_scales=0.05, sub_size=2
-)
+image_plane_grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 """
-For our lens galaxy, we'll use the same SIS `MassProfile` as before.
+For our lens galaxy, we'll use the same spherical isothermal mass profile again.
 """
 sis_mass_profile = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 
@@ -35,7 +39,7 @@ lens_galaxy = al.Galaxy(redshift=0.5, mass=sis_mass_profile)
 print(lens_galaxy)
 
 """
-And for our source galaxy, the same `SphSersic` `LightProfile`
+And for the source, the same spherical Sersic light profile.
 """
 sersic_light_profile = al.lp.SphSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
@@ -46,16 +50,18 @@ source_galaxy = al.Galaxy(redshift=1.0, light=sersic_light_profile)
 print(source_galaxy)
 
 """
-Now, lets use the lens and source galaxies to ray-trace our `Grid2D`, using a `Tracer` from the ray-tracing module. 
+__Tracers__
+
+Now, lets use the lens and source galaxies to ray-trace the grid, however this time using a `Tracer` object.  
 When we pass our galaxies into the `Tracer` below, the following happens:
 
 1) The galaxies are ordered in ascending redshift.
-2) Planes are created at every one of these redshifts, with the galaxies at those redshifts associated with those planes.
+2) Planes are created at every one of these redshifts, with each galaxy associated with the plane at its redshift.
 """
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 """
-This `Tracer` is composed of a list of planes, in this case two `Plane`'s (the image and source plane).
+The has the list of planes as an attribute, which in this example is two planes (an image and source plane).
 """
 print(tracer.planes)
 
@@ -71,12 +77,15 @@ print(tracer.planes[1])
 print(tracer.source_plane)
 
 """
-The most convenient part of the `Tracer` is we can use it to create fully `ray-traced` images, without manually 
-setting up the `Plane`'s to do this. The function below does the following
+__Ray Tracing__
 
-1) Using the lens-total mass distribution, the deflection angle of every image-plane `Grid2D` coordinate is computed.
-2) These deflection angles are used to trace every image-plane coordinate to a source-plane coordinate.
-3) The light of each traced source-plane coordinate is evaluated using the source-plane `Galaxy`'s `LightProfile`.
+With a `Tracer` we create fully ray-traced images without manually setting up the planes and performing lensing 
+calculations one-by-one to do this. The function below does the following:
+
+ 1) Using the lens's total mass distribution, the deflection angle of every image-plane $(y,x)$ grid coordinate is 
+ computed.
+ 2) These deflection angles are used to trace every image-plane coordinate to the source-plane.
+ 3) The light of each traced source-plane coordinate is evaluated using the source plane galaxy's light profiles.
 """
 traced_image = tracer.image_from_grid(grid=image_plane_grid)
 print("traced image pixel 1")
@@ -93,22 +102,25 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-We can also use the `Tracer` to compute the traced `Grid2D` of every plane, instead of getting the traced image itself:
+We can also use the tracer to compute the traced grid of every plane:
 """
 traced_grids = tracer.traced_grids_of_planes_from_grid(grid=image_plane_grid)
 
 """
-And the source-plane`s `Grid2D` has been deflected.
+The first traced grid corresponds to the image-plane grid (i.e. before lensing), whereas the second grid is that of
+the source-plane.
 """
-print("grid source-plane coordinate 1")
+print("grid image-plane (y,x) coordinate 1")
+print(traced_grids[0].native[0, 0])
+print("grid image-plane (y,x) coordinate 2")
+print(traced_grids[0].native[0, 1])
+print("grid source-plane (y,x) coordinate 1")
 print(traced_grids[1].native[0, 0])
-print("grid source-plane coordinate 2")
+print("grid source-plane (y,x) coordinate 2")
 print(traced_grids[1].native[0, 1])
-print("grid source-plane coordinate 3")
-print(traced_grids[1].native[0, 2])
 
 """
-We can use the TracerPlotter to plot these planes and grids.
+We can use the `TracerPlotter` to plot these planes and grids.
 """
 include_2d = aplt.Include2D(grid=True)
 
@@ -119,29 +131,26 @@ tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True, plane_ind
 tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True, plane_index=1)
 
 """
-**PyAutoLens** has tools for plotting a `Tracer`. A ray-tracing subplot plots the following:
+A ray-tracing subplot plots the following:
 
-1) The image, computed by tracing the source-`Galaxy`'s light `forwards` through the `Tracer`.
-2) The source-plane image, showing the source-`Galaxy`'s true appearance (i.e. if it were not lensed).
-3) The image-plane convergence, computed using the lens galaxy's total mass distribution.
-4) The image-plane gravitational potential, computed using the lens galaxy's total mass distribution.
-5) The image-plane deflection angles, computed using the lens galaxy's total mass distribution.
+ 1) The image, computed by ray-tracing the source-galaxy's light from the source-plane to the image-plane.
+ 2) The source-plane image, showing the source-galaxy's intrinsic appearance (i.e. if it were not lensed).
+ 3) The image-plane convergence, computed using the lens galaxy's total mass distribution.
+ 4) The image-plane gravitational potential, computed using the lens galaxy's total mass distribution.
+ 5) The image-plane deflection angles, computed using the lens galaxy's total mass distribution.
 """
 tracer_plotter.subplot_tracer()
 
 """
-Just like for a plane, these quantities attributes can be computed by passing a `Grid2D` (converted to 2D ndarrays
-the same dimensions as our input grid!).
+Just like for a profile, galaxy or plane, these quantities attributes can be computed via a `_from_grid` method.
 """
 convergence = tracer.convergence_from_grid(grid=image_plane_grid)
 
-print("Tracer - Convergence - `Grid2D` coordinate 1:")
+print("Tracer convergence at coordinate 1:")
 print(convergence.native[0, 0])
-print("Tracer - Convergence - `Grid2D` coordinate 2:")
+print("Tracer convergence at coordinate 2:")
 print(convergence.native[0, 1])
-print("Tracer - Convergence - `Grid2D` coordinate 3:")
-print(convergence.native[0, 2])
-print("Tracer - Convergence - `Grid2D` coordinate 101:")
+print("Tracer convergence at coordinate 101:")
 print(convergence.native[1, 0])
 
 """
@@ -152,13 +161,11 @@ image_plane_convergence = tracer.image_plane.convergence_from_grid(
     grid=image_plane_grid
 )
 
-print("Image-Plane - Convergence - `Grid2D` coordinate 1:")
+print("Image-Plane convergence at coordinate 1:")
 print(image_plane_convergence.native[0, 0])
-print("Image-Plane - Convergence - `Grid2D` coordinate 2:")
+print("Image-Plane convergence at coordinate 2:")
 print(image_plane_convergence.native[0, 1])
-print("Image-Plane - Convergence - `Grid2D` coordinate 3:")
-print(image_plane_convergence.native[0, 2])
-print("Image-Plane - Convergence - `Grid2D` coordinate 101:")
+print("Image-Plane convergene at coordinate 101:")
 print(image_plane_convergence.native[1, 0])
 
 """
@@ -170,13 +177,10 @@ and uncomment the lines below!
 # print(tracer.image_plane.potential_from_grid(grid=image_plane_grid))
 # print("Deflections:")
 # print(tracer.deflections_from_grid(grid=image_plane_grid))
-# print(tracer.deflections_from_grid(grid=image_plane_grid))
-# print(tracer.image_plane.deflections_from_grid(grid=image_plane_grid))
 # print(tracer.image_plane.deflections_from_grid(grid=image_plane_grid))
 
 """
-You can also plot the above attributes on individual figures, using appropriate ray-tracing `Plotter` (I've left most 
-commented out again for convenience)
+The `TracerPlotter` can also plot the above attributes as individual figures:
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
 tracer_plotter.figures_2d(
@@ -188,9 +192,12 @@ tracer_plotter.figures_2d(
 )
 
 """
-In the previous tutorial, we plotted the critical curves on the convergence map of a `MassProfile`. We now introduce
-the 'caustic' which is a critical curve mapped to the source-plane. This is computed by calculating the the deflection 
-angles of the `Tracer` at the critical curves and ray-tracing them to the source plane.
+__Caustics__
+
+In the previous tutorial, we plotted the critical curves of the mass profile on the image-plane. We will now plot the
+'caustics', which correspond to each critical curve ray-traced to the source-plane. This is computed by using the 
+lens galaxy mass profile's to calculate the deflection angles at the critical curves and ray-trace them to the 
+source-plane.
 
 As discussed in the previous tutorial, critical curves mark regions of infinite magnification. Thus, if a source
 appears near a caustic in the source plane it will appear significantly brighter than its true luminosity. 
@@ -212,7 +219,7 @@ We can also plot the caustic on the source-plane image.
 tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
-Caustics also mark the regions in the source-plane where the multiplicity of the strong lens changes. That if,
+Caustics also mark the regions in the source-plane where the multiplicity of the strong lens changes. That is,
 if a source crosses a caustic, it goes from 2 images to 1 image. Try and show this yourself by changing the (y,x) 
 centre of the source-plane galaxy's light profile!
 """
@@ -226,23 +233,19 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
 tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
 
 """
-Before we finish, you might be wondering why do both the image-plane and `Tracer` have the attributes convergence / 
-potential / deflection angles, when the two are identical? 
+__Wrap Up__
 
-Afterall, only `MassProfile`'s contribute to these quantities, and only the image-plane has galaxies with 
-measureable  `MassProfile`'s! There are two reasons:
+You might be wondering why do both the tracer and its image-plane have the attributes convergence / potential / 
+deflection angles, when the two are identical? Afterall, only mass profiles contribute to these quantities, and 
+only image-plane galaxies have had mass profiles so far!
 
-__Convenience__:  You could always write `tracer.image_plane.convergence_from_grid(grid=grid)`. However, code 
-appears neater if you can just write `tracer.convergence_from_grid(grid=grid)`.
-
-__Multi-plane Lensing__:
+The reason is due 'multi-plane' lensing, which is basically any lensing configuration where there are more than 2 
+galaxies at more than 2 redshifts. For example, we could have a lensing system with 3 galaxies, at redshifts 0.5, 1.0 
+and 2.0 (you can make such a system in the `Tracer` if you wish!).
  
- For now, we're focused on the simplest lensing configuration possible, an image-plane + source-plane configuration. 
- However, there are strong lens system where there are more than 2 planes! 
-
- In these instances, the  convergence, potential and deflections of each plane is different to the overall values 
- given by the `Tracer`.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
- will prepare you for the advanced chapters later on!
+When there are more than 2 planes, the convergence, potential and deflections at each individual plane is different to 
+that of the entire multi-plane strong lens system. This is beyond the scope of this chapter, but be reassured that 
+what you're learning now will prepare you for the advanced chapters later on!
 
 And with that, we're done. You`ve performed your first ray-tracing with **PyAutoLens**! There are no exercises for this 
 chapter, and we're going to take a deeper look at ray-tracing in the next chapter.

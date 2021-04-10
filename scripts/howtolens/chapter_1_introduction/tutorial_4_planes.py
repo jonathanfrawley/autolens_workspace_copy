@@ -2,34 +2,26 @@
 Tutorial 4: Planes
 ==================
 
-We've learnt how to make galaxy objects out of `LightProfile`'s and `MassProfile`'s. Now, we'll use these galaxies to
-make a strong-gravitational lens.
+So far, we have learnt how to combine light profiles, mass profiles and galaxies to perform various calculations. In
+this tutorial we'll use these objects to perform our first ray-tracing calculations!
 
-For newcomers to lensing, a strong gravitational lens is a system where two (or more) galaxies align perfectly down our
-line of sight, such that the foreground `Galaxy`'s mass (represented as `MassProfile`'s) deflects the light (represented
-as `LightProfile`'s) of the background source galaxy(s).
+A strong gravitational lens is a system where two (or more) galaxies align perfectly down our line of sight from Earth
+such that the foreground galaxy's mass (represented as mass profiles) deflects the light (represented as light profiles)
+of a background source galaxy(s).
 
-When the alignment is just right and the lens is just massive enough, the background source galaxy appears multiple
-times. The schematic below shows such a system, where two light-rays from the source are bending
-around the lens galaxy and into the observer (light should bend smoothly)
+When the alignment is just right and the lens is massive enough, the background source galaxy appears multiple
+times. The schematic below shows such a system, where light-rays from the source are deflected around the lens galaxy
+to the observer following multiple distinct paths.
 
 ![Schematic of Gravitational Lensing](https://i.imgur.com/zB6tIdI.jpg)
 
 As an observer, we don't see the source's true appearance (e.g. a round blob of light). Instead, we only observe its 
-light after it is deflected and lensed by the foreground `Galaxy`'s mass. In this exercise, we'll make a source galaxy 
-image whose light has been deflected by a lens galaxy.
+light after it has been deflected and lensed by the foreground galaxys.
 
-In the schematic above, we used the terms `Image-Plane` and `Source-Plane`. In lensing speak, a `plane` is a 
-collection of galaxies at the same redshift (that is, parallel to one another down our line-of-sight). Therefore:
-
-- If two or more lens galaxies are at the same redshift in the image-plane, they deflect light in the same way. 
-This means we can sum the convergences, potentials and deflection angles of their `MassProfile`'s.
-
-- If two or more source galaxies are at the same redshift in the source-plane, their light is ray-traced in the same 
-way. Therefore, when determining their lensed images, we can sum the lensed images of each `Galaxy`'s `LightProfile`'s.
-
-So, lets do it - lets use the `plane` module in AutoLens to create a strong lensing system like the one pictured above. 
-For simplicity, we'll assume 1 lens galaxy and 1 source galaxy.
+In the schematic above, we used the terms 'image-plane' and 'source-plane'. In lensing, a 'plane' is a collection of
+galaxies at the same redshift (meaning that they are physically parallel to one another). In this tutorial, we'll
+use the `Plane` object to create a strong lensing system like the one pictured above. Whilst a plane can contain
+any number of galaxies, in this tutorial we'll stick to just one lens galaxy and one source galaxy.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -41,17 +33,17 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-As always, we need a `Grid2D`, where our `Grid2D` is the coordinates we `trace` from the image-plane to the source-plane in 
-the lensing configuration above. Our `Grid2D` is therefore no longer just a `grid`, but an image-plane `Grid2D` representing 
-our image-plane coordinates. Thus, lets name as such.
+__Initial Setup__
+
+As always, we need a 2D grid of $(y,x)$ coordinates. 
+
+However, we can now think of our grid as the coordinates that we are going to 'trace' from the image-plane to the 
+source-plane. We name our grid the `image_plane_grid` to reflect this.
 """
-image_plane_grid = al.Grid2D.uniform(
-    shape_native=(100, 100), pixel_scales=0.05, sub_size=1
-)
+image_plane_grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 """
-Whereas before we called our `Galaxy`'s things like `galaxy_with_light_profile`, lets now refer to them by their role 
-in lensing, e.g. `lens_galaxy` and `source_galaxy`.
+We will also name our `Galaxy` objects `lens_galaxy` and `source_galaxy`, to reflect their role in the schematic above.
 """
 mass_profile = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 
@@ -64,12 +56,15 @@ light_profile = al.lp.SphSersic(
 source_galaxy = al.Galaxy(redshift=1.0, bulge=light_profile)
 
 """
-Lets setup our image-plane using a `Plane` object. This `Plane` takes the lens galaxy we made above.
+__Planes__
+
+We now use the `Plane` object to create the image-plane of the schematic above, which uses the lens galaxy above. 
+Because this galaxy is at redshift 0.5, this means our image-plane is also at redshift 0.5.
 """
 image_plane = al.Plane(galaxies=[lens_galaxy])
 
 """
-Just like we did with `Galaxy`'s we can compute quantities from the `Plane` by passing it a `Grid2D`.
+Just like profiles and galaxies, a `Plane` has `_from_grid` method which we can use to compute its quantities.
 """
 deflections = image_plane.deflections_from_grid(grid=image_plane_grid)
 
@@ -82,44 +77,49 @@ print(deflections.native[0, 1, 1])
 print(deflections.native[0, 1, 1])
 
 """
-_Plane_ mat_plot_2d exist, which work analogously to `Profile` mat_plot_2d and `Galaxy` mat_plot_2d.
+There is also a `PlanePlotter` which, you guessed it, behaves like the profile and galaxy plotters.
 """
 plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=image_plane_grid)
 plane_plotter.figures_2d(deflections_y=True, deflections_x=True)
 
 """
-Throughout this chapter, we plotted lots of deflection angles. However, if you are not familiar with strong lensing, 
-you probably weren`t entirely sure what they are actually used for. 
+__Ray Tracing__
 
-The deflection angles tell us how light is `lensed` by a lens galaxy. By taking the image-plane coordinates and 
-deflection angles, we can subtract the two to determine the source-plane`s lensed coordinates, e.g.
+Throughout this chapter we have plotted deflection angles frequently. However, we have not yet used the deflection 
+angles to actually deflect anything! 
 
-source_plane_coordinates = image_plane_coordinates - image_plane_deflection_angles
+The deflection angles tell us how light is 'deflected' or 'lensed' by the lens galaxy. By taking the $(y,x)$ grid of 
+image-plane coordinates and the $(y,x)$ grid of deflection angles, we can subtract the two to determine the 
+source-plane`s coordinates, e.g.
 
-Therefore, we can use our image_plane to `trace` its `Grid2D` to the source-plane...
+ `source_plane_coordinates = image_plane_coordinates - image_plane_deflection_angles`
+
+We perform this below using the `traced_grid_from_grid` method of the `image_plane`:
 """
 source_plane_grid = image_plane.traced_grid_from_grid(grid=image_plane_grid)
+
 print("Traced source-plane coordinates of `Grid2D` pixel 0:")
 print(source_plane_grid.native[0, 0, :])
 print("Traced source-plane coordinates of `Grid2D` pixel 1:")
 print(source_plane_grid.native[0, 1, :])
 
 """
-... and use this `Grid2D` to setup the source-plane
+We now have grid of coordinates in the source-plane, so we can set up the source-plane as a `Plane` object.
 """
 source_plane = al.Plane(galaxies=[source_galaxy])
 
 """
-Lets inspect our `Grid2D`'s - I bet our source-plane isn't the boring uniform `Grid2D` we plotted in the first tutorial!
+If its not yet clear what is going on, the figure below should explain below. Lets again plot our `image_plane_grid`,
+which we know is a boring uniform grid of $(y,x)$ coordinates, but also plot the source-plane grid.
 """
-mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid2D"))
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
 )
 plane_plotter.figures_2d(plane_grid=True)
 
-mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid2D"))
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
@@ -127,7 +127,13 @@ plane_plotter = aplt.PlanePlotter(
 plane_plotter.figures_2d(plane_grid=True)
 
 """
-We can zoom in on the `centre` of the source-plane (remembering the lens galaxy was centred at (0.1", 0.1")).
+The source-plane looks very interesting! We can see it is not regular, not uniform, and has an aestetically pleasing
+visual appearance. Remember that every coordinate on this source-plane grid (e.g. every black dot) corresponds to a 
+coordinate on the image-plane grid that has been deflected by our mass profile; this is strong gravitational lensing
+in action!
+
+We can zoom in on the `centre` of the source-plane (remembering the lens galaxy was centred at (0.0", 0.0")) to 
+reveal a 'diamond like' structure with a fractal like appearance.
 """
 mat_plot_2d = aplt.MatPlot2D(
     title=aplt.Title(label="Source-plane Grid2D Zoomed"),
@@ -141,11 +147,18 @@ plane_plotter = aplt.PlanePlotter(
 plane_plotter.figures_2d(plane_grid=True)
 
 """
-We can also plot both `Plane`'s next to one another, and highlight specific points. This means we can see how different 
-image pixels map to the source-plane (and visa versa).
+__Mappings__
 
-(We are inputting the indexes of the `Grid2D` into `indexes` - the first set of indexes go from 0 -> 50, which is the top 
-row of the image-grid running from the left - as we said it would!)
+Lets plot the image and source planes next to one another and highlight specific points on both. The coloring of the 
+highlighted points therefore shows how specific image pixels **map** to the source-plane (and visa versa).
+
+This is the first time we have used the `Visuals2D` object, which allows the appearance of **PyAutoLens** figures to 
+be customized. We'll see this object crop up throughout the **HowToLens** lectures, and a full description of all
+of its options is provided in the `autolens_workspace/plot` package.
+
+Below, we input integer `indexes` that highlight the image-pixels that correspond to those indexes in 
+a different color. We highlight indexes running from 0 -> 50, which appear over the top row of the image-plane grid,
+alongside numerous other indexes.
 """
 visuals_2d = aplt.Visuals2D(
     indexes=[
@@ -156,31 +169,46 @@ visuals_2d = aplt.Visuals2D(
     ]
 )
 
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
+
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane,
     grid=image_plane_grid,
-    visuals_2d=visuals_2d,
     mat_plot_2d=mat_plot_2d,
+    visuals_2d=visuals_2d,
 )
-plane_plotter.subplot_with_source_grid()
+plane_plotter.figures_2d(plane_grid=True)
+
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane,
+    grid=source_plane_grid,
+    mat_plot_2d=mat_plot_2d,
+    visuals_2d=visuals_2d,
+)
+plane_plotter.figures_2d(plane_grid=True)
 
 """
-Clearly, the source-plane`s `Grid2D` is very different to the image-planes! It's not uniform and its certainly not boring!
+__Lensed Images__
 
-We can now ask the question - `what does our source-galaxy look like in the image-plane`? That is, to us, the observer 
-on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source galaxy's light 
-back from the source-plane grid.
+We can now map image-pixels to the source plane. Thus, we can ask the following question: what does a source-galaxy 
+in the source-plane look like in the image-plane`? That is, to us, the observer  on Earth, how does the source-galaxy 
+appear after its light has been deflected by the mass of the lens galaxy? What does it look like after strong 
+gravitational lensing?. 
+
+To do this, we simple trace the source galaxy's light back from the source-plane grid.
 """
 plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=source_plane_grid)
-plane_plotter.figures_2d(plane_image=True)
+plane_plotter.figures_2d(image=True)
 
 """
 It's a rather spectacular ring of light, but why is it a ring? Well:
 
-- Our lens galaxy was centred at (0.0", 0.0").
-- Our source-galaxy was centred at (0.0", 0.0").
-- Our lens galaxy had a spherical `MassProfile`.
-- Our source-galaxy a spherical `LightProfile`.
+- The lens galaxy is centred at (0.0", 0.0").
+- The source-galaxy is centred at (0.0", 0.0").
+- The lens galaxy is a spherical mass profile.
+- The source-galaxy ia a spherical light profile.
 
 Given the perfect symmetry of the system, every path the source's light takes around the lens galaxy is radially 
 identical. Thus, nothing else but a ring of light can form!
@@ -188,10 +216,13 @@ identical. Thus, nothing else but a ring of light can form!
 This is called an 'Einstein Ring' and its radius is called the 'Einstein Radius', which are both named after the man 
 who famously used gravitational lensing to prove his theory of general relativity.
 
-Finally, because we know our source-`Galaxy`'s `LightProfile`, we can also plot its `plane-image`. This image is how the 
-source intrinsically appears in the source-plane (e.g. without lensing). This is a useful thing to know, because the 
-source-s light is highly magnified, meaning astronomers can study it in a lot more detail than would otherwise be 
-possible!
+Finally, we plot the `plane-image` of the source galaxy. This image represents how the source intrinsically appears 
+in the source-plane (e.g. before it is strongly lensed). 
+
+The source galaxy's light is highly magnified, meaning it appears brighter than otherwise possible. Many Astronomers
+use strong lensing to study the most distant and faint galaxies in the Universe, which would otherwise be too faint for 
+us to ever observe. Our ability to recover its light before the effects of lensing is therefore vital to studying the
+source's properties.
 """
 include_2d = aplt.Include2D(grid=True)
 
@@ -201,8 +232,8 @@ plane_plotter = aplt.PlanePlotter(
 plane_plotter.figures_2d(plane_image=True)
 
 """
-Plotting the `Grid2D` over the plane image obscures its appearance, which isn't ideal. We can of course 
-tell **PyAutoLens** not to plot the grid.
+We typically avoid plotting the soruce plane grid over a plane image because it obscures its appearance. We do this  
+using the `Include2D` plotting object. 
 """
 include_2d = aplt.Include2D(grid=False)
 
@@ -212,16 +243,16 @@ plane_plotter = aplt.PlanePlotter(
 plane_plotter.figures_2d(plane_image=True)
 
 """
-For `MassProfile`'s, you can also plot their 'critical curves', which for those unfamiliar with lensing are lines of 
-infinite magnification where the `MassProfile` perfectly `focuses` light rays. Source light near a critical curve 
-appears much brighter than its true luminosity!
+__Critical Curves__
 
-In the next tutorial, we'll also plot the 'caustics', which are the 'critical_curves' mapped to the source-plane.
-        
-You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
-shape. This is a numerical issue with the way that **PyAutoLens** computes the critical curve, without this issue
-both would appear perfect symmetric and smooth! Implementing a more robust calculation of these quantities is on the
-**PyAutoLens** feature list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
+To end, we can finally explain what the black and red lines that have appeared on many of the plots throughout this
+chapter actually are. 
+ 
+These lines are called the 'critical curves', and they define line of infinite magnification due to a mass profile. 
+They therefore mark where in the image-plane a mass profile perfectly `focuses` light rays such that if a source is 
+located there, it will appear very bright: potentially 10-100x as brighter than its intrinsic luminosity.
+
+In the next tutorial, we'll introduce 'caustics', which are where the critical curves map too in the source-plane.
 """
 include_2d = aplt.Include2D(critical_curves=True)
 
@@ -231,23 +262,32 @@ plane_plotter = aplt.PlanePlotter(
 plane_plotter.figures_2d(convergence=True)
 
 """
-And, we're done. This is the first tutorial covering strong-lensing and I highly recommend you take a moment to really 
-mess about with the code above to see what sort of lensed images you can form. Pay attention to the source-plane `Grid2D` - 
-its appearance can change a lot!
+You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
+shape. This is a numerical issue with the way that **PyAutoLens** computes the critical curve. Without this issue
+both critical curves would appear symmetric and smooth! Implementing a more robust calculation for these quantities is 
+on the **PyAutoLens** feature list, but for now you'll just have to accept this aspect of the visualization is 
+sub-optimal!
 
-In particular, try:
+__Wrap Up__
 
- 1) Changing the lens galaxy's einstein radius - what happens to the source-plane`s image?
+And, we're done. This is the first tutorial where we performed actual strong-lensing calculations, so you take a 
+moment to mess about with the code above and see how you can change the appearance of the source-plane grid and lensed
+source's image.
 
- 2) Change the SphIsothermal `MassProfile` to an `EllIsothermal` `MassProfile`.and set its axis_ratio to 0.8. 
- What happens to the number of source images?
+In particular, you should try:
 
- 3) As discussed at the beginning, `Plane`'s can be composed of multiple galaxies. Make an the image-plane with two 
- galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
- galaxies!
+ 1) Changing the lens galaxy's einstein radius, what happens to the source-plane`s image?
 
-Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory. 
-Don't worry about maths, and equations, and anything scary, but you should at least go to Wikipedia to figure out:
+ 2) Change the lens's mass profile from a `SphIsothermal` to an `EllIsothermal`, making sure to input 
+ `elliptical_comps` that are not (0.0, 0.0). What happens to the number of source images?
+
+Try to make an the image-plane with  two galaxies, both with mass profiles, and see how multi-galaxy lensing can 
+produce extremely irregular images of a single source galaxy. Also try making a source-plane with multiple galaxies, 
+and see how weird and irregular you can make the lensed image appear.
+
+Finally, if you are a newcomer to strong lensing, now might be a good time to read-up briefly on some strong lensing 
+theory. Don't worry about going over the maths of lensing in any detail, but you should at least try scouring 
+Wikipedia or another source of information to clearly establish:
 
  - What a critical line is.
  - What a caustic is.

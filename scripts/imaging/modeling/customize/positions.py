@@ -53,7 +53,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 """
 __Positions__
@@ -86,7 +86,7 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.subplot_imaging()
 
 """
-__Model + Search + Analysis__ 
+__Model + Search__ 
 
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
@@ -113,7 +113,7 @@ one another. However, we only want the threshold to aid the non-linear with the 
 removing genuinely physical models.
 """
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=positions,
     settings_lens=al.SettingsLens(positions_threshold=0.5),
 )

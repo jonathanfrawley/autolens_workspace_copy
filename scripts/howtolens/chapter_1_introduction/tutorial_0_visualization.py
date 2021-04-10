@@ -2,10 +2,8 @@
 Tutorial 0: Visualization
 =========================
 
-In this tutorial, we'll cover visualization in **PyAutoLens** and make sure images display properly on your computer.
-
-First, lets load an image of a (simulated) strong lens. Don't worry too much about what the code below is doing as it
-will be covered in a later tutorial.
+In this tutorial, we quickly cover visualization in **PyAutoLens** and make sure images display clealry in your
+Jupyter notebook and on your computer screen.
 """
 #%matplotlib inline
 
@@ -14,17 +12,14 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-PyAutoLens assumes the working directory is `autolens_workspace/` on your hard-disk. This is so that it can:
+__Directories__
+
+**PyAutoLens assumes** the working directory is `autolens_workspace` on your hard-disk. This is so that it can:
  
  - Load configuration settings from config files in the `autolens_workspace/config` folder.
  - Load example data from the `autolens_workspace/dataset` folder.
  - Output the results of models fits to your hard-disk to the `autolens/output` folder. 
     
-If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
-download it here:
- 
- https://github.com/Jammy2211/autolens_workspace
-
 At the top of every tutorial notebook, you'll see the following cell. This cell uses the project `pyprojroot` to
 locate the path to the workspace on your computer and use it to set the working directory of the notebook.
 """
@@ -44,10 +39,13 @@ use this path in this tutorial!
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 """
+__Dataset__
+
 The `dataset_path` specifies where the dataset is located, which is the 
 directory `autolens_workspace/dataset/imaging/no_lens_light/mass_sie__source_sersic`.
 
-There are many example simulated images of strong lenses in this directory that will be used throughout the tutorials.
+There are many example simulated images of strong lenses in this directory that will be used throughout the 
+**HowToLens** lectures.
 """
 dataset_path = path.join(
     "dataset", "imaging", "no_lens_light", "mass_sie__source_sersic"
@@ -70,6 +68,8 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.figures_2d(image=True)
 
 """
+__Plot Customization__
+
 Does the figure display correctly on your computer screen? 
 
 If not, you can customize a number of matplotlib setup options using a `MatPlot2D` object in **PyAutoLens**, which 
@@ -91,19 +91,19 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
 imaging_plotter.figures_2d(image=True)
 
 """
-Many matplotlib options can be customized, but for now we're only concerned with making sure figures display cleanly in 
-your Jupyter Notebooks. However, for future reference, a comprehensive API reference guide of all options and what 
-`matplotlib` methods they wrap can be found in at`autolens_workspace/plot`. You should check this out once you are
-more familiar with PyAutoLens.
+Many matplotlib options can be customized, but for now we're only concerned with making sure figures display clear in 
+your Jupyter Notebooks. Nevertheless, a comprehensive API reference guide of all `matplotlib` wrappers and methods can 
+be found in the `autolens_workspace/plot` package. You should check this out once you are more familiar with 
+**PyAutoLens**.
 
-Ideally, we wouldn't need to specify a new `MatPlot2D` object every time we plot an image we make, especially as 
-you'll be  changing the same option to the same value over and over again (e.g. the figsize). Fortunately, the 
-default values used by **PyAutoLens** can be fully customized.
+Ideally, we would not specify a new `MatPlot2D` object every time we plot an image, especially as you would be 
+changing the same option to the same values every time (e.g. the figsize) to make the figure display correctly over 
+and over again. Fortunately, the default values used by **PyAutoLens** can be fully customized via the config files.
 
 Checkout the following files in `autolens_workspace/config/visualize/mat_wrap`:
 
-All default matplotlib values used by **PyAutoLens** are here. There`s lots, so lets only focus on whats important for 
-displaying figures correctly:
+All default matplotlib values used by **PyAutoLens** are here. There are a lot of files, so lets only focus on whats 
+important for displaying figures correctly:
 
  - Figure.ini -> [figure] -> figsize
  - YLabel.ini -> [figure] -> fontsize
@@ -115,11 +115,14 @@ displaying figures correctly:
 Don't worry about all the other files or options listed for now, as they`ll make a lot more sense once you are familiar 
 with **PyAutoLens**.
 
-(Note that you will need to reset your Jupyter notebook server for these changes to take effect, so make sure you 
-have the right values using the `mat_plot_2d` object in the cell above beforehand!)
+If you had to change any of the above settings to get the figures to display clearly, you should update their values
+in the corresponding config files above (you will need to reset your Jupyter notebook server for these changes to 
+take effect, so make sure you have the right values using the `mat_plot_2d` object in the cell above beforehand!).
 
-In addition to individual `figures` which use a `mat_plot_2d` to plot them, **PyAutoLens** also uses this object to 
-plot `subplots`. 
+__Subplots__
+
+In addition to plotting individual `figures`, **PyAutoLens** can also plot `subplots` which are again customized via
+the `mat_plot` objects.
 
 Lets plot a subplot of our `Imaging` data:
 """
@@ -142,11 +145,11 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
 imaging_plotter.subplot_imaging()
 
 """
-Again, you can customize the default appearance of subplots by editing the config files above, but not editing the
+Again, you can customize the default appearance of subplots by editing the config files above, but now editing the
 corresponding entries under the [subplot] headers.
 
-The other thing we can do with figures is choose what we include in the plot. For example, we can choose whether to 
-include the origin of the coordinate system on our plot of the image:
+We can also customize what is included in a plot. for example whether the origin of the coordinate system appears on 
+the image:
 """
 include_2d = aplt.Include2D(origin=True)
 imaging_plotter = aplt.ImagingPlotter(
@@ -161,7 +164,9 @@ imaging_plotter = aplt.ImagingPlotter(
 imaging_plotter.figures_2d(image=True)
 
 """
-Throughout the **HowToLens** lecture series you'll see lots more objects that can be included on figures and subplots.
+__Wrap Up__
+
+Throughout the **HowToLens** lectures you'll see lots more objects that can be included on figures and subplots.
 
 Just like the matplotlib setup, you can customize what does and does not appear on figures by default using the 
 config file `autolens_workspace/config/visualize/include.ini`

@@ -3,9 +3,6 @@ introduce search chaining, a concept we mentioned in the previous chapter. Searc
 searches together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
 realistic lens models.
 
-Also, be sure to checkout the on-the-fly output I discussed in the summary of chapter 2 (checkout this summary now
-if you skipped it!)
-
 With these pipelines, you'll be able to:
 
 1) Fit a lens mass model and source light model to an image of a strongly lensed source.

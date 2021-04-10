@@ -53,9 +53,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 positions = al.Grid2DIrregular.from_json(
@@ -67,7 +67,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = (path.join("imaging", "chaining", "api"),)
+path_prefix = path.join("imaging", "chaining", "hyper_mode")
 
 """
 __HYPER SETUP__
@@ -131,7 +131,7 @@ search = af.DynestyStatic(
     path_prefix=path_prefix, name="search[1]__hyper", n_live_points=50
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -176,7 +176,7 @@ search = af.DynestyStatic(
     path_prefix=path_prefix, name="search[2]__hyper", n_live_points=30
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_1)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_1)
 
 result_2 = search.fit(model=model, analysis=analysis)
 

@@ -50,10 +50,7 @@ imaging_plotter.subplot_imaging()
 We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit.
 """
 mask = al.Mask2D.circular(
-    shape_native=imaging.shape_native,
-    pixel_scales=imaging.pixel_scales,
-    sub_size=1,
-    radius=3.0,
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 """
@@ -62,16 +59,16 @@ The Imaging object combines the dataset with the mask.
 Here, the Mask2D is also used to compute the `Grid2D` we used in the lensing.py tutorial to compute lensing calculations.
 Note how the Grid2D has also had the mask applied to it.
 """
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-grid_plotter = aplt.Grid2DPlotter(grid=masked_imaging.grid)
+grid_plotter = aplt.Grid2DPlotter(grid=imaging.grid)
 grid_plotter.figure_2d()
 
 """
 Here is what our image looks like with the mask applied, where PyAutoLens has automatically zoomed around the mask
 to make the lensed source appear bigger.
 """
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.figures_2d(image=True)
 
 """
@@ -88,7 +85,7 @@ lens_galaxy = al.Galaxy(
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=45.0),
     ),
 )
 
@@ -96,7 +93,7 @@ source_galaxy = al.Galaxy(
     redshift=1.0,
     bulge=al.lp.EllSersic(
         centre=(0.1, 0.1),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.3,
         effective_radius=1.0,
         sersic_index=2.5,
@@ -113,10 +110,10 @@ The fit performs the necessary tasks to create the model image we fit the data w
 image with the `Imaging` PSF. We can see this by comparing the tracer`s image (which isn't PSF convolved) and the 
 fit`s model image (which is).
 """
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=imaging.grid)
 tracer_plotter.figures_2d(image=True)
 
-fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=imaging, tracer=tracer)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_imaging_plotter.figures_2d(model_image=True)
@@ -168,7 +165,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 """
 Lets create a new fit using this tracer and replot its residuals, normalized residuals and chi-squareds.
 """
-fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+fit = al.FitImaging(imaging=imaging, tracer=tracer)
 
 fit_imaging_plotter.figures_2d(
     residual_map=True, normalized_residual_map=True, chi_squared_map=True

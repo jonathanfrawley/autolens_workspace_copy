@@ -47,9 +47,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -92,10 +92,10 @@ the **HowToLens** lectures.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]`.
+ `/autolens_workspace/output/imaging/modeling/mass_sie__source_sersic/mass[sie]_source[bulge]`.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", dataset_name),
+    path_prefix=path.join("imaging", "modeling", dataset_name),
     name="mass[sie]_source[bulge]",
     n_live_points=50,
 )
@@ -106,7 +106,7 @@ __Analysis__
 The `AnalysisImaging` object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
 the `Imaging`dataset.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 __Model-Fit__

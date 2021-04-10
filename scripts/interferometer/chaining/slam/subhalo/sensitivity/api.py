@@ -58,7 +58,9 @@ interferometer = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
-    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT),
+)
+interferometer = interferometer.apply_settings(
+    settings=al.SettingsInterferometer(transformer_class=al.TransformerNUFFT)
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -74,8 +76,10 @@ likelihood model.
 We perform this fit using the lens model we will use to perform sensitivity mapping, which we call the `base_model`.
 """
 base_model = af.Collection(
-    lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
-    source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
+    galaxies=af.Collection(
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic),
+    )
 )
 
 search_base = af.DynestyStatic(

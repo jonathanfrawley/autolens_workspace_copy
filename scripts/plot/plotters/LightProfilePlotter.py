@@ -18,7 +18,7 @@ First, lets create a simple `LightProfile` which we'll plot.
 """
 bulge = al.lp.EllSersic(
     centre=(0.0, 0.0),
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     intensity=1.0,
     effective_radius=0.8,
     sersic_index=4.0,
@@ -45,10 +45,7 @@ the `Include2D` object.
 plotting its mask and border below).
 """
 mask = al.Mask2D.circular(
-    shape_native=grid.shape_native,
-    pixel_scales=grid.pixel_scales,
-    radius=2.0,
-    sub_size=grid.sub_size,
+    shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, radius=2.0
 )
 masked_grid = al.Grid2D.from_mask(mask=mask)
 

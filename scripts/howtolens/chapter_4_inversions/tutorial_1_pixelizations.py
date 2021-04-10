@@ -2,8 +2,10 @@
 Tutorial 1: Pixelizations
 =========================
 
-To begin chapter 4, we'll begin by learning about `Pixelization``., which we apply to a source-plane to reconstruct a
-source-`Galaxy`'s light.
+In the previous chapters, we used light profiles to model the light of a strong lens's source galaxy, where the light
+profile was an analytic description of how the luminosity varies as a function of radius. In this chapter, we are
+instead going to reconstruct the source's light on a pixel-grid, and in this tutorial we will learn how to create
+a source-plane pixelization in **PyAutoLens**.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -15,49 +17,55 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our source galaxy doesn`t have a 
-`LightProfile`,as we're going to reconstruct its light using a pixelization).
+__Initial Setup__
+
+Lets setup a lensed source-plane grid, using a lens galaxy and tracer. 
+
+Note how our source galaxy no longer uses a light profile, as we will instead reconstruct its light using a 
+pixelization.
 """
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     ),
     shear=al.mp.ExternalShear(elliptical_comps=(0.05, 0.05)),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)])
+source_galaxy = al.Galaxy(redshift=1.0)
+
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[1]
 
 """
-Next, lets set up a `Pixelization`.sing the `pixelization` module, which is imported as `pix` for short.
+__Pixelization__
+
+Next, lets set up a `Pixelization` using the `pixelization` module, which is access via `pix` for conciseness.
 
 There are multiple `Pixelization`'s available in **PyAutoLens**. For now, we'll keep it simple and use a uniform 
-rectangular grid. As usual, the grid`s `shape` defines its $(y,x)$ dimensions.
+rectangular grid, whose `shape` defines its $(y,x)$ dimensions.
 """
 rectangular = al.pix.Rectangular(shape=(25, 25))
 
 """
-By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid2D` of coordinates, no image, and nothing which tells it 
-about the lens we're fitting. This information comes when we use the `Pixelization` to set up a `Mapper`. we'll use 
-the (traced) source-plane `Grid2D` to set up this mapper.
+By itself, a pixelization does not tell us much. It has no grid of $(y,x)$ coordinates, no image, and no information
+about the lens we are fitting. This information comes when we use the pixelization to create up a `Mapper`, which we
+perform below using the (traced) source-plane grid that we created above.
 """
 mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 """
-This `Mapper` is a `RectangularMapper` - every `Pixelization` generates it owns mapper.
+This `Mapper` is a `RectangularMapper`, every `Pixelization` generates it owns mapper.
 """
 print(type(mapper))
 
 """
-By plotting our mapper, we now see our `Pixelization`. Its a fairly boring `Grid2D` of rectangular pixels.
-
-(we'll cover what the `inversion` means in a later tutorial).
+By plotting our mapper, we now see our `Pixelization`. Its a fairly boring grid of rectangular pixels.
 """
 include_2d = aplt.Include2D(
     mapper_source_grid_slim=False, mapper_source_pixelization_grid=False
@@ -80,7 +88,7 @@ print(mapper.source_pixelization_grid[2])
 print("etc.")
 
 """
-Infact, we can plot these centre on our `Grid2D` - to make it look slightly less boring!
+We can plot these centre on our grid, to make it look slightly less boring!
 """
 include_2d = aplt.Include2D(
     mapper_source_grid_slim=False, mapper_source_pixelization_grid=False
@@ -91,7 +99,7 @@ mapper_plotter.set_title("Slightly less Boring Grid2D of Rectangular Pixels")
 mapper_plotter.figure_2d()
 
 """
-The `Mapper` also has the (source-plane) `Grid2D` that we passed when we set it up. Lets check they`re the same.
+The `Mapper` also has the (source-plane) grid that we passed when we set it up. Lets check they`re the same.
 """
 print("Source Grid2D Pixel 1")
 print(source_plane_grid[0])
@@ -102,7 +110,7 @@ print(mapper.source_grid_slim[1])
 print("etc.")
 
 """
-We can over-lay the `Grid2D` on top. Its starting to look a bit less boring now!
+We can over-lay this grid on the figure, which is starting to look a bit less boring now!
 """
 include_2d = aplt.Include2D(
     mapper_source_grid_slim=True, mapper_source_pixelization_grid=True
@@ -121,7 +129,7 @@ mapper_plotter.set_title("Zoomed Grid2D of Rectangular Pixels")
 mapper_plotter.figure_2d()
 
 """
-Finally, the mapper`s pixeliation_grid has lots of information about the `Pixelization`, for example, the arc-second 
+Finally, the mapper`s `pixeliation_grid` has lots of information about the pixelization, for example, the arc-second 
 size and dimensions.
 """
 print(mapper.source_pixelization_grid.shape_native_scaled)
@@ -129,13 +137,15 @@ print(mapper.source_pixelization_grid.scaled_maxima)
 print(mapper.source_pixelization_grid.scaled_minima)
 
 """
-And with that, we're done. This was a relatively gentle overview of `Pixelization``., but one that was hopefully easy 
-to follow. Think about the following questions before moving on to the next tutorial:
+__Wrap Up__
+
+This was a relatively gentle overview of pixelizations, but one that was hopefully easy to follow. Think about the 
+following questions before moving on to the next tutorial:
 
  1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points 
  distributed evenly over the rectangular grid`s pixels? Do some pixels have a lot more grid-points inside of them? 
  Do some pixels have no grid-points in them?
 
  2) The rectangular pixelization`s edges are aligned with the most exterior coordinates of the source-grid. This is 
- intentional - why do you think this is?
+ intentional, why do you think this is?
 """

@@ -50,10 +50,10 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-masked_imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
-masked_imaging_plotter.subplot()
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot()
 
 """
 We compose the lens model that we fit to the data using `Model` objects. These behave analogously to `Galaxy`
@@ -101,7 +101,7 @@ The `PhaseImaging` object above returns a `Result` object, which contains the ma
 and `FitImaging` objects and which can easily be plotted.
 """
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=masked_imaging.grid
+    tracer=result.max_log_likelihood_tracer, grid=imaging.grid
 )
 tracer_plotter.subplot_tracer()
 

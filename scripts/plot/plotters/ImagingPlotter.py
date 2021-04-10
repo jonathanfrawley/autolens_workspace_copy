@@ -54,14 +54,13 @@ the plotted of a mask and its border below).
 mask = al.Mask2D.circular_annular(
     shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
-    sub_size=1,
     inner_radius=0.3,
     outer_radius=3.0,
 )
-masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=2))
+imaging = imaging.apply_mask(mask=mask)
 
 include_2d = aplt.Include2D(origin=True, mask=True, border=True)
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, include_2d=include_2d)
 imaging_plotter.subplot_imaging()
 
 """

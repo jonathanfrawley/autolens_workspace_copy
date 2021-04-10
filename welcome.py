@@ -154,7 +154,7 @@ input(
      
      - misc: Miscelaneous scripts for specific lens analysis.
      
-    The `advanced` folders are for experienced users. The example scripts and HowToLens lectures will guide new users 
+    The `chaining` folders are for experienced users. The example scripts and HowToLens lectures will guide new users 
     to these modules when they have sufficient experience and familiarity with PyAutoLens.
     
     [Press Enter to continue]

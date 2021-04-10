@@ -24,7 +24,7 @@ def simulate_imaging(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -73,7 +73,7 @@ def simulate_imaging_in_counts(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_in_counts")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -128,7 +128,7 @@ def simulate_imaging_in_adus(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_in_adus")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -183,7 +183,7 @@ def simulate_imaging_with_large_stamp(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_large_stamp")
 
-    grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -222,7 +222,7 @@ def simulate_imaging_with_small_stamp(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_small_stamp")
 
-    grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -261,7 +261,7 @@ def simulate_imaging_with_offset_centre(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_offset_centre")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -300,7 +300,7 @@ def simulate_imaging_noise_map_wht(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_noise_map_wht")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -341,7 +341,7 @@ def simulate_imaging_with_large_psf(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_large_psf")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(101, 101), sigma=0.05, pixel_scales=0.1
@@ -382,7 +382,7 @@ def simulate_imaging_with_even_psf(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_even_psf")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -409,7 +409,11 @@ def simulate_imaging_with_even_psf(dataset_path):
 
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
-    imaging.psf = al.Kernel2D.from_gaussian(
+    imaging.psf_unormalized = al.Kernel2D.from_gaussian(
+        shape_native=(22, 22), sigma=0.05, pixel_scales=0.1
+    )
+
+    imaging.psf_normalized = al.Kernel2D.from_gaussian(
         shape_native=(22, 22), sigma=0.05, pixel_scales=0.1
     )
 
@@ -425,7 +429,7 @@ def simulate_imaging_with_unnormalized_psf(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_unnormalized_psf")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(shape_native=(21, 21), sigma=0.05, pixel_scales=0.1)
 
@@ -466,7 +470,7 @@ def simulate_imaging_with_psf_with_offset_centre(dataset_path):
 
     imaging_path = path.join(dataset_path, "imaging_with_off_centre_psf")
 
-    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(130, 130), pixel_scales=0.1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(21, 21), sigma=0.05, pixel_scales=0.1, centre=(0.1, 0.1)

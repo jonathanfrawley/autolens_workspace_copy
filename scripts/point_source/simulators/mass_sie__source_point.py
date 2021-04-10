@@ -41,17 +41,17 @@ faint dist in the source for purely visualization purposes to show where the mul
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
 
 However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
+axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and phi.
+We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     ),
 )
 
@@ -88,6 +88,7 @@ positions = solver.solve(
     lensing_obj=tracer, source_plane_coordinate=source_galaxy.point.centre
 )
 
+
 """
 Use the positions to compute the magnification of the `Tracer` at every position.
 """
@@ -100,6 +101,10 @@ flux = 1.0
 fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ValuesIrregular(values=fluxes)
 
+"""
+We now output the image of this strong lens to `.fits` which can be used for visualize when performing point-source 
+modeling and to `.png` for general inspection.
+"""
 visuals_2d = aplt.Visuals2D(multiple_images=positions)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals_2d)
@@ -112,22 +117,28 @@ mat_plot_2d = aplt.MatPlot2D(
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.figures_2d(image=True)
 
-"""
-Output the simulated dataset to the dataset path as .fits files.
-"""
-positions.output_to_json(
-    file_path=path.join(dataset_path, "positions.json"), overwrite=True
-)
-fluxes.output_to_json(file_path=path.join(dataset_path, "fluxes.json"), overwrite=True)
-
-"""
-Output a subplot of the simulated dataset, the image and a subplot of the `Tracer`'s quantities to the dataset path 
-as .png files.
-"""
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()
+
+"""
+Create a point-source dictionary data object and output this to a `.json` file, which is the format used to load and
+analyse the dataset.
+"""
+point_source_dataset = al.PointSourceDataset(
+    name="point_0",
+    positions=positions,
+    positions_noise_map=positions.values_from_value(value=grid.pixel_scale),
+    fluxes=fluxes,
+    fluxes_noise_map=al.ValuesIrregular(values=[1.0, 1.0, 1.0, 1.0]),
+)
+
+point_source_dict = al.PointSourceDict(point_source_dataset_list=[point_source_dataset])
+
+point_source_dict.output_to_json(
+    file_path=path.join(dataset_path, "point_source_dict.json"), overwrite=True
+)
 
 
 """

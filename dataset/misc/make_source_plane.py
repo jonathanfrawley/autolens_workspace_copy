@@ -5,6 +5,7 @@ image-plane grid.
 This is so the `source_planes.py` script can be used to analysis the system in a setting where the deflection angle
 map is `known`.
 """
+from os import path
 import autolens as al
 
 dataset_type = "imaging"
@@ -19,11 +20,13 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-"""The mask and grid of the imaging dataset."""
+"""
+The mask and grid of the imaging dataset.
+"""
 mask = al.Mask2D.unmasked(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1
+    shape_native=imaging.shape_2d, pixel_scales=imaging.pixel_scales
 )
-grid = al.Grid.from_mask(mask=mask)
+grid = al.Grid2D.from_mask(mask=mask)
 
 """
 The true lens `Galaxy` of the `mass_sie__source_parametric.py` simulator script, which is required to compute the
@@ -34,19 +37,21 @@ lens_galaxy = al.Galaxy(
     mass=al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=45.0),
     ),
 )
 
 deflections = lens_galaxy.deflections_from_grid(grid=grid)
-deflections_y = al.Array.manual_mask(array=deflections.in_1d[:, 0], mask=grid.mask)
-deflections_x = al.Array.manual_mask(array=deflections.in_1d[:, 1], mask=grid.mask)
+deflections_y = al.Array2D.manual_mask(array=deflections.in_1d[:, 0], mask=grid.mask)
+deflections_x = al.Array2D.manual_mask(array=deflections.in_1d[:, 1], mask=grid.mask)
 
-mask.output_to_fits(file_path=f"examples/misc/files/mask.fits", overwrite=True)
-grid.output_to_fits(file_path=f"examples/misc/files/grid.fits", overwrite=True)
+output_path = path.join("dataset", "misc")
+
+mask.output_to_fits(file_path=path.join(output_path, "mask.fits"), overwrite=True)
+grid.output_to_fits(file_path=path.join(output_path, "grid.fits"), overwrite=True)
 deflections_y.output_to_fits(
-    file_path=f"examples/misc/files/deflections_y.fits", overwrite=True
+    file_path=path.join(output_path, "deflections_y.fits"), overwrite=True
 )
 deflections_x.output_to_fits(
-    file_path=f"examples/misc/files/deflections_x.fits", overwrite=True
+    file_path=path.join(output_path, "deflections_x.fits"), overwrite=True
 )

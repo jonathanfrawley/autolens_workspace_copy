@@ -48,6 +48,7 @@ The workspace includes the following main directories:
 - ``config``: Configuration files which customize **PyAutoLens**'s behaviour.
 - ``dataset``: Where data is stored, including example datasets distributed with **PyAutoLens**.
 - ``output``: Where the **PyAutoLens** analysis and visualization are output.
+- ``slam``: The Source, Light and Mass (SLaM) lens modeling pipelines, which are scripts for experienced users.
 
 The examples in the ``notebooks`` and ``scripts`` folders are structured as follows:
 
@@ -62,13 +63,15 @@ The examples in the ``notebooks`` and ``scripts`` folders are structured as foll
 In the ``imaging`` and ``interferometer`` folders you'll find the following packages:
 
 - ``modeling``: Examples of how to fit a lens model to data via a non-linear search.
+- ``chaining``: Advanced modeling scripts which chain together multiple non-linear searches.
 - ``simulators``: Scripts for simulating realistic imaging and interferometer data of strong lenses.
 - ``preprocess``: Tools to preprocess ``data`` before an analysis (e.g. convert units, create masks).
 
-The ``advanced`` sections are for veteran users and contain:
+The ``chaining`` sections are for users familiar with **PyAutoLens** and contain:
 
 - ``pipelines``: Example pipelines for modeling strong lenses using non-linear search chaining.
-- ``SLaM``: The Source, Light and Mass (SLaM) lens modeling pipelines.
+- ``hyper_mode``: Examples using hyper-mode, which adapts the lens model to the data being fitted.
+- ``slam``: Example scripts that fit lens datasets using the SLaM pipelines.
 
 Getting Started
 ---------------

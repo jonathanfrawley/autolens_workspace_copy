@@ -2,11 +2,13 @@
 Tutorial 8: Pipeline
 ====================
 
-To illustrate lens modeling using an `Inversion`, we'll revisit the complex source model-fit that we performed in
-tutorial 6 of chapter 3. This time, as you`ve probably guessed, we'll fit the complex source using an `Inversion`.
+To illustrate lens modeling using an inversion this tutorial revists revisit the complex source model-fit that we
+performed in tutorial 6 of chapter 3. This time, as you have probably guessed, we will fit the complex source using
+an inversion.
 
-we'll begin by modeling the source with a `LightProfile`, to initialize the mass model and avoid the unphysical
-solutions discussed in tutorial 6. we'll then switch to an `Inversion`.
+We will use search chaining to do this, first fitting the source with a light profile, thereby initialize the mass
+model priors and avoiding the unphysical solutions discussed in tutorial 6. In the later searches we will switch to
+an `Inversion`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -20,11 +22,13 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__Initial Setup__
+
 we'll use strong lensing data, where:
 
  - The lens galaxy's light is omitted.
  - The lens galaxy's total mass distribution is an `EllIsothermal` and `ExternalShear`.
- - The source galaxy's `LightProfile` is four `EllSersic``..
+ - The source galaxy's `LightProfile` is four `EllSersic`.
 """
 dataset_name = "mass_sie__source_sersic_x4"
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
@@ -41,7 +45,7 @@ mask = al.Mask2D.circular(
 )
 
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -75,7 +79,7 @@ search = af.DynestyStatic(
     n_live_points=50,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -111,7 +115,7 @@ model = af.Collection(
             al.Galaxy,
             redshift=1.0,
             pixelization=al.pix.VoronoiMagnification,
-            regularization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         ),
     )
 )
@@ -123,8 +127,7 @@ search = af.DynestyStatic(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
-    settings_pixelization=al.SettingsPixelization(use_border=True),
+    dataset=imaging, settings_pixelization=al.SettingsPixelization(use_border=True)
 )
 
 result_2 = search.fit(model=model, analysis=analysis)
@@ -187,13 +190,13 @@ by a `factor` to ensure it is not too small (and thus does not remove plausible 
 multiplication, the threshold is below the `minimum_threshold`, it is rounded up to this minimum value.
 """
 settings_lens = al.SettingsLens(
-    positions_threshold=result_2.last.positions_threshold_from(
+    positions_threshold=result_2.positions_threshold_from(
         factor=3.0, minimum_threshold=0.2
     )
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=result_2.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
@@ -201,7 +204,10 @@ analysis = al.AnalysisImaging(
 result_3 = search.fit(model=model, analysis=analysis)
 
 """
-And with that, we now have a pipeline to model strong lenses using an inversion! Checkout the example pipeline in
-`autolens_workspace/pipelines/examples/inversion_hyper_galaxies_bg_noise.py` for an example of an `Inversion` pipeline 
-that includes the lens light component.
+__Wrap Up__
+
+And with that, we now have a pipeline to model strong lenses using an inversion! 
+
+Checkout the example pipelines in the `autolens_workspace/notebooks/chaining` package for inversion pipelines that 
+includes the lens light component.
 """

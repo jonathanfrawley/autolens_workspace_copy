@@ -74,10 +74,10 @@ simulator = al.SimulatorImaging(
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
 
 However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
+axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and phi.
+We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -90,28 +90,28 @@ source_galaxy = al.Galaxy(
     redshift=1.0,
     light_0=al.lp.EllSersic(
         centre=(0.1, 0.1),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.1,
         effective_radius=1.0,
         sersic_index=2.5,
     ),
     light_1=al.lp.EllSersic(
         centre=(0.8, 0.6),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.5, phi=30.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.5, angle=30.0),
         intensity=0.2,
         effective_radius=0.3,
         sersic_index=3.0,
     ),
     light_2=al.lp.EllSersic(
         centre=(-0.3, 0.6),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.3, phi=120.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.3, angle=120.0),
         intensity=0.6,
         effective_radius=0.5,
         sersic_index=1.5,
     ),
     light_3=al.lp.EllSersic(
         centre=(-0.3, -0.3),
-        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=85.0),
+        elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=85.0),
         intensity=0.4,
         effective_radius=0.1,
         sersic_index=2.0,

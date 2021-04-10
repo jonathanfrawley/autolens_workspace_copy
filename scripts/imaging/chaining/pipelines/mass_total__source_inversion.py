@@ -25,24 +25,22 @@ __Dataset + Masking__
 Load, plot and mask the `Imaging` data.
 """
 dataset_name = "mass_sie__source_sersic_x2"
-pixel_scales = 0.1
-
 dataset_path = path.join("dataset", "imaging", "no_lens_light", dataset_name)
 
 imaging = al.Imaging.from_fits(
     image_path=path.join(dataset_path, "image.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    pixel_scales=pixel_scales,
+    pixel_scales=0.1,
 )
 
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -50,7 +48,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "chaining", "mass_total__source_inversion")
+path_prefix = path.join("imaging", "pipelines", dataset_name)
 
 """
 __Redshifts__
@@ -90,7 +88,7 @@ search = af.DynestyStatic(
     n_live_points=50,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -123,7 +121,7 @@ model = af.Collection(
             al.Galaxy,
             redshift=redshift_source,
             pixelization=al.pix.VoronoiMagnification,
-            regularization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         ),
     )
 )
@@ -134,7 +132,7 @@ search = af.DynestyStatic(
     n_live_points=20,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_2 = search.fit(model=model, analysis=analysis)
 
@@ -185,13 +183,13 @@ We update the positions and positions threshold using the previous model-fitting
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
 settings_lens = al.SettingsLens(
-    positions_threshold=result_2.last.positions_threshold_from(
+    positions_threshold=result_1.positions_threshold_from(
         factor=3.0, minimum_threshold=0.2
     )
 )
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging,
+    dataset=imaging,
     positions=result_2.image_plane_multiple_image_positions,
     settings_lens=settings_lens,
 )
@@ -241,7 +239,7 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging, settings_lens=settings_lens)
+analysis = al.AnalysisImaging(dataset=imaging, settings_lens=settings_lens)
 
 result_4 = search.fit(model=model, analysis=analysis)
 

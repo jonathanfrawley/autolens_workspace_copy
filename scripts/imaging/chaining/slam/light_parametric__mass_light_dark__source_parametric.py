@@ -12,8 +12,8 @@ uses a parametric `EllSersic` profile for the bulge, this will be used in the su
 Using a SOURCE PARAMETRIC PIPELINE, LIGHT PIPELINE and a MASS LIGHT DARK PIPELINE this SLaM script fits `Imaging` of
 a strong lens system, where in the final model:
 
- - The lens galaxy's light is a bulge+disk `EllSersic` and `EllSersic`.
- - The lens galaxy's stellar mass distribution is a bulge+disk tied to the light model above.
+ - The lens galaxy's light is a bulge `EllSersic`.
+ - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
  - The lens galaxy's dark matter mass distribution is modeled as a `EllNFWMCRLudlow`.
  - The source galaxy's light is a parametric `EllSersic`.
 
@@ -60,9 +60,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -70,7 +70,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", "with_lens_light", dataset_name)
+path_prefix = path.join("imaging", "slam", dataset_name)
 
 """
 __Redshifts__
@@ -99,8 +99,7 @@ __SOURCE PARAMETRIC PIPELINE (with lens light)__
 The SOURCE PARAMETRIC PIPELINE (with lens light) uses three searches to initialize a robust model for the 
 source galaxy's light, which in this example:
 
- - Uses a parametric `EllSersic` bulge and `EllSersic` disk with centres aligned for the lens
- galaxy's light.
+ - Uses a parametric `EllSersic` bulge.
 
  - Uses an `EllIsothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
@@ -109,19 +108,17 @@ source galaxy's light, which in this example:
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS LIGHT DARK 
  PIPELINE).
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 bulge = af.Model(al.lp.EllSersic)
-disk = af.Model(al.lp.EllSersic)
 bulge.centre = (0.0, 0.0)
-disk.centre = (0.0, 0.0)
 
 source_parametric_results = slam.source_parametric.with_lens_light(
     path_prefix=path_prefix,
     analysis=analysis,
     setup_hyper=setup_hyper,
     lens_bulge=bulge,
-    lens_disk=disk,
+    lens_disk=None,
     mass=af.Model(al.mp.EllIsothermal),
     shear=af.Model(al.mp.ExternalShear),
     source_bulge=af.Model(al.lp.EllSersic),
@@ -137,8 +134,7 @@ The LIGHT PARAMETRIC PIPELINE uses one search to fit a complex lens light model 
 lens mass model and source light model fixed to the maximum log likelihood result of the SOURCE PARAMETRIC PIPELINE.
 In this example it:
 
- - Uses a parametric `EllSersic` bulge and `EllSersic` disk with centres aligned for the lens galaxy's 
- light [Do not use the results of the SOURCE PARAMETRIC PIPELINE to initialize priors].
+ - Uses a parametric `EllSersic` bulge [Do not use the results of the SOURCE PARAMETRIC PIPELINE to initialize priors].
 
  - Uses an `EllIsothermal` model for the lens's total mass distribution [fixed from SOURCE PARAMETRIC PIPELINE].
 
@@ -148,8 +144,6 @@ In this example it:
  PIPELINE [fixed values].
 """
 bulge = af.Model(al.lp.EllSersic)
-disk = af.Model(al.lp.EllSersic)
-bulge.centre = disk.centre
 
 light_results = slam.light_parametric.with_lens_light(
     path_prefix=path_prefix,
@@ -157,7 +151,7 @@ light_results = slam.light_parametric.with_lens_light(
     setup_hyper=setup_hyper,
     source_results=source_parametric_results,
     lens_bulge=bulge,
-    lens_disk=disk,
+    lens_disk=None,
 )
 
 """
@@ -167,8 +161,8 @@ The MASS LIGHT DARK PIPELINE (with lens light) uses one search to fits a complex
 accuracy, using the source model of the SOURCE PIPELINE and the lens light model of the LIGHT PARAMETRIC PIPELINE to 
 initialize the model priors . In this example it:
 
- - Uses a parametric `EllSersic` bulge and `EllSersic` disk with centres aligned for the lens galaxy's 
- light and its stellar mass [12 parameters: fixed from LIGHT PARAMETRIC PIPELINE].
+ - Uses a parametric `EllSersic` bulge for the lens galaxy's light and its stellar mass [12 parameters: fixed from 
+ LIGHT PARAMETRIC PIPELINE].
 
  - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` whose centre is aligned with bulge of 
  the light and stellar mass mdoel above [5 parameters].
@@ -179,7 +173,7 @@ initialize the model priors . In this example it:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PARAMETRIC PIPELINE through to the MASS 
  LIGHT DARK PIPELINE.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 lens_bulge = af.Model(al.lmp.EllSersic)
 dark = af.Model(al.mp.EllNFWMCRLudlow)
@@ -193,7 +187,7 @@ mass_results = slam.mass_light_dark.with_lens_light(
     source_results=source_parametric_results,
     light_results=light_results,
     lens_bulge=lens_bulge,
-    lens_disk=af.Model(al.lmp.EllSersic),
+    lens_disk=None,
     lens_envelope=None,
     dark=dark,
 )

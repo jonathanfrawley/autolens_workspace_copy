@@ -45,7 +45,7 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 model = af.Collection(
     galaxies=af.Collection(
@@ -55,12 +55,12 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", dataset_name),
+    path_prefix=path.join("imaging", "modeling", dataset_name),
     name="mass[sie]_source[bulge]",
     n_live_points=50,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result = search.fit(model=model, analysis=analysis)
 

@@ -55,9 +55,7 @@ mask_custom = al.Mask2D.from_fits(
     pixel_scales=imaging.pixel_scales,
 )
 
-masked_imaging = imaging.apply_mask(
-    mask=mask_custom  # <----- The custom mask is used here!
-)
+imaging = imaging.apply_mask(mask=mask_custom)  # <----- The custom mask is used here!
 
 """
 When we plot the `Imaging` dataset with the mask it extracts only the regions of the image in the mask remove 
@@ -65,7 +63,7 @@ contaminating bright sources away from the lens and zoom in around the mask to e
 """
 visuals_2d = aplt.Visuals2D(mask=mask_custom)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, visuals_2d=visuals_2d)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
 imaging_plotter.subplot_imaging()
 
 """
@@ -83,7 +81,7 @@ search = af.DynestyStatic(
     path_prefix=path.join("imaging", "customize"), name="custom_mask"
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 __Model-Fit__

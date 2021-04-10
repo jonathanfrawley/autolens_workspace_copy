@@ -2,89 +2,97 @@
 Tutorial 2: Parameter Space and Priors
 ======================================
 
-In the previous example, we used a non-linear search to infer the best-fit lens model of imaging-imaging of a strong
-lens. In this example, we'll get a deeper intuition of how a non-linear search works.
+In the previous tutorial, we used a non-linear search to infer the a lens model that provided a good fit to simulated
+imaging data of a strong lens. Now, we will gain deeper intuition of how a non-linear search works.
 
-First, I want to develop the idea of a `parameter space`. Lets think of a function, like the simple function below:
+First, lets develop the concept of a 'parameter space'.
 
-f(x) = x^2
+If mathematics, you will have learnt that we can write a simple function as follows:
 
-In this function, when we input a parameter x, it returns a value f(x). The mappings between different values of x and
-f(x) define a parameter space (and if you remember your high school math classes, you'll remember this parameter
-space is a parabola).
+$f(x) = x^2$
+
+In this function, when we input the parameter $x`$ in to the function $f$, it returns a value $f(x)$. The mappings
+between values of $x$ and $f(x)$ define what we can call the parameter space of this function (and if you remember
+your math classes, this parameter space is defined by a parabola).
 
 A function can of course have multiple parameters:
 
-f(x, y, z) = x + y^2 - z^3
+$f(x, y, z) = x + y^2 - z^3$
 
-This function has 3 parameters, x, y and z. The mappings between x, y and z and f(x, y, z) again define a parameter
-space, albeit now in 3 dimensions. Nevertheless, one could still picture this parameter space as some 3 dimensional
-curved surface.
+This function has 3 parameters, $x$, $y$ and $z$. The mappings between $x$, $y$ and $z$ and $f(x, y, z)$ define another
+parameter space, albeit this parameter space now has 3 dimensions. Nevertheless, just like we could plot a parabole to
+visualize the parameter space $f(x) = x^2$, we could visualize this parameter space as 3 dimensional surface.
 
-The process of computing a log likelihood in **PyAutoLens** can be visualized in exactly the same way. We have a set of
-lens model parameters, which we input into **PyAutoLens**`s `log_likelihood function`. Now, this log likelihood function
-isn't something that we can write down analytically and its inherently non-linear. But, nevertheless, it is a function;
-if we put the same set of lens model parameters into it, we'll compute the same log likelihood.
+In the previous tutorial, we discussed how the `AnalysisImaging` class had a `log_likelihood_function` which fitted
+the imaging data with a lens model so as to return a log likelihood.
 
-We can write our log_likelihood function as follows (using x_mp, y_mp, I_lp etc. as short-hand notation for the
-`MassProfile` and `LightProfile` parameters):
+This process can be thought of as us computing a likelihood from a function, just like our functions $f(x)$ above.
+However, the log likelihood function is not something that we can write down analytically as an equation and its
+behaviour is inherently non-linear. Nevertheless, it is a function, and if we put the same values of lens model
+parameters into this function the same value of log likelihood will be returned.
 
-f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from **PyAutoLens**`s `Tracer` and `FitImaging` objects.
+Therefore, we can write our log likelihood function as follows, using terms such as I_{lp}$, $x_{mp}$, $y_{mp}$,
+as short-hand notation for the parameters of our light profiles and mass profiles.
 
-The point is, like we did for the simple functions above, we again have a parameter space! It can`t be written
-down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
-it, and find the solutions which maximize our log_likelihood function!
+$f(I_{lp}, x_{mp},, y_{mp}, ...) = log(likelihood)$
 
-Lets inspect the results of the last tutorial's non-linear search. we're going to look at what are called `Probability
-density functions` or `PDF's for short. These represent where the highest log likelihood regions of parameter space were
-found for each parameter.
+By expressing the likelihood in this way we now have a parameter space! The solutions to this function cannot be written
+analytically and it is hihgly complex and non-linear. However, we have already learnt how we use this function to
+find solutions which give the highest likelihoods; we use a non-linear search!
 
-Navigate to the image folder in `autolens_workspace/output/howtolens/tutorial_1_non_linear_search`
-and open the `pdf_triangle.png` figure. The Gaussian shaped lines running down the diagonal of this triangle represent
-1D estimates of the highest log likelihood regions that were found in parameter space for each parameter.
+To gain further insight, we can inspect the results of the previous tutorial and its 'Probability density functions' or
+`PDF' for short. These provide a visual representation of where the non-linear search found the highest likelihood
+regions of parameter space for each parameter.
 
-The remaining figures, which look like contour-maps, show the maximum log likelihood regions in 2D between every
-parameter pair. We often see that two parameters are `degenerate`, whereby increasing one and decreasing the other
-leads to a similar log_likelihood value. The 2D PDF between the source-`Galaxy`'s `LightProfile`'s intensity I and
-effective radius R shows such a degeneracy. This makes sense - making the source galaxy brighter and smaller is
-similar to making it fainter and bigger!
+Navigate to the folder `autolens_workspace/output/howtolens/tutorial_1_non_linear_search/images`
+and open the `pdf_triangle.png` figure, where:
 
-So, how does **PyAutoLens** know where to look in parameter space? A parameter, say, the Einstein Radius, could in
-principle take any value between negative and positive infinity. **PyAutoLens** must of told it to only search regions of
-parameter space with `reasonable` values (i.e. Einstein radii of around 1"-3").
+ - The 1D plots of curved lines show, in one dimension, the values of each parameter that gave the highest likelihood
+ solutions.
 
-These are our `priors` - which define where we tell the non-linear search to search parameter space. These tutorials
-use two types of prior:
+ - The 2D plots show contours of how different combinations of parameters gave the highest likelihood. When we see
+  a curved contour between two parameters, we say that they are 'degenerate', whereby changing both parameters in a
+  systematic way leads to models that fit the data equally well. As example degeneracy is between the source's
+  intensity $I_{lp}$ and effective radius $R_{lp}$, which makes sense: making the source galaxy brighter and smaller is
+  similar to making it fainter and bigger!
 
-UniformPrior:
+So, how does a non-linear search know where to search parameter? A parameter, say, the Einstein Radius, could in
+principle take any value between negative and positive infinity. Something must be telling it to only search certain
+regions of parameter space with `reasonable` physically plausible values of Einstein radius (between 1.0"-4.0").
 
- The values of a parameter are randomly drawn between a lower and upper limit. For example, the
- orientation angle phi of a `Profile` typically assumes a uniform prior between 0.0 and 180.0 degrees.
+These are called the 'priors'. Our priors define where we instruct the non-linear search to search parameter space, and
+throughout these tutorials we will use three types of prior:
 
-GaussianPrior:
+- UniformPrior: The values of a parameter are randomly drawn between a `lower_limit` and `upper_limit`. For example,
+the Einstein radius of an isothermal mass profiles typically assumes a uniform prior between 0.0" and 4.0".
 
- The values of a parameter are randomly drawn from a Gaussian distribution with a mean value and a
- width sigma. For example, an Einstein radius might assume a mean value of 1.0" and width of sigma = 1.0".
+- LogUniformPrior: Like a `UniformPrior` this randomly draws values between a `limit_limit` and `upper_limit`, but the
+values are drawn from a distribution with base 10. This is used for the `intensity` of a light profile, as the
+luminosity of galaxies follows a log10 distribution.
 
-The default priors on all parameters can be found by navigating to the `autolens_workspace/config/priors/` folder,
-and inspecting config files like light_profiles.json. The convention is as follow:
+- GaussianPrior: The values of a parameter are randomly drawn from a Gaussian distribution with a `mean` and width
+ `sigma`. For example, the $y$ and $x$ centre values in a light or mass profile typically assume a mean of 0.0" and a
+ sigma of 0.3", indicating that we expect the profile centre to be located near the centre of the image.
+
+The default priors of every parameter are provided in the configuration files located at
+`autolens_workspace/config/priors/`. Each class of models has a config file (e.g. `light_profiles.json`) and they
+follow the following convention:
 
 {
     "SphIsothermal": { <- The name of the `Profile` we are defining the default priors of.
         "einstein_radius": { <- The parameter of the `Profile` we are defining the default priors of.
-            "type": "Gaussian", <- The type of prior, in this case a GaussianPrior (other priors are Uniform, LogUniform, etc.)
+            "type": "Gaussian", <- The type of prior, in this case a GaussianPrior.
             "lower_limit": 0.0, <- The lower physical limit allowed for values of this parameter.
             "upper_limit": "inf", <- The upper physical limit allowed for values of this parameter.
             "width_modifier": {
                 "type": "Relative", <- Ignore these for now.
                 "value": 0.05
             },
-            "mean": 1.6, <- The `mean` of the GaussianPrior, telling Dynesty where to sample parameter space.
-            "sigma": 0.01 <- The `sigma` of the GaussianPrior, telling Dynesty how wide to sample this parameter.
+            "mean": 1.6, <- The `mean` of the GaussianPrior, telling the search where to sample parameter space.
+            "sigma": 0.01 <- The `sigma` of the GaussianPrior, telling the search how wide to sample this parameter.
         }
     },
 }
-
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -98,6 +106,8 @@ import autolens.plot as aplt
 import autofit as af
 
 """
+__Initial Setup__
+
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's total mass distribution is a `SphIsothermal`.
@@ -114,13 +124,15 @@ imaging = al.Imaging.from_fits(
 )
 
 """
+__Masking__
+
 we'll create and use a 3.0" `Mask2D` again.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
@@ -128,15 +140,14 @@ imaging_plotter = aplt.ImagingPlotter(
 imaging_plotter.subplot_imaging()
 
 """
-To change the priors on specific parameters, we create our galaxy models and then, simply, customize their priors.
+__Prior Customization__
+
+To change the priors on specific parameters, we create our galaxy models and use **PyAutoFit** to set new priors. 
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.SphIsothermal)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SphExponential)
 
 """
-To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors chain our `Model` to the 
-non-linear search. Thus, it tells **PyAutoLens** where to search non-linear parameter space.
-
 These two lines change the centre of the lens galaxy's total mass distribution to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 
 _Galaxy_`s light.
@@ -147,7 +158,7 @@ lens.mass.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 lens.mass.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
 """
-Lets also change the prior on the lens galaxy's einstein radius to a GaussianPrior centred on 1.4". For real lens 
+Lets also change the prior on the lens galaxy's einstein radius to a `GaussianPrior` centred on 1.4". For real lens 
 modeling, this might be done by visually estimating the radius the lens's arcs / ring appear.
 """
 lens.mass.einstein_radius = af.GaussianPrior(mean=1.4, sigma=0.2)
@@ -163,21 +174,35 @@ We again combine our model components into a `Collection`, which will use the ob
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-We can now fit this custom model with a search like we did before. If you look at the `model.info` file in the output 
-of the non-linear search, you'll see that the priors have indeed been changed.
+__Search__
+
+We can now fit this custom model with a search like we did in tutorial 1. 
+
+If you look at the `model.info` file in the output folder of the non-linear search, you'll see that certain priors 
+have been updated to the priors we set above.
+
+When setting up dynesty, we include a new input `number_of_cores=2`. The non-linear search can use parallel processing 
+to sample multiple lens models at once on your CPU. When `number_of_cores=2` the search will run roughly two times as
+fast, for `number_of_cores=3` three times as fast, and so on. The downside is more cores on your CPU will be in-use
+which may hurt the general performance of your computer.
+
+You should experiment to figure out the highest value which does not give a noticeable loss in performance of your 
+computer. If you know that your processor is a quad-core process you should be able to use `number_of_cores=4`, 
+and even higher end processors can potentially use even higher values.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_2_custom_priors",
     n_live_points=40,
+    number_of_cores=1,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result = search.fit(model=model, analysis=analysis)
 
 print(
-    "Dynesty has begun running - checkout the autolens_workspace/output/tutorial_2_parameter_space_and_priors"
+    "Dynesty has begun running - checkout the autolens_workspace/output/howtolens/chapter_2/tutorial_2_parameter_space_and_priors"
     " folder for live output of the results, images and lens model."
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
@@ -188,14 +213,16 @@ fit_imaging_plotter.subplot_fit_imaging()
 print("Dynesty has finished run - you may now continue the notebook.")
 
 """
-And, we're done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can`t emphasize 
+__Wrap Up__
+
+This tutorial had some pretty difficult concepts to wrap your head around. However, I cannot emphasize 
 enough how important it is that you develop an intuition for non-linear searches and the notion of a non-linear 
 parameter space. Becoming good at lens modeling is all being able to navigate a complex, degenerate and highly 
 non-linear parameter space! Luckily, we're going to keep thinking about this in the next set of tutorials, so if 
 you're not feeling too confident yet, you will be soon!
 
 Before continuing to the next tutorial, I want you think about whether anything could go wrong when we search a 
-non-linear parameter space. Is it possible that we won't find the highest log likelihood lens model? Why might this be?
+non-linear parameter space. Is it possible that we do not find the highest log likelihood lens model? Why might this be?
 
-Try and list 3 reasons why this might happen. In the next tutorial, we'll learn about just that - failure!
+Try and list 3 reasons why this might happen. In the next tutorial, we'll learn about just that, failure!
 """

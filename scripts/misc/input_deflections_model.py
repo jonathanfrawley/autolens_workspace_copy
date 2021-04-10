@@ -79,15 +79,12 @@ not this `Mask2D` now defines the image-plane region we will fit the data (and t
 likelihood, etc is calculated.
 """
 mask = al.Mask2D.circular(
-    shape_native=imaging.shape_native,
-    pixel_scales=imaging.pixel_scales,
-    radius=3.0,
-    sub_size=2,
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 grid = al.Grid2D.from_mask(mask=mask)
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
 """
 We create the `InputDeflections` `MassProfile`.almosst the same as the previous example. This is going to be passed to 
@@ -101,7 +98,7 @@ lens model we fit to the data we`d waste a lot of time. However, because our def
 this expensive repeated calculation and speed up the code significantly. Yay!
 """
 image_plane_grid = al.Grid2D.uniform(
-    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales
 )
 input_deflections = al.mp.InputDeflections(
     deflections_y=deflections_y,
@@ -146,7 +143,7 @@ __Analysis__
 The `AnalysisImaging` object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
 the `Imaging`dataset.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 __Model-Fit__

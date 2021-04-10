@@ -38,9 +38,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -48,9 +48,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join(
-    "imaging", "chaining", "light_parametric__mass_total__source_parametric"
-)
+path_prefix = path.join("imaging", "pipelines", dataset_name)
 
 """
 __Redshifts__
@@ -82,7 +80,7 @@ search = af.DynestyStatic(
     path_prefix=path_prefix, name="search[1]_light[parametric]", n_live_points=50
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_1 = search.fit(model=model, analysis=analysis)
 
@@ -100,14 +98,16 @@ In search 2 we fit a lens model where:
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
 model = af.Collection(
-    lens=af.Model(
-        al.Galaxy,
-        redshift=redshift_lens,
-        bulge=result_1.instance.galaxies.lens.bulge,
-        mass=al.mp.EllIsothermal,
-        shear=al.mp.ExternalShear,
-    ),
-    source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllSersic),
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=result_1.instance.galaxies.lens.bulge,
+            mass=al.mp.EllIsothermal,
+            shear=al.mp.ExternalShear,
+        ),
+        source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.EllSersic),
+    )
 )
 
 search = af.DynestyStatic(
@@ -116,7 +116,7 @@ search = af.DynestyStatic(
     n_live_points=75,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_2 = search.fit(model=model, analysis=analysis)
 
@@ -140,16 +140,20 @@ mass model and source light. However, the lens light model may not be particular
 the result of search 1 to initialize the priors.
 """
 model = af.Collection(
-    lens=af.Model(
-        al.Galaxy,
-        redshift=redshift_lens,
-        bulge=af.Model(al.lp.EllSersic),
-        mass=result_2.model.galaxies.lens.mass,
-        shear=result_2.model.galaxies.lens.shear,
-    ),
-    source=af.Model(
-        al.Galaxy, redshift=redshift_source, bulge=result_2.model.galaxies.source.bulge
-    ),
+    galaxies=af.Collection(
+        lens=af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=af.Model(al.lp.EllSersic),
+            mass=result_2.model.galaxies.lens.mass,
+            shear=result_2.model.galaxies.lens.shear,
+        ),
+        source=af.Model(
+            al.Galaxy,
+            redshift=redshift_source,
+            bulge=result_2.model.galaxies.source.bulge,
+        ),
+    )
 )
 
 search = af.DynestyStatic(
@@ -158,6 +162,6 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_3 = search.fit(model=model, analysis=analysis)

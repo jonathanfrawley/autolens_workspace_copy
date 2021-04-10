@@ -3,9 +3,9 @@ Tutorial 1: Search Chaining
 ===========================
 
 In chapter 2, we learnt how to perform lens modeling using a non-linear search. In all of the tutorials, we fitted the
-data using just one non-linear search. In chapter 3, we introduce a technique called non-linear search chaining, which
-performs lens modeling as a sequence of non-linear searches. The initial searches fit simpler lens model whose parameter
-space can be more accurately and efficiently sampled. The results of this search are then passed to later searches
+data using just one non-linear search. In this chapter, we introduce a technique called 'non-linear search chaining',
+fits a lens model using a sequence of non-linear searches. The initial searches fit simpler lens model whose parameter
+spaces can be more accurately and efficiently sampled. The results of this search are then passed to later searches
 which fit lens models of gradually increasing complexity.
 
 Lets think back to tutorial 4 of chapter 2. We learnt there were three approaches one could take fitting a lens model
@@ -29,8 +29,8 @@ gives a reasonable lens model. However, we'll make a couple of extra simplifying
 our lens model complexity down and get the non-linear search running fast.
 
 The model we infer above will therefore be a lot less realistic. But it does not matter, because in the second search
-we're going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
-first search, we can use its results to tune the priors of our second search. For example:
+we're going to relax these assumptions and fit the more realistic lens model. The beauty is that, by running the first
+search, we can use its results to tune the priors of our second search. For example:
 
  1) The first search should give us a pretty good idea of the lens galaxy's light and mass profiles, for example its
  intensity, effective radius and einstein radius.
@@ -51,6 +51,8 @@ import autolens.plot as aplt
 import autofit as af
 
 """
+__Initial Setup__
+
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens galaxy's light is an `EllSersic`.
@@ -67,27 +69,30 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-"""
-we'll create and use a smaller 2.0" `Mask2D` again.
-"""
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=2.6
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-"""
-When plotted, the lens light`s is clearly visible in the centre of the image.
-"""
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
 )
 imaging_plotter.subplot_imaging()
 
 """
+__Model__
+
 As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It's 
 that bright blob of light in the middle! Given that we know we're going to make the lens model more complex in the 
 next search, lets take a more liberal approach than before and fix the lens centre to $(y,x)$ = (0.0", 0.0").
+
+Now, you might be thinking, doesn`t this prevent our search from generalizing to other strong lenses? What if the 
+centre of their lens galaxy isn't at (0.0", 0.0")?
+
+Well, this is true if our dataset reduction centres the lens galaxy somewhere else. But we get to choose where we 
+centre it when we make the image. Therefore, I`d recommend you always centre the lens galaxy at the same location, 
+and (0.0", 0.0") seems the best choice!
 """
 bulge = af.Model(al.lp.EllSersic)
 mass = af.Model(al.mp.EllIsothermal)
@@ -107,13 +112,6 @@ Lets use the same approach of making the ellipticity of the mass trace that of t
 mass.elliptical_comps = bulge.elliptical_comps
 
 """
-Now, you might be thinking, doesn`t this prevent our search from generalizing to other strong lenses? What if the 
-centre of their lens galaxy isn't at (0.0", 0.0")?
-
-Well, this is true if our dataset reduction centres the lens galaxy somewhere else. But we get to choose where we 
-centre it when we make the image. Therefore, I`d recommend you always centre the lens galaxy at the same location, 
-and (0.0", 0.0") seems the best choice!
-
 We also discussed that the Sersic index of most lens galaxies is around 4. Lets fix it to 4 this time.
 """
 bulge.sersic_index = 4.0
@@ -124,26 +122,30 @@ We now compose the model with these components that have had their priors custom
 We have not done anything to the source model, but use an `EllExponential` which will become the more complex
 `EllSersic` in the second search.
 """
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+lens = af.Model(
+    al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=al.mp.ExternalShear
+)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllExponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
+__Search + Analysis__
+
 Now lets create the search and analysis.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_1",
-    n_live_points=40,
+    n_live_points=50,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
 Lets run the search, noting that our liberal approach to reducing the lens model complexity has reduced it to just 
-11 parameters. (The results are still preloaded for you, but feel free to run it yourself, its fairly quick).
+11 parameters.
 """
 print(
     "Dynesty has begun running - checkout the workspace/output/5_chaining_searches"
@@ -156,21 +158,26 @@ result_1 = search.fit(model=model, analysis=analysis)
 print("Dynesty has finished run - you may now continue the notebook.")
 
 """
-And indeed, we get a reasonably good model and fit to the data - in a much shorter space of time!
+__Result__
+
+And indeed, we get a reasonably good model and fit to the data, in a much shorter space of time!
 """
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_1.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-Now all we need to do is look at the results of search 1 and tune our priors in search 2 to those result. Lets setup 
+__Prior Passing__
+
+Now all we need to do is look at the results of search 1 and pass the results as priors for search 2. Lets setup 
 a custom search that does exactly that.
 
-GaussianPriors are a nice way to do this. They tell the non-linear search where to look, but leave open the 
+GaussianPriors are a nice way to pass priors. They tell the non-linear search where to look, but leave open the 
 possibility that there might be a better solution nearby. In contrast, UniformPriors put hard limits on what values a 
-parameter can or can`t take. It makes it more likely we'll accidently cut-out the global maxima solution.
+parameter can or can`t take. It makes it more likely we will accidently cut-out the global maxima solution.
 """
 bulge = af.Model(al.lp.EllSersic)
 mass = af.Model(al.mp.EllIsothermal)
+shear = af.Model(al.mp.ExternalShear)
 source_bulge = af.Model(al.lp.EllSersic)
 
 """
@@ -220,6 +227,8 @@ mass.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
 mass.einstein_radius = af.GaussianPrior(
     mean=1.6, sigma=0.1, lower_limit=0.0, upper_limit=np.inf
 )
+shear.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(mean=0.05, sigma=0.05)
+shear.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(mean=0.05, sigma=0.05)
 
 """
 __SOURCE LIGHT PRIORS:__
@@ -257,12 +266,12 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 Lets setup and run the search. As expected, it gives us the correct lens model. However, it does so significantly 
-faster than we're used to!
+faster than we are used to!
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_2",
-    n_live_points=40,
+    n_live_points=50,
 )
 
 print(
@@ -276,20 +285,23 @@ result_2 = search.fit(model=model, analysis=analysis)
 print("Dynesty has finished run - you may now continue the notebook.")
 
 """
+__Result__
+
 Look at that, the right lens model, again!
 """
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_2.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-Our choice to chain two searches together was a huge success. We managed to fit a complex and realistic model, but were 
-able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We could apply 
-search 1 to pretty much any strong lens and therefore get ourselves a decent lens model with which to tune search 2`s 
-priors.
+__Wrap Up__
 
-You`re probably thinking though that there is one huge, giant, glaring flaw in all of this that I've not mentioned. 
-Search 2 can`t be generalized to another lens - it`s priors are tuned to the image we fitted. If we had a lot of lenses, 
-we`d have to write a new search for every single one. This isn't ideal, is it?
+Chaining two searches together was a huge success. We managed to fit a complex and realistic model, but were able to 
+begin by making simplifying assumptions that eased our search of non-linear parameter space. We could apply search 1 to 
+pretty much any strong lens and therefore get ourselves a decent lens model with which to tune search 2`s priors.
+
+You are probably thinking though that there is one huge, giant, glaring flaw in all of this that I've not mentioned. 
+Search 2 can`t be generalized to another lens, because its priors are tuned to the image we fitted. If we had a lot 
+of lenses, we`d have to write a new search for every single one. This isn't ideal, is it?
 
 Fortunately, we can pass priors in **PyAutoLens** without specifying the specific values. The API for this technique,
 called prior passing, is the topic of the next tutorial.

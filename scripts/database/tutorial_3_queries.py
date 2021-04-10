@@ -79,13 +79,13 @@ of lenses efficiently load and inspect the results.
 Models with multiple galaxies are therefore easily accessed via the database.]
 """
 mass = agg.galaxies.lens.mass
-agg_query = agg.query(mass == al.mp.EllIsothermal)
-samples_gen = agg_query.values("samples")
-print(
-    "Total Samples Objects via `EllIsothermal` model query = ",
-    len(list(samples_gen)),
-    "\n",
-)
+# agg_query = agg.query(mass == al.mp.EllIsothermal)
+# samples_gen = agg_query.values("samples")
+# print(
+#     "Total Samples Objects via `EllIsothermal` model query = ",
+#     len(list(samples_gen)),
+#     "\n",
+# )
 
 """
 Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the 
@@ -93,13 +93,13 @@ inferred value of `sersic_index` for the `EllSersic` of the source's bulge is le
 the first of the three model-fits).
 """
 bulge = agg.galaxies.source.bulge
-agg_query = agg.query(bulge.sersic_index < 3.0)
-samples_gen = agg_query.values("samples")
-print(
-    "Total Samples Objects In Query `source.bulge.sersic_index < 3.0` = ",
-    len(list(samples_gen)),
-    "\n",
-)
+# agg_query = agg.query(bulge.sersic_index < 3.0)
+# samples_gen = agg_query.values("samples")
+# print(
+#     "Total Samples Objects In Query `source.bulge.sersic_index < 3.0` = ",
+#     len(list(samples_gen)),
+#     "\n",
+# )
 
 """
 Advanced queries can be constructed using logic, for example we below we combine the two queries above to find all
@@ -109,14 +109,14 @@ less than 3.0 for the source's bulge.
 The OR logical clause is also supported via the symbol |.
 """
 mass = agg.galaxies.lens.mass
-bulge = agg.galaxies.source.bulge
-agg_query = agg.query((mass == al.mp.EllIsothermal) & (bulge.sersic_index < 3.0))
-samples_gen = agg_query.values("samples")
-print(
-    "Total Samples Objects In Query `Gaussian & sigma < 3.0` = ",
-    len(list(samples_gen)),
-    "\n",
-)
+# bulge = agg.galaxies.source.bulge
+# agg_query = agg.query((mass == al.mp.EllIsothermal) & (bulge.sersic_index < 3.0))
+# samples_gen = agg_query.values("samples")
+# print(
+#     "Total Samples Objects In Query `Gaussian & sigma < 3.0` = ",
+#     len(list(samples_gen)),
+#     "\n",
+# )
 
 """
 Old Aggregator API... delete soon.

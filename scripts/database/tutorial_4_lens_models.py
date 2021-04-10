@@ -240,10 +240,10 @@ Our strong lens dataset was created via a simulator script, so we passed the `Tr
 lens, which was written as a .pickle file called `true_tracer.pickle` to the search to make it accessible in the 
 database. This will allow us to directly compare the inferred lens model to the `truth`. 
 """
-true_tracers = [true_tracer for true_tracer in agg.values("true_tracer")]
+# true_tracers = [true_tracer for true_tracer in agg.values("true_tracer")]
 
 print("Parameters used to simulate the lens dataset:")
-print(true_tracers)
+# print(true_tracers)
 
 """
 Finish.

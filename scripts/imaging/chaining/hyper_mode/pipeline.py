@@ -34,7 +34,7 @@ from os import path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
-from . import extensions
+import extensions
 
 """
 __Dataset__ 
@@ -55,9 +55,9 @@ mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-masked_imaging = imaging.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
@@ -65,9 +65,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join(
-    "imaging", "chaining", "light_parametric__mass_total__source_parametric"
-)
+path_prefix = path.join("imaging", "chaining", "hyper_pipeline")
 
 """
 __Redshifts__
@@ -113,7 +111,7 @@ We can only use hyper-model once we have a good model for the lens and source ga
 images of both of these components to effectively perform tasks like scaling their noise or adapting a pixelization
 or regularization pattern to the source's unlensed morphology.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 bulge = af.Model(al.lp.EllSersic)
 disk = af.Model(al.lp.EllExponential)
@@ -178,7 +176,7 @@ search = af.DynestyStatic(
     n_live_points=100,
 )
 
-analysis = al.AnalysisImaging(dataset=masked_imaging)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 result_3 = search.fit(model=model, analysis=analysis)
 
@@ -235,7 +233,7 @@ after its hyper-model image is created via an `Inversion`.
 You'll note that all hyper-mode examples and the SLaM pipelines use this trick, as using parametric sources to adapt 
 to the source morphology can lead to poor results for complex sources.
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_3)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_3)
 
 model = af.Collection(
     galaxies=af.Collection(
@@ -254,9 +252,9 @@ model = af.Collection(
             pixelization=al.pix.VoronoiMagnification,
             regularization=al.reg.Constant,
         ),
-        hyper_image_sky=result_3.hyper.instance.hyper_image_sky,
-        hyper_background_noise=result_3.hyper.instance.hyper_background_noise,
-    )
+    ),
+    hyper_image_sky=result_3.hyper.instance.hyper_image_sky,
+    hyper_background_noise=result_3.hyper.instance.hyper_background_noise,
 )
 
 search = af.DynestyStatic(
@@ -275,7 +273,7 @@ model = af.Collection(
             bulge=result_4.instance.galaxies.lens.bulge,
             disk=result_4.instance.galaxies.lens.disk,
             mass=result_3.model.galaxies.lens.mass,
-            shear=result_3.last.model.galaxies.lens.shear,
+            shear=result_3.model.galaxies.lens.shear,
             hyper_galaxy=result_4.instance.galaxies.lens.hyper_galaxy,
         ),
         source=af.Model(
@@ -316,7 +314,7 @@ up the model-fit significantly.
   
 This uses the maximum likelihood hyper-result search 6. 
 """
-analysis = al.AnalysisImaging(dataset=masked_imaging, hyper_result=result_5)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5)
 
 search = af.DynestyStatic(
     path_prefix=path_prefix,
@@ -333,7 +331,6 @@ model = af.Collection(
             redshift=result_5.instance.galaxies.lens.redshift,
             bulge=result_5.instance.galaxies.lens.bulge,
             disk=result_5.instance.galaxies.lens.disk,
-            envelope=result_5.instance.galaxies.lens.envelope,
             mass=result_5.instance.galaxies.lens.mass,
             shear=result_5.instance.galaxies.lens.shear,
             hyper_galaxy=result_5.instance.galaxies.lens.hyper_galaxy,
@@ -377,9 +374,7 @@ model = af.Collection(
 
 preloads = al.Preloads.setup(result=result_6, pixelization=True)
 
-analysis = al.AnalysisImaging(
-    dataset=masked_imaging, hyper_result=result_5, preloads=preloads
-)
+analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5, preloads=preloads)
 
 search = af.DynestyStatic(
     path_prefix=path_prefix,
@@ -447,7 +442,7 @@ model = af.Collection(
 preloads = al.Preloads.setup(result=result_7.hyper, pixelization=True)
 
 analysis = al.AnalysisImaging(
-    dataset=masked_imaging, hyper_result=result_7.hyper, preloads=preloads
+    dataset=imaging, hyper_result=result_7.hyper, preloads=preloads
 )
 
 search = af.DynestyStatic(

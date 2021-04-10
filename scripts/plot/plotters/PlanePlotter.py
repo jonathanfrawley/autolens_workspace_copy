@@ -31,7 +31,7 @@ We create a `Plane` representing a source-plane containing a `Galaxy` with a `Li
 """
 bulge = al.lp.EllSersic(
     centre=(0.1, 0.1),
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, angle=60.0),
     intensity=0.3,
     effective_radius=1.0,
     sersic_index=2.5,
@@ -90,10 +90,7 @@ the `Include2D` object.
 plotting its mask and border below).
 """
 mask = al.Mask2D.circular(
-    shape_native=grid.shape_native,
-    pixel_scales=grid.pixel_scales,
-    radius=2.0,
-    sub_size=grid.sub_size,
+    shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, radius=2.0
 )
 masked_grid = al.Grid2D.from_mask(mask=mask)
 

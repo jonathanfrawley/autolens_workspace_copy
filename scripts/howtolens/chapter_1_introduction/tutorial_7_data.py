@@ -2,9 +2,13 @@
 Tutorial 7: Data
 ================
 
-In this example, we'll use the `imaging` module to simulate `Imaging` of a strong lens made using a `Tracer`. By
-simulate, we mean that it will appear as if we had observed it using a real telescope, with this example making an
-image representative of Hubble Space Telescope imaging.
+Up to now, all of the image's we've created have come from light profiles. Oher than the actual light that profile emits
+there is no other effects in the images of that light profile.
+
+This contrasts real data of a strong lens, where there are lots of other effects in our strong lens imagimg (noise,
+diffraction due to the telescope optics, etc.). In this example, we use **PyAutoLens** to simulate Hubble Space
+Telescope (HST) imaging of a strong lens, where the strong lens image is made via a tracer. By simulate, we mean that this
+image will contain these effects that are present in real data.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -17,18 +21,14 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-To simulate an image, we need to model the telescope's optics. we'll do this by convolving the image with a 
-Point-Spread Function using a `Kernel2D` object, which we can simulate as a Gaussian.
+__Initial Setup__
+
+We'll need a 2D grid to make the strong lens image we'll ultimately simulate as if it was observed with HST.
 """
-psf = al.Kernel2D.from_gaussian(shape_native=(11, 11), sigma=0.1, pixel_scales=0.1)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
 """
-To simulate `Imaging` dataset, we use a `Grid2D`, like usual.
-"""
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1, sub_size=2)
-
-"""
-Now, lets setup our lens galaxy, source galaxy and `Tracer`.
+Now, lets setup our lens galaxy, source galaxy and tracer.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -51,15 +51,28 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 """
-Lets look at the `Tracer`'s image; this is the image we'll be simulating.
+Lets look at the tracer's image; which is the image we'll be simulating.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-To simulate the `Imaging` data, we don't use the image plotted above. Instead, we use an image which has been generated
-specifically for simulating an image, which pads the array it is computed on based on the shape of the PSF we
-convolve the image with. This ensures edge-effects do not degrade our simulation`s PSF convolution.
+__Simulations__
+
+To simulate an image, we need to model how the light is diffracted as it enters the telescope's optics. 
+
+We do this using a two dimensional convolution, where a blurring kernel is used to mimic the effect of distraction. In
+Astronomy, the kernel representing blurring in a telescope is called the 'Point-Spread Function' (PSF) and it is 
+represented using a `Kernel2D` object, which in this example is a 2D Gaussian.
+"""
+psf = al.Kernel2D.from_gaussian(
+    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+)
+
+"""
+The simulation does not use tracer's image plotted above. Instead, we use a slightly different image which is padded 
+with zeros around its edge, based on the shape of the PSF that we will convolve the image with. This ensures 
+edge-effects do not degrade our simulation`s PSF convolution.
 """
 normal_image = tracer.image_from_grid(grid=grid)
 padded_image = tracer.padded_image_from_grid_and_psf_shape(
@@ -70,12 +83,17 @@ print(normal_image.shape_native)
 print(padded_image.shape_native)
 
 """
-Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid2D` to the `Imaging` module`s simulate function. 
-This adds the following effects to the image:
+To simulate imaging data we create a `SimulatorImaging` object, which represents all of the effects that occur when
+imaging data is accquired in a telescope, including:
 
- 1) Telescope optics: Using the Point Spread Function above.
- 2) The Background Sky: Although the image that is returned is automatically background sky subtracted.
+ 1) Diffraction due to the telescope optics: this uses the Point Spread Function defined above.
+ 
+ 2) The Background Sky: this is background light from the Universe that is observed in addition to the strong lens's 
+ light (the image that is returned is has this background sky subtracted, so it simply acts as a source of noise).
+ 
  3) Poisson noise: Due to the background sky, lens galaxy and source galaxy Poisson photon counts.
+ 
+We pass the tracer and grid to the simulator to create the image of the strong lens and add the above effects to it.
 """
 simulator = al.SimulatorImaging(
     exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
@@ -84,23 +102,28 @@ simulator = al.SimulatorImaging(
 imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
 """
-Lets plot the image. We can see the image has been blurred due to the telescope optics and noise has been added.
+By plotting the image, we can see it has been blurred due to the telescope optics and that noise has been added.
 """
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.figures_2d(image=True)
 
 """
-We'll now output these files to .fits files, we'll begin to analyze them in the next tutorial!
+__Output__
+
+We'll finally output these files to `.fits` files, which is the data storage format used by Astronomers to store
+images. Pretty much all data from telescope like HST comes in `.fits` format, and **PyAutoLens** has built-in tools 
+for manipulating `.fits` files.
 
 The `dataset_path` specifies where the data is output, this time in the directory 
-`autolens_workspace/dataset/imaging/no_lens_light/howtolens/`, which contains many example images of strong lens distributed with the
-`autolens_workspace`..
+`autolens_workspace/dataset/imaging/no_lens_light/howtolens/`, which contains many example images of strong lens 
+distributed with the`autolens_workspace`.
 """
 dataset_path = path.join("dataset", "imaging", "no_lens_light", "howtolens")
 print("Dataset Path: ", dataset_path)
 
 """
-Now output our simulated data to hard-disk.
+Finally, output our simulated data to hard-disk. In the next tutorial we'll load our simulated imaging data from 
+these `.fits` files and begin to analyse them!
 """
 imaging.output_to_fits(
     image_path=path.join(dataset_path, "image.fits"),

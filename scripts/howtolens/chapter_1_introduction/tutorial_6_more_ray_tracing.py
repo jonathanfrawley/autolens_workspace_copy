@@ -2,13 +2,25 @@
 Tutorial 6: More Ray Tracing
 ============================
 
-In this example, we'll reinforce what we learnt about ray-tracing in the last tutorial and introduce the following
+We'll now reinforce the ideas that we learnt about ray-tracing in the previous tutorial and introduce the following
 new concepts:
 
-1) That a `Tracer` can be given any number of galaxies.
+ - That a `Tracer` can be given any number of galaxies.
+ - That by specifying redshifts and a cosmology, the results are converted from arc-second coordinates to physical
+ units of kiloparsecs (kpc). Again, if you're not an Astronomer, you may not be familiar with the unit of parsec, it
+ may be worth a quick Google!
 
-2) That by specifying redshifts and a cosmology, our results are converted to physical unit_label of
-kiloparsecs (kpc).
+Up to now, the planes have also had just one lens galaxy or source galaxy at a time. In this example, the tracer will
+have multiple galaxies at each redshift, meaning that each plane has more than one galaxy. In terms of lensing
+calculations:
+
+- If two or more lens galaxies are at the same redshift in the image-plane, the convergences, potentials and
+deflection angles of their mass profiles are summed when performing lensing calculations.
+
+- If two or more source galaxies are at the same redshift in the source-plane, their light can simply be summed before
+ray tracing.
+
+The `Tracer` fully accounts for this.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -22,31 +34,34 @@ import autolens.plot as aplt
 from astropy import cosmology
 
 """
-To begin, lets setup the `Grid2D`'s we'll ray-trace using. Lets do something crazy, and use a higher resolution `Grid2D` 
-then before and set the sub `Grid2D` size to 4x4 per pixel!
+__Initial Setup__
 
-Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
+To begin, lets setup the grid we'll ray-trace using. But, lets do something crazy and use a higher resolution than 
+the previous tutorials!
 
 Lets also stop calling it the `image_plane_grid`, and just remember from now on our `grid` is in the image-plane.
 """
-grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.025, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(250, 250), pixel_scales=0.02)
 
 """
-Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
+The grid is now shape 250 x 250, which has more image-pixels than the 100 x 100 grid used previously.
 """
-print(grid.sub_shape_native)
-print(grid.sub_shape_slim)
+print(grid.shape_native)
+print(grid.shape_slim)
 
 """
-Next, lets setup a lens galaxy. In the previous tutorial, we set up each `Profile` one line at a time. This made code 
-long and cumbersome to read. This time we'll setup easy galaxy using one block of code. 
+__Concise Code__
+
+Next, lets setup a lens galaxy. Up to now we have we set up each profile one line at a time, making the code long and 
+cumbersome to read. 
+
+From now on, we'll set up each galaxy with a single block of code, making it more concise and readable.
  
-
 we'll also give the lens galaxy some attributes we didn`t in the last tutorial:
 
- 1) A `LightProfile`, meaning its light will appear in the image.
- 2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
- 3) A redshift, which the `Tracer` will use to convert arc second coordinates to kpc.
+ - A light profile representing a `bulge` of stars, meaning the lens galaxy's light will appear in the image for the
+ first time.
+ - An external shear, which accounts for the deflection of light due to line-of-sight structures.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -92,7 +107,7 @@ galaxy_plotter = aplt.GalaxyPlotter(
 galaxy_plotter.figures_2d(image=True)
 
 """
-And their deflection angles - note that the satellite doesn`t contribute as much to the deflections.
+And their deflection angles, noting that the satellite does not contribute as much to the deflections.
 """
 mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy Deflections (y)"))
 
@@ -120,9 +135,9 @@ galaxy_plotter.set_title("Lens Satellite Deflections (x)")
 galaxy_plotter.figures_2d(deflections_x=True)
 
 """
-Now, lets make two source galaxies at redshift 1.0. Lets not use the terms `light` and `mass` to setup the light and 
-`MassProfile`'s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a `bulge` 
-and `disk`).
+Now, lets make two source galaxies at redshift 1.0. Instead of using the name `light` for the light profiles, lets 
+instead use more descriptive names that indicate what morphological component of the galaxy the light profile 
+represents. In this case, we'll use the terms `bulge` and `disk`, the two main structures that a galaxy can be made of
 """
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
@@ -164,11 +179,14 @@ galaxy_plotter.set_title("Source Galaxy 1")
 galaxy_plotter.figures_2d(image=True)
 
 """
-Now lets pass our 4 galaxies to the ray_tracing module, which means the following will occur:
+__Multi Galaxy Ray Tracing__
 
- 1) Using the galaxy redshift`s, and image-plane and source-plane will be created with the appopriate galaxies.
+Now lets pass our 4 galaxies to a `Tracer`, which means the following will occur:
 
-Note that we've also supplied the `Tracer` below with a Planck15 cosmology.
+ - Using the galaxy redshift`s, and image-plane and source-plane will be created each with two galaxies galaxies.
+
+We've also pass the tracer below a Planck15 cosmology, where the cosomology of the Universe describes exactly how 
+ray-tracing is performed.
 """
 tracer = al.Tracer.from_galaxies(
     galaxies=[lens_galaxy, lens_satellite, source_galaxy_0, source_galaxy_1],
@@ -176,31 +194,35 @@ tracer = al.Tracer.from_galaxies(
 )
 
 """
-We can next plot the tracer`s `Profile` image, which is compute as follows:
+We can now plot the tracer`s image, which now there are two galaxies in each plane is computed as follows:
 
- 1) First, using the image-plane `Grid2D`, the images of the lens galaxy and its satellite are computed.
+ 1) First, using the image-plane grid, the images of the lens galaxy and its satellite are computed.
 
- 2) Using the `MassProfile`'s of the lens and satellite, their deflection angles are computed.
+ 2) Using the mass profiles of the lens and its satellite, their deflection angles are computed.
 
- 3) These deflection angles are summed, such that the deflection of light due to every `MassProfile` and both the lens 
- galaxy and its satellite is computed.
+ 3) These deflection angles are summed, such that the deflection of light due to the mass profiles of both galaxies in 
+ the image-plane is accounted for.
 
- 4) These deflection angles are used to trace every image-grid coordinate to a source-plane coordinate.
+ 4) These deflection angles are used to trace every image-grid coordinate to the source-plane.
 
- 5) The image of the source galaxies is computed by ray-tracing their light back to the image-plane.
+ 5) The image of the source galaxies is computed by summing both of their images and ray-tracing their light back to 
+ the image-plane.
+ 
+This process is pretty much the same as we have single in previous tutorials when there is one galaxy per plane. We
+are simply summing the images and deflection angles of the galaxies before using them to perform ray-tracing.
 """
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.set_title("Image")
 tracer_plotter.figures_2d(image=True)
 
 """
-As we did previously, we can plot the `Grid2D` of the source plane and inspect the source-plane grid.
+As we did previously, we can plot the source plane grid to see how each coordinate was traced. 
 """
 tracer_plotter.set_title("Source-plane Grid2D")
 tracer_plotter.figures_2d_of_planes(plane_grid=True, plane_index=1)
 
 """
-We can zoom in on the `centre` of the source-plane.
+We can zoom in on the source-plane to reveal the inner structure of the caustic.
 """
 mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.2, 0.2, -0.2, 0.2]))
 
@@ -209,8 +231,12 @@ tracer_plotter.set_title("Source-plane Grid2D")
 tracer_plotter.figures_2d_of_planes(plane_grid=True, plane_index=1)
 
 """
-Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our `Tracer` with 
-a cosmology, our unit can be converted to kiloparsecs! (This cell can take a bit of time to run)
+__Units__
+
+Lets plot the lensing quantities again. However, we'll now use the `Units` object of the **PyAutoLens** plotter module 
+to set `in_kpc=True` and therefore plot the y and x axes in kiloparsecs.
+
+This conversion is performed automatically, using the galaxy redshifts and cosmology.
 """
 mat_plot_2d = aplt.MatPlot2D(units=aplt.Units(in_kpc=True))
 
@@ -218,10 +244,12 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_pl
 tracer_plotter.subplot_tracer()
 
 """
-In the previous example, we saw that the `Tracer` had attributes we plotted (e.g. convergence, potential, etc.). Now 
-we've input an **AstroPy** cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
+If you're too familiar with Cosmology, it will be unclear how exactly we converted the distance units from 
+arcseconds to kiloparsecs. You'll need to read up on your Cosmology lecture to understand this properly.
 
-We can use the `cosmology_util` module in **PyAutoLens** to compute quantities associated with this cosmology.
+The `util.cosmology` method provides many methods for calculation different cosmological quantites, which are shown 
+below (if you're not too familiar with cosmology don't worry that you don't know what these mean, it isn't massively
+important for using **PyAutoLens**).
 """
 cosmology = tracer.cosmology
 
@@ -261,13 +289,15 @@ print(
 )
 
 """
-And with that, we've completed tutorial 6. Try the following:
+__Wrap Up__
 
- 1) By changing the lens and source galaxy redshifts, does the image of the `Tracer` change at all?
+Tutorial 6 completed! Try the following:
+
+ 1) If you change the lens and source galaxy redshifts, does the tracer's image change?
 
  2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your 
-    cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
+ cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
 
- 3) The `Tracer` has a small delay in being computed, whereas other tracers were almost instant. What do you think 
-    is the cause of this slow-down?
+ 3) The tracer has a small delay in being computed, whereas other tracers were almost instant. What do you think 
+ is the cause of this slow-down?
 """

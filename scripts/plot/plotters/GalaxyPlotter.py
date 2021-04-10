@@ -18,7 +18,7 @@ First, lets create a `Galaxy` with multiple `LightProfile`'s and a `MassProfile`
 """
 bulge = al.lp.EllSersic(
     centre=(0.0, -0.05),
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, phi=45.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.9, angle=45.0),
     intensity=4.0,
     effective_radius=0.6,
     sersic_index=3.0,
@@ -26,7 +26,7 @@ bulge = al.lp.EllSersic(
 
 disk = al.lp.EllExponential(
     centre=(0.0, 0.05),
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=30.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=30.0),
     intensity=2.0,
     effective_radius=1.6,
 )
@@ -34,7 +34,7 @@ disk = al.lp.EllExponential(
 mass = al.mp.EllIsothermal(
     centre=(0.0, 0.0),
     einstein_radius=0.8,
-    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, phi=45.0),
+    elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.7, angle=45.0),
 )
 
 galaxy = al.Galaxy(redshift=0.5, bulge=bulge, disk=disk, mass=mass)
@@ -75,10 +75,7 @@ the `Include2D` object.
 plotting its mask and border below).
 """
 mask = al.Mask2D.circular(
-    shape_native=grid.shape_native,
-    pixel_scales=grid.pixel_scales,
-    radius=2.0,
-    sub_size=grid.sub_size,
+    shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, radius=2.0
 )
 masked_grid = al.Grid2D.from_mask(mask=mask)
 

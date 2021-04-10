@@ -86,9 +86,10 @@ for dataset_name in dataset_names:
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
 
-    settings_imaging = al.SettingsImaging(grid_class=al.Grid2D, sub_size=2)
+    settings_imaging = al.SettingsImaging(grid_class=al.Grid2D, sub_size=1)
 
-    masked_imaging = imaging.apply_mask(mask=mask, settings=settings_imaging)
+    imaging = imaging.apply_mask(mask=mask)
+    imaging = imaging.apply_settings(settings=settings_imaging)
 
     """
     __Info__
@@ -130,6 +131,6 @@ for dataset_name in dataset_names:
         n_live_points=50,
     )
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging)
+    analysis = al.AnalysisImaging(dataset=imaging)
 
     search.fit(analysis=analysis, model=model, info=info, pickle_files=pickle_files)
