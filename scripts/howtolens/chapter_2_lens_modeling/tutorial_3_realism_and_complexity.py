@@ -93,7 +93,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_3_realism_and_complexity",
-    n_live_points=80,
+    nlive=80,
     number_of_cores=1,
 )
 
@@ -140,14 +140,14 @@ appears to give a high likelihood (compared to the models around it) but, as dis
 all of parameter space.
 
 Inferring such solutions is essentially a failure of our non-linear search and it is something we do not want to
-happen! Lets infer a local maxima, by reducing the number of live points, `n_live_points`, dynesty uses to map out 
+happen! Lets infer a local maxima, by reducing the number of live points, `nlive`, dynesty uses to map out 
 parameter space. We are going to use so few that the initial search over parameter space has an extremely low 
 probability of getting close the global maxima, meaning it converges on a local maxima. 
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_3_realism_and_complexity__local_maxima",
-    n_live_points=5,
+    nlive=5,
     number_of_cores=1,
 )
 

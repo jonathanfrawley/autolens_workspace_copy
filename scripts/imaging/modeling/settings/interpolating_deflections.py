@@ -100,7 +100,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "settings"),
     name="interpolating_deflections",
-    n_live_points=100,
+    nlive=100,
     walks=10,
 )
 

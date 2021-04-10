@@ -91,7 +91,7 @@ run it.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_1",
-    n_live_points=50,
+    nlive=50,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -167,7 +167,7 @@ that were passed.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_2_search_chaining_2",
-    n_live_points=50,
+    nlive=50,
 )
 
 print(

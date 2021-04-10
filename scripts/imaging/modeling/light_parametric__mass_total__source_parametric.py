@@ -99,7 +99,7 @@ __Search__
 The lens model is fitted to the data using a non-linear search. In this example, we use the nested sampling algorithm 
 Dynesty (https://dynesty.readthedocs.io/en/latest/). We make the following changes to the Dynesty __Settings__:
 
- - Increase the number of live points, `n_live_points`, from the default value of 50 to 100. 
+ - Increase the number of live points, `nlive`, from the default value of 50 to 100. 
  - Increase the number of random walks per live point, `walks` from the default value of 5 to 10. 
  
 These changes are motivated by the higher dimensionality non-linear parameter space that including the lens light 
@@ -116,7 +116,7 @@ The `name` and `path_prefix` below specify the path where results ae stored in t
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling", dataset_name),
     name="light[bulge]_mass[sie]_source[bulge]",
-    n_live_points=100,
+    nlive=100,
     walks=10,
 )
 

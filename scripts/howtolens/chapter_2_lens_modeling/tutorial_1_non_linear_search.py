@@ -182,14 +182,14 @@ sampling algorithm dynesty. We pass the `DynestyStatic` object the following:
  - A `name`, which gives the search a name and means the full output path is 
    `autolens_workspace/output/howtolens/chapter_2/tutorial_1_non_linear_search`. 
 
- - Input parameters like `n_live_points` and `walks` which control how it samples parameter space. These are discussed
+ - Input parameters like `nlive` and `walks` which control how it samples parameter space. These are discussed
  in more detail in a later tutorial.
 
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_1_non_linear_search",
-    n_live_points=40,
+    nlive=40,
     walks=5,
 )
 

@@ -81,7 +81,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]_light[parametric]", n_live_points=50
+    path_prefix=path_prefix, name="search[1]_light[parametric]", nlive=50
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -134,7 +134,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[2]_light[fixed]_mass[light_dark]_source[parametric]",
-    n_live_points=75,
+    nlive=75,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -185,7 +185,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[3]_light[parametric]_mass[light_dark]_source[parametric]",
-    n_live_points=75,
+    nlive=75,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)

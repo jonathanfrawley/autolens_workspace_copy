@@ -97,7 +97,7 @@ The `name` and `path_prefix` below specify the path where results ae stored in t
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling", dataset_name),
     name="mass[sie]_source[bulge]",
-    n_live_points=50,
+    nlive=50,
 )
 
 """

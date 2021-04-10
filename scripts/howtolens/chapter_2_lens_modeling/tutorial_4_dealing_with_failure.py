@@ -199,7 +199,7 @@ regions of parameter space, given our improved and more informed priors.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_custom_priors",
-    n_live_points=50,
+    nlive=50,
     number_of_cores=1,
 )
 
@@ -291,7 +291,7 @@ We now create this search and run it.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_reducing_complexity",
-    n_live_points=50,
+    nlive=50,
     number_of_cores=1,
 )
 
@@ -346,7 +346,7 @@ Every non-linear search has settings which govern how thoroughly it searches par
 points that was passed to Dynesty an example of such a setting. The more thoroughly the search looks, the more likely 
 it is that it`ll find the global maximum lens model. However,  the search will also take longer!
 
-Below, we create a more thorough dynesty search, that uses `n_live_points=200` and `walks=10`. What these settings
+Below, we create a more thorough dynesty search, that uses `nlive=200` and `walks=10`. What these settings
 are actually changing is discussed in the optional tutorial `howtolens/chapter_optional/tutorial_searches.ipynb`
 """
 lens = af.Model(
@@ -364,7 +364,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_look_harder",
-    n_live_points=200,
+    nlive=200,
     walks=10,
     number_of_cores=1,
 )

@@ -110,8 +110,8 @@ analysis = al.AnalysisImaging(dataset=imaging)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[1]_light[bulge]",
-    n_live_points=30,
-    evidence_tolerance=5.0,
+    nlive=30,
+    dlogz=5.0,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -177,8 +177,8 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[2]_mass[sie]_source[bulge]",
-    n_live_points=50,
-    evidence_tolerance=5.0,
+    nlive=50,
+    dlogz=5.0,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)
@@ -229,7 +229,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[3]_light[bulge]_mass[sie]_source[bulge]",
-    n_live_points=100,
+    nlive=100,
 )
 
 result_3 = search.fit(model=model, analysis=analysis)

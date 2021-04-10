@@ -74,7 +74,7 @@ def detection_single_plane(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", n_live_points=100
+        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", nlive=100
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -129,7 +129,7 @@ def detection_single_plane(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="subhalo[2]_mass[total]_source_subhalo[search_lens_plane]",
-        n_live_points=50,
+        nlive=50,
         walks=5,
         facc=0.2,
     )
@@ -189,7 +189,7 @@ def detection_single_plane(
     search = af.DynestyStatic(
         name="subhalo[3]_subhalo[single_plane_refine]",
         path_prefix=path_prefix,
-        n_live_points=100,
+        nlive=100,
     )
 
     result_3 = search.fit(model=model, analysis=analysis)
@@ -264,7 +264,7 @@ def detection_multi_plane(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", n_live_points=100
+        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", nlive=100
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -321,7 +321,7 @@ def detection_multi_plane(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="subhalo[2]_mass[total]_source_subhalo[multi_plane]",
-        n_live_points=50,
+        nlive=50,
         walks=5,
         facc=0.2,
     )
@@ -383,7 +383,7 @@ def detection_multi_plane(
     search = af.DynestyStatic(
         name="subhalo[3]_subhalo[multi_plane_refine]",
         path_prefix=path_prefix,
-        n_live_points=100,
+        nlive=100,
     )
 
     result_3 = search.fit(model=model, analysis=analysis)
@@ -552,7 +552,7 @@ def sensitivity_mapping_imaging(
     """
     We next specify the search used to perform each model fit by the sensitivity mapper.
     """
-    search = af.DynestyStatic(path_prefix=path_prefix, n_live_points=50)
+    search = af.DynestyStatic(path_prefix=path_prefix, nlive=50)
 
     """
     We can now combine all of the objects created above and perform sensitivity mapping. The inputs to the `Sensitivity`
@@ -764,7 +764,7 @@ def sensitivity_mapping_interferometer(
     """
     We next specify the search used to perform each model fit by the sensitivity mapper.
     """
-    search = af.DynestyStatic(path_prefix=path_prefix, n_live_points=50)
+    search = af.DynestyStatic(path_prefix=path_prefix, nlive=50)
 
     """
     We can now combine all of the objects created above and perform sensitivity mapping. The inputs to the `Sensitivity`

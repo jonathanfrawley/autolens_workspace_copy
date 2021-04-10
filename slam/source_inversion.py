@@ -75,7 +75,7 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[1]_mass[fixed]_source[inversion_magnification_initialization]",
-        n_live_points=30,
+        nlive=30,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -115,7 +115,7 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[2]_mass[total]_source[fixed]",
-        n_live_points=50,
+        nlive=50,
     )
 
     result_2 = search.fit(model=model, analysis=analysis)
@@ -154,8 +154,8 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[3]_mass[fixed]_source[inversion_initialization]",
-        n_live_points=30,
-        evidence_tolerance=setup_hyper.evidence_tolerance,
+        nlive=30,
+        dlogz=setup_hyper.dlogz,
         sample="rstagger",
     )
 
@@ -209,7 +209,7 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[4]_mass[total]_source[fixed]",
-        n_live_points=50,
+        nlive=50,
     )
 
     result_4 = search.fit(model=model, analysis=analysis)
@@ -311,7 +311,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[1]_light[fixed]_mass[fixed]_source[inversion_magnification_initialization]",
-        n_live_points=30,
+        nlive=30,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -357,7 +357,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[2]_light[fixed]_mass[total]_source[inversion_magnification]",
-        n_live_points=50,
+        nlive=50,
     )
 
     result_2 = search.fit(model=model, analysis=analysis)
@@ -402,8 +402,8 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[3]_light[fixed]_mass[fixed]_source[inversion_initialization]",
-        n_live_points=30,
-        evidence_tolerance=setup_hyper.evidence_tolerance,
+        nlive=30,
+        dlogz=setup_hyper.dlogz,
         sample="rstagger",
     )
 
@@ -463,7 +463,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_inversion[4]_light[fixed]_mass[total]_source[inversion]",
-        n_live_points=50,
+        nlive=50,
     )
 
     result_4 = search.fit(model=model, analysis=analysis)

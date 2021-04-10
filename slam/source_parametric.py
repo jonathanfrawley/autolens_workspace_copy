@@ -82,7 +82,7 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[1]_mass[total]_source[parametric]",
-        n_live_points=200,
+        nlive=200,
         walks=10,
     )
 
@@ -192,7 +192,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[1]_light[parametric]",
-        n_live_points=75,
+        nlive=75,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -236,7 +236,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[2]_light[fixed]_mass[total]_source[parametric]",
-        n_live_points=200,
+        nlive=200,
         walks=10,
     )
 
@@ -279,7 +279,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[3]_light[parametric]_mass[total]_source[parametric]",
-        n_live_points=100,
+        nlive=100,
     )
 
     result_3 = search.fit(model=model, analysis=analysis)

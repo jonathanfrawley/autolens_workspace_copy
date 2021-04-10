@@ -137,7 +137,7 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="mass_light_dark[1]_light[parametric]_mass[light_dark]_source",
-        n_live_points=100,
+        nlive=100,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)

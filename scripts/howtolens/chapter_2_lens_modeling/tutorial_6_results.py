@@ -47,7 +47,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_1_non_linear_search",
-    n_live_points=40,
+    nlive=40,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)

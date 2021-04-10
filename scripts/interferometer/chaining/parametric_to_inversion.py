@@ -94,7 +94,7 @@ provides a reasonably accurate lens model.
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_inversion"),
     name="search[1]__parametric",
-    n_live_points=50,
+    nlive=50,
 )
 
 analysis = al.AnalysisInterferometer(dataset=interferometer)
@@ -159,7 +159,7 @@ We now create the non-linear search and perform the model-fit using this model.
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_inversion"),
     name="search[2]__inversion",
-    n_live_points=40,
+    nlive=40,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)

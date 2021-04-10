@@ -128,7 +128,7 @@ You may wish to inspect the results of the search 1 model-fit to ensure a fast n
 provides a reasonably accurate lens model.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__hyper", n_live_points=50
+    path_prefix=path_prefix, name="search[1]__hyper", nlive=50
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -173,7 +173,7 @@ regions of the source. This indicates that a much better result has been achieve
 in chapter 5 of the **HowToLens** lectures.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__hyper", n_live_points=30
+    path_prefix=path_prefix, name="search[2]__hyper", nlive=30
 )
 
 analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_1)

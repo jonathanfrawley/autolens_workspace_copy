@@ -61,19 +61,19 @@ We'll therefore discuss in a bit more detail how Dynesty works, but still keep t
 and avoid technical terms and jargon. For a complete description of Dynesty you should check out the Dynesty 
 publication `https://arxiv.org/abs/1904.02180`.
 
-n_live_points:
+nlive:
 
 Dynesty is a `nested sampling` algorithm. As we described in tutorial 1, it throws down a set of `live points` in 
 parameter space, where each live point corresponds to a lens model with a given set of parameters. These points are
 initially distributed according to our priors, hence why tuning our priors allows us to sample parameter space faster.
  
-The number of live points is set by the parameter `n_live_points`. More points provide a more thorough sampling of 
+The number of live points is set by the parameter `nlive`. More points provide a more thorough sampling of 
 parameter space, increasing the probability that we locate the global maxima solution. Therefore, if you think your 
-model-fit has gone to a local maxima, you should try increasing `n_live_points`. The downside of this is Dynesty will 
+model-fit has gone to a local maxima, you should try increasing `nlive`. The downside of this is Dynesty will 
 take longer to sample parameter space and converge on a solution. Ideally, we will use as few live points as possible 
 to locate the global maxima as quickly as possible.
 
-evidence_tolerance:
+dlogz:
 
 A nested sampling algorithm estimates the *Bayesian Evidence* of the model-fit, which is quantity the non-linear 
 search algorithms we introduce later do not. The Bayesian evidence quantifies how well the lens model as a whole fits
@@ -83,14 +83,14 @@ their overall fit to the data compared to a simpler model. By computing the comp
 different models one can objectively choose the lens model that best fits the data.
 
 A nested sampling algorithm stops sampling when it estimates that continuing sampling will not increase the Bayesian 
-evidence (called the `log_evidence`) by more than the `evidence_tolerance`. As Dynesty progresses and converges on the
-solution, the rate of increase of the estimated Bayesian evidence slows down. Therefore, higher `evidence_tolerance`s 
+evidence (called the `log_evidence`) by more than the `dlogz`. As Dynesty progresses and converges on the
+solution, the rate of increase of the estimated Bayesian evidence slows down. Therefore, higher `dlogz`s 
 mean Dynesty terminate sooner.
     
-A high `evidence_tolerance` will make the errors estimated on every parameter unreliable and its value must be kept 
+A high `dlogz` will make the errors estimated on every parameter unreliable and its value must be kept 
 below 0.8 for reliable error estimates. However, when chaining searches, we typically *do not care* about the errors 
 in the first search, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
-faster (we'll estimate reliable errors in the second search when the `evidence_tolerance is 0.8 or less). 
+faster (we'll estimate reliable errors in the second search when the `dlogz is 0.8 or less). 
 
 walks:
 
@@ -135,8 +135,8 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_slow",
-    n_live_points=150,
-    evidence_tolerance=0.8,
+    nlive=150,
+    dlogz=0.8,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -167,7 +167,7 @@ Now lets run the search with fast setting, so we can compare the total number of
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_fast",
-    n_live_points=30,
+    nlive=30,
 )
 
 print(

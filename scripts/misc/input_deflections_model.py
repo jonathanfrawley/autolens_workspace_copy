@@ -134,7 +134,7 @@ operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 search = af.DynestyStatic(
     path_prefix=path.join("misc", dataset_name),
     name="search__input_deflections",
-    n_live_points=100,
+    nlive=100,
 )
 
 """

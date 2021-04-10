@@ -102,7 +102,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "settings"),
     name="signal_to_noise_limit",
-    n_live_points=100,
+    nlive=100,
     walks=10,
 )
 

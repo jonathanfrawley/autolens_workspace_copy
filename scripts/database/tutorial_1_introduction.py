@@ -128,7 +128,7 @@ for dataset_name in dataset_names:
     search = af.DynestyStatic(
         path_prefix=path.join("database", dataset_name),
         name="database_example",
-        n_live_points=50,
+        nlive=50,
     )
 
     analysis = al.AnalysisImaging(dataset=imaging)

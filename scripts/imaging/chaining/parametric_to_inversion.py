@@ -100,7 +100,7 @@ You may wish to inspect the results of the search 1 model-fit to ensure a fast n
 provides a reasonably accurate lens model.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__parametric", n_live_points=50
+    path_prefix=path_prefix, name="search[1]__parametric", nlive=50
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -166,7 +166,7 @@ __Search + Model-Fit__
 We now create the non-linear search and perform the model-fit using this model.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__inversion", n_live_points=40
+    path_prefix=path_prefix, name="search[2]__inversion", nlive=40
 )
 
 result_2 = search.fit(model=model, analysis=analysis)

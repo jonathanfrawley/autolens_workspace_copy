@@ -125,7 +125,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="hyper[1]_light[parametric]", n_live_points=50
+    path_prefix=path_prefix, name="hyper[1]_light[parametric]", nlive=50
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -147,7 +147,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[2]_light[fixed]_mass[sie]_source[parametric]",
-    n_live_points=75,
+    nlive=75,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)
@@ -173,7 +173,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[3]_light[parametric]_mass[total]_source[parametric]",
-    n_live_points=100,
+    nlive=100,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -260,7 +260,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[4]_light[fixed]_mass[fixed]_source[inversion_initialization]",
-    n_live_points=20,
+    nlive=20,
 )
 
 result_4 = search.fit(model=model, analysis=analysis)
@@ -291,7 +291,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[5]_light[fixed]_mass[total]_source[inversion_magnification]",
-    n_live_points=50,
+    nlive=50,
 )
 
 result_5 = search.fit(model=model, analysis=analysis)
@@ -319,8 +319,8 @@ analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[6]_light[fixed]_mass[fixed]_source[inversion_initialization]",
-    n_live_points=30,
-    evidence_tolerance=setup_hyper.evidence_tolerance,
+    nlive=30,
+    dlogz=setup_hyper.dlogz,
     sample="rstagger",
 )
 
@@ -379,7 +379,7 @@ analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5, preloads=p
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[7]_light[fixed]_mass[total]_source[inversion]",
-    n_live_points=50,
+    nlive=50,
 )
 
 result_7 = search.fit(model=model, analysis=analysis)
@@ -448,7 +448,7 @@ analysis = al.AnalysisImaging(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[8]_light[parametric]_mass[total]_source[inversion]",
-    n_live_points=50,
+    nlive=50,
 )
 
 result_8 = search.fit(model=model, analysis=analysis)
