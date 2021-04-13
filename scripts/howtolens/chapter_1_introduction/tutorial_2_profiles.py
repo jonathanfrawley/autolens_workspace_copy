@@ -54,10 +54,10 @@ print(sersic_light_profile)
 __Images__
 
 We next pass the `Grid2D` to the `sersic_light_profile`, to compute the intensity of the Sersic at every (y,x) 
-coordinate on our two dimension grid. This uses the `image_from_grid` method, and you'll see throughout this tutorial 
+coordinate on our two dimension grid. This uses the `image_2d_from_grid` method, and you'll see throughout this tutorial 
 that **PyAutoLens** has numerous `_from_grid` methods for computing quantities from a grid.
 """
-light_image = sersic_light_profile.image_from_grid(grid=grid)
+light_image = sersic_light_profile.image_2d_from_grid(grid=grid)
 
 """
 Much like the `Grid2D` objects discussed in the previous tutorial, this returns an `Array2D` object:
@@ -122,7 +122,7 @@ uses the `Grid2D``s object meaning that we can access the deflection angles via 
 (If you are still unclear what exactly a deflection angle means or how it will help us with gravitational lensing,
 things should become a lot clearer in tutorial 4 of this chapter. For now, just look at the pretty pictures they make!).
 """
-mass_profile_deflections = sis_mass_profile.deflections_from_grid(grid=grid)
+mass_profile_deflections = sis_mass_profile.deflections_2d_from_grid(grid=grid)
 
 print("deflection-angles of `Grid2D` pixel 0:")
 print(mass_profile_deflections.native[0, 0])
@@ -153,11 +153,11 @@ images of below:
 Extracting `Array2D`'s of these quantities from **PyAutoLens** is exactly the same as for the image and deflection 
 angles above.
 """
-mass_profile_convergence = sis_mass_profile.convergence_from_grid(grid=grid)
+mass_profile_convergence = sis_mass_profile.convergence_2d_from_grid(grid=grid)
 
-mass_profile_potential = sis_mass_profile.potential_from_grid(grid=grid)
+mass_profile_potential = sis_mass_profile.potential_2d_from_grid(grid=grid)
 
-mass_profile_magnification = sis_mass_profile.magnification_from_grid(grid=grid)
+mass_profile_magnification = sis_mass_profile.magnification_2d_from_grid(grid=grid)
 
 """
 Plotting them is equally straight forward.

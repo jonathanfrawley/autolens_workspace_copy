@@ -92,7 +92,7 @@ tracer_plotter.figures_2d(image=True)
 # multiple_images = position_solver.solve(lensing_obj=tracer, source_plane_coordinate=(0.1, 0.1))
 #
 # visuals_2d = aplt.Visuals2D(multiple_images=multiple_images)
-# image = tracer.image_from_grid(grid=grid)
+# image = tracer.image_2d_from_grid(grid=grid)
 #
 # array_plotter = aplt.Array2DPlotter(
 #     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d

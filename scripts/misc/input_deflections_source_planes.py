@@ -104,8 +104,8 @@ grid = al.Grid2D.from_mask(mask=mask)
 """
 The deflections will be computed only in the regions included on the `Grid2D`, e.g. the 3.0" mask we defined above.
 """
-deflections_y = input_deflections.deflections_from_grid(grid=grid)
-deflections_x = input_deflections.deflections_from_grid(grid=grid)
+deflections_y = input_deflections.deflections_2d_from_grid(grid=grid)
+deflections_x = input_deflections.deflections_2d_from_grid(grid=grid)
 grid_plotter = aplt.Grid2DPlotter(grid=grid)
 grid_plotter.figure_2d()
 aplt.Array2DPlotter(

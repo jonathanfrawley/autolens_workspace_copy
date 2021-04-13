@@ -66,7 +66,7 @@ image_plane = al.Plane(galaxies=[lens_galaxy])
 """
 Just like profiles and galaxies, a `Plane` has `_from_grid` method which we can use to compute its quantities.
 """
-deflections = image_plane.deflections_from_grid(grid=image_plane_grid)
+deflections = image_plane.deflections_2d_from_grid(grid=image_plane_grid)
 
 print("deflection-angles of `Plane`'s `Grid2D` pixel 0:")
 print(deflections.native[0, 0, 0])

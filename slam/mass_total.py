@@ -81,9 +81,7 @@ def no_lens_light(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix,
-        name="mass_total[1]_mass[total]_source",
-        nlive=100,
+        path_prefix=path_prefix, name="mass_total[1]_mass[total]_source", nlive=100
     )
 
     result_1 = search.fit(model=model, analysis=analysis)

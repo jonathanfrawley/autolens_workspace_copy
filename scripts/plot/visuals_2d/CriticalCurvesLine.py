@@ -85,7 +85,7 @@ To plot critical_curves manually, we can pass them into a` Visuals2D` object. Th
 figures where they are not an internal property, like an `Array2D`.
 """
 visuals_2d = aplt.Visuals2D(critical_curves=tracer.critical_curves_from_grid(grid=grid))
-image = tracer.image_from_grid(grid=grid)
+image = tracer.image_2d_from_grid(grid=grid)
 
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d

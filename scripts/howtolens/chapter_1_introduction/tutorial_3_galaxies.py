@@ -43,10 +43,10 @@ galaxy_with_light_profile = al.Galaxy(redshift=0.5, light=sersic_light_profile)
 print(galaxy_with_light_profile)
 
 """
-We have seen that we can pass a 2D grid to a light profile to compute its image via its `image_from_grid` method. We 
+We have seen that we can pass a 2D grid to a light profile to compute its image via its `image_2d_from_grid` method. We 
 can do the exact same with a galaxy:
 """
-galaxy_image = galaxy_with_light_profile.image_from_grid(grid=grid)
+galaxy_image = galaxy_with_light_profile.image_2d_from_grid(grid=grid)
 
 print("intensity of `Grid2D` pixel 0:")
 print(galaxy_image.native[0, 0])

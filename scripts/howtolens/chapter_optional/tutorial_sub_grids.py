@@ -121,7 +121,7 @@ The values computed when we call a `_from_grid` method (e.g. the image intensiti
 The `Array2D` containing the values therefore has the same `sub_shape_native` and `sub_shape_slim` dimensions as the 
 sub-grid, which in this case is a 200 x 200 grid.
 
-The example below shows this for the `image_from_grid` of a light profile.
+The example below shows this for the `image_2d_from_grid` of a light profile.
 """
 sersic_light_profile = al.lp.EllSersic(
     centre=(0.0, 0.0),
@@ -131,7 +131,7 @@ sersic_light_profile = al.lp.EllSersic(
     sersic_index=2.5,
 )
 
-light_image = sersic_light_profile.image_from_grid(grid=grid)
+light_image = sersic_light_profile.image_2d_from_grid(grid=grid)
 
 print(light_image.sub_shape_native)
 print(light_image.sub_shape_slim)

@@ -51,7 +51,7 @@ sersic_light_profile = al.lp.EllSersic(
 By passing this profile a `Grid2D`, we can evaluate the light at every (y,x) coordinate on the `Grid2D` and create an 
 image of the `LightProfile`.
 """
-image = sersic_light_profile.image_from_grid(grid=grid)
+image = sersic_light_profile.image_2d_from_grid(grid=grid)
 
 """
 The PyAutoLens plot module provides methods for plotting objects and their properties, like the `LightProfile`'s image.
@@ -70,7 +70,7 @@ Below we create an `EllIsothermal` `MassProfile` and compute its deflection angl
 isothermal_mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.0), einstein_radius=1.6
 )
-deflections = isothermal_mass_profile.deflections_from_grid(grid=grid)
+deflections = isothermal_mass_profile.deflections_2d_from_grid(grid=grid)
 
 """
 Lets plot the `MassProfile`'s deflection angle map.
@@ -117,7 +117,7 @@ When calculating this image, the `Tracer` performs all ray-tracing for the stron
 lens galaxy's total mass distribution to deflect the light-rays that are traced to the source galaxy. As a result, 
 the source's appears as a multiply imaged and strongly lensed Einstein ring.
 """
-image = tracer.image_from_grid(grid=grid)
+image = tracer.image_2d_from_grid(grid=grid)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)

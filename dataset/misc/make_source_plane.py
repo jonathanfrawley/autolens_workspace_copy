@@ -41,7 +41,7 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-deflections = lens_galaxy.deflections_from_grid(grid=grid)
+deflections = lens_galaxy.deflections_2d_from_grid(grid=grid)
 deflections_y = al.Array2D.manual_mask(array=deflections.in_1d[:, 0], mask=grid.mask)
 deflections_x = al.Array2D.manual_mask(array=deflections.in_1d[:, 1], mask=grid.mask)
 

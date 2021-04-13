@@ -190,9 +190,7 @@ def with_lens_light(
     model = af.Collection(galaxies=af.Collection(lens=lens))
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix,
-        name="source_parametric[1]_light[parametric]",
-        nlive=75,
+        path_prefix=path_prefix, name="source_parametric[1]_light[parametric]", nlive=75
     )
 
     result_1 = search.fit(model=model, analysis=analysis)

@@ -108,10 +108,7 @@ model = af.Collection(
 analysis = al.AnalysisImaging(dataset=imaging)
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix,
-    name="search[1]_light[bulge]",
-    nlive=30,
-    dlogz=5.0,
+    path_prefix=path_prefix, name="search[1]_light[bulge]", nlive=30, dlogz=5.0
 )
 
 result_1 = search.fit(model=model, analysis=analysis)

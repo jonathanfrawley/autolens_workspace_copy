@@ -100,9 +100,7 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__sie", nlive=50
-)
+search = af.DynestyStatic(path_prefix=path_prefix, name="search[1]__sie", nlive=50)
 
 analysis = al.AnalysisImaging(dataset=imaging)
 

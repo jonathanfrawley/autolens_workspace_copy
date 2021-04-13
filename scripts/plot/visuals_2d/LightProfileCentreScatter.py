@@ -106,7 +106,7 @@ light_profile_centres = tracer.extract_attribute(
 )
 
 visuals_2d = aplt.Visuals2D(light_profile_centres=light_profile_centres)
-image = tracer.image_from_grid(grid=grid)
+image = tracer.image_2d_from_grid(grid=grid)
 
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d

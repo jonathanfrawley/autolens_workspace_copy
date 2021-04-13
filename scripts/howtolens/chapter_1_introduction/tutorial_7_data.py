@@ -74,8 +74,8 @@ The simulation does not use tracer's image plotted above. Instead, we use a slig
 with zeros around its edge, based on the shape of the PSF that we will convolve the image with. This ensures 
 edge-effects do not degrade our simulation`s PSF convolution.
 """
-normal_image = tracer.image_from_grid(grid=grid)
-padded_image = tracer.padded_image_from_grid_and_psf_shape(
+normal_image = tracer.image_2d_from_grid(grid=grid)
+padded_image = tracer.padded_image_2d_from_grid_and_psf_shape(
     grid=grid, psf_shape_2d=psf.shape_native
 )
 

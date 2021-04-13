@@ -86,7 +86,7 @@ To plot caustics manually, we can pass them into a` Visuals2D` object. This is u
 figures where they are not an internal property, like an `Array2D`, as well as plotting them on image-plane images.
 """
 visuals_2d = aplt.Visuals2D(caustics=tracer.caustics_from_grid(grid=grid))
-image = tracer.image_from_grid(grid=grid)
+image = tracer.image_2d_from_grid(grid=grid)
 
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d

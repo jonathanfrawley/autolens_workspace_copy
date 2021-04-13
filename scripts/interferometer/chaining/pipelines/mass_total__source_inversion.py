@@ -86,9 +86,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix,
-    name="search[1]_mass[sie]_source[parametric]",
-    nlive=50,
+    path_prefix=path_prefix, name="search[1]_mass[sie]_source[parametric]", nlive=50
 )
 
 analysis = al.AnalysisInterferometer(dataset=interferometer)
@@ -174,9 +172,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix,
-    name="search[3]_mass[sie]_source[inversion]",
-    nlive=50,
+    path_prefix=path_prefix, name="search[3]_mass[sie]_source[inversion]", nlive=50
 )
 
 """
@@ -237,9 +233,7 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix,
-    name="search[4]_mass[total]_source[inversion]",
-    nlive=100,
+    path_prefix=path_prefix, name="search[4]_mass[total]_source[inversion]", nlive=100
 )
 
 analysis = al.AnalysisInterferometer(

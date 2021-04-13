@@ -127,9 +127,7 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__hyper", nlive=50
-)
+search = af.DynestyStatic(path_prefix=path_prefix, name="search[1]__hyper", nlive=50)
 
 analysis = al.AnalysisImaging(dataset=imaging)
 
@@ -172,9 +170,7 @@ higher likelihood than search 1 and how the source reconstruction has congregate
 regions of the source. This indicates that a much better result has been achieved, the reasons for which are discussed
 in chapter 5 of the **HowToLens** lectures.
 """
-search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__hyper", nlive=30
-)
+search = af.DynestyStatic(path_prefix=path_prefix, name="search[2]__hyper", nlive=30)
 
 analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_1)
 

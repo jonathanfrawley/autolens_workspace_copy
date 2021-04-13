@@ -30,7 +30,7 @@ We can easily ray-trace grids using a `MassProfile` and plot them with a `Grid2D
 mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.2), einstein_radius=1.0
 )
-deflections = mass_profile.deflections_from_grid(grid=grid)
+deflections = mass_profile.deflections_2d_from_grid(grid=grid)
 
 lensed_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
 

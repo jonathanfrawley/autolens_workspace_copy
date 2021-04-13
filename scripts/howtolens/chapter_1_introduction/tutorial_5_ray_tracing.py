@@ -87,7 +87,7 @@ calculations one-by-one to do this. The function below does the following:
  2) These deflection angles are used to trace every image-plane coordinate to the source-plane.
  3) The light of each traced source-plane coordinate is evaluated using the source plane galaxy's light profiles.
 """
-traced_image = tracer.image_from_grid(grid=image_plane_grid)
+traced_image = tracer.image_2d_from_grid(grid=image_plane_grid)
 print("traced image pixel 1")
 print(traced_image.native[0, 0])
 print("traced image pixel 2")
@@ -144,7 +144,7 @@ tracer_plotter.subplot_tracer()
 """
 Just like for a profile, galaxy or plane, these quantities attributes can be computed via a `_from_grid` method.
 """
-convergence = tracer.convergence_from_grid(grid=image_plane_grid)
+convergence = tracer.convergence_2d_from_grid(grid=image_plane_grid)
 
 print("Tracer convergence at coordinate 1:")
 print(convergence.native[0, 0])
@@ -157,7 +157,7 @@ print(convergence.native[1, 0])
 Of course, these convergences are identical to the image-plane convergences, as it`s only the lens galaxy that 
 contributes to the overall mass of the ray-tracing system.
 """
-image_plane_convergence = tracer.image_plane.convergence_from_grid(
+image_plane_convergence = tracer.image_plane.convergence_2d_from_grid(
     grid=image_plane_grid
 )
 
@@ -173,11 +173,11 @@ I've left the rest below commented to avoid too many print statements, but if yo
 and uncomment the lines below!
 """
 # print("Potential:")
-# print(tracer.potential_from_grid(grid=image_plane_grid))
-# print(tracer.image_plane.potential_from_grid(grid=image_plane_grid))
+# print(tracer.potential_2d_from_grid(grid=image_plane_grid))
+# print(tracer.image_plane.potential_2d_from_grid(grid=image_plane_grid))
 # print("Deflections:")
-# print(tracer.deflections_from_grid(grid=image_plane_grid))
-# print(tracer.image_plane.deflections_from_grid(grid=image_plane_grid))
+# print(tracer.deflections_2d_from_grid(grid=image_plane_grid))
+# print(tracer.image_plane.deflections_2d_from_grid(grid=image_plane_grid))
 
 """
 The `TracerPlotter` can also plot the above attributes as individual figures:

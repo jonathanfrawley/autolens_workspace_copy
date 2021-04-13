@@ -92,7 +92,7 @@ mass_profile_centres = tracer.extract_attribute(
     cls=al.mp.MassProfile, attr_name="centre"
 )
 visuals_2d = aplt.Visuals2D(mass_profile_centres=mass_profile_centres)
-image = tracer.image_from_grid(grid=grid)
+image = tracer.image_2d_from_grid(grid=grid)
 
 array_plotter = aplt.Array2DPlotter(
     array=image, mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d

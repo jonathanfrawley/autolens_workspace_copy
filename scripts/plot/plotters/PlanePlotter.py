@@ -21,7 +21,7 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 mass_profile = al.mp.EllIsothermal(
     centre=(0.0, 0.0), elliptical_comps=(0.1, 0.2), einstein_radius=1.0
 )
-deflections = mass_profile.deflections_from_grid(grid=grid)
+deflections = mass_profile.deflections_2d_from_grid(grid=grid)
 lens_galaxy = al.Galaxy(redshift=0.5, mass=mass_profile)
 
 lensed_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)

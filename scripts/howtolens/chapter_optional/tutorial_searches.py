@@ -165,9 +165,7 @@ print(result_slow.samples.total_samples)
 Now lets run the search with fast setting, so we can compare the total number of iterations required.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("howtolens", "chapter_2"),
-    name="tutorial_6_fast",
-    nlive=30,
+    path_prefix=path.join("howtolens", "chapter_2"), name="tutorial_6_fast", nlive=30
 )
 
 print(
