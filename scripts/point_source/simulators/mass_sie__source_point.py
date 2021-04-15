@@ -111,7 +111,7 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals
 tracer_plotter.figures_2d(image=True)
 
 mat_plot_2d = aplt.MatPlot2D(
-    output=aplt.Output(path=dataset_path, filename="image", format="fits")
+    output=aplt.Output(path=dataset_path, filename="image_2d", format="fits")
 )
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
