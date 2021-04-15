@@ -11,7 +11,7 @@ PyAutoLens Workspace
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
-`Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/b5e8bde03271d9d2737e88710a81eddf1ee10a1c?filepath=introduction.ipynb>`_ |
+`Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/40999b690565e69c621476003e2685f5caded303?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
 Welcome to the **PyAutoLens** Workspace. You can get started right away by going to the `autolens workspace
