@@ -75,6 +75,12 @@ lens_galaxy_model = af.Model(
 source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
 """
+We combine the lens and source model galaxies above into a `Collection`, which is the model we will fit. Note how
+we could easily extend this object to compose highly complex models containing many galaxies.
+"""
+model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+
+"""
 We now choose the non-linear search, which is the fitting method used to determine the set of `LightProfile`
 and `MassProfile` parameters that best-fit our data.
 
@@ -84,21 +90,32 @@ very effective at lens modeling.
 search = af.DynestyStatic(name="overview_modeling")
 
 """
-To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the search by passing it the dataset and mask.
-
-(Lens modeling can often take hours, or more, to be performed. For this example, we have preloaded the results of the
-lens modeling process so that the code above runs instantly.)
+We next create an `AnalysisImaging` object, which contains the `log likelihood function` that the non-linear search 
+calls to fit the lens model to the data.
 """
-search = al.PhaseImaging(
-    search=search,
-    galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model),
-)
-
-result = search.run(dataset=imaging, mask=mask)
+analysis = al.AnalysisImaging(dataset=imaging)
 
 """
-The `PhaseImaging` object above returns a `Result` object, which contains the maximum log likelihood `Tracer`
-and `FitImaging` objects and which can easily be plotted.
+To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
+dynesty samples, model parameters, visualization) to hard-disk.
+
+Once running you should checkout the `autolens_workspace/output` folder, which is where the results of the search are 
+written to hard-disk (in the `overview_modeling` folder) on-the-fly. This includes lens model parameter estimates with 
+errors non-linear samples and the visualization of the best-fit lens model inferred by the search so far. 
+"""
+result = search.fit(model=model, analysis=analysis)
+
+"""
+Whilst navigating the output folder, you may of noted the results were contained in a folder that appears as a random
+collection of charachters. 
+
+This is the model-fit's unique identifier, which is generated based on the model, search and dataset used by the fit. 
+Fitting an identical model, search and dataset will generate the same identifier, meaning that rerunning the script 
+will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset, a new 
+unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
+
+The fit above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer`` and ``FitImaging``
+objects and which can easily be plotted.
 """
 tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer, grid=imaging.grid

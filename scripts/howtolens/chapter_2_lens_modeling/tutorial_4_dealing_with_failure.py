@@ -347,7 +347,10 @@ points that was passed to Dynesty an example of such a setting. The more thoroug
 it is that it`ll find the global maximum lens model. However,  the search will also take longer!
 
 Below, we create a more thorough dynesty search, that uses `nlive=200` and `walks=10`. What these settings
-are actually changing is discussed in the optional tutorial `howtolens/chapter_optional/tutorial_searches.ipynb`
+are actually changing is discussed in the optional tutorial `howtolens/chapter_optional/tutorial_searches.ipynb`.
+
+Due to the long run times of this search, we comment it output below so it does not run. Feel free to undo these
+comments so the script runs faster.
 """
 lens = af.Model(
     al.Galaxy,
@@ -375,14 +378,14 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-result_light_trace_mass = search.fit(model=model, analysis=analysis)
+# result_look_harder = search.fit(model=model, analysis=analysis)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
-fit_imaging_plotter = aplt.FitImagingPlotter(
-    fit=result_light_trace_mass.max_log_likelihood_fit
-)
-fit_imaging_plotter.subplot_fit_imaging()
+# fit_imaging_plotter = aplt.FitImagingPlotter(
+#     fit=result_look_harder.max_log_likelihood_fit
+# )
+# fit_imaging_plotter.subplot_fit_imaging()
 
 """
 lets list the advantages and disadvantages of simply adjusting the non-linear search:

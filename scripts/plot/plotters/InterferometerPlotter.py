@@ -20,10 +20,15 @@ First, lets load example interferometer of of a strong lens as an `Interferomete
 dataset_name = "mass_sie__source_sersic"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
 
+real_space_mask = al.Mask2D.circular(
+    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+)
+
 interferometer = al.Interferometer.from_fits(
     visibilities_path=path.join(dataset_path, "visibilities.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    real_space_mask=real_space_mask,
 )
 
 """
@@ -38,7 +43,7 @@ interferometer_plotter.figures_2d(
     v_wavelengths=True,
     uv_wavelengths=True,
     amplitudes_vs_uv_distances=True,
-    searches_vs_uv_distances=True,
+    phases_vs_uv_distances=True,
 )
 
 """

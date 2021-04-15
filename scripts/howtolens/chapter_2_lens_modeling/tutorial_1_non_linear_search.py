@@ -249,7 +249,7 @@ result = search.fit(model=model, analysis=analysis)
 print("Dynesty has finished run - you may now continue the notebook.")
 
 """
-__Outputs__
+__Output Folder__
 
 Now this is running you should checkout the `autolens_workspace/output` folder.
 
@@ -257,9 +257,24 @@ This is where the results of the search are written to your hard-disk (in the `t
 When its completed, images, results and information about the fit appear in this folder, meaning that you don't need 
 to keep running Python code to see the result.
 
-In fact, even when the search is running, information about the highest likelihood model inferred by the search so-far 
-is output to this folder on-the-fly. If you navigate to the `output/howtolens` folder, even before the search has 
-finished, you will see:
+__Unique Identifier__
+
+In the output folder, you will note that results are in a folder which is a collection of random characters. This acts 
+as a `unique_identifier` of the model-fit, where this identifier is generated based on the model, search and dataset 
+that are used in the fit.
+ 
+An identical combination of model, search and dataset generates the same identifier, meaning that rerunning the
+script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
+a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder. 
+
+__On The Fly Outputs__
+
+Even when the search is running, information about the highest likelihood model inferred by the search so-far 
+is output to this folder on-the-fly. If you navigate to the folder: 
+
+ `output/howtolens/chapter_1/tutorials_1_non_linear_search/unique_identifier` 
+ 
+Even before the search has finished, you will see:
 
  1) The `images` folder, where images of the highest likelihood lens model are output on-the-fly. This includes the
  `FitImaging` subplot we plotted in the previous chapter, which therefore gives a real sense of 'how good' the model

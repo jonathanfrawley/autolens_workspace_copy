@@ -96,9 +96,18 @@ The folder `autolens_workspace/notebooks/imaging/modeling/customize/non_linear_s
 non-linear searches **PyAutoLens** supports. If you are unclear of what a non-linear search is, checkout chapter 2 of 
 the **HowToLens** lectures.
 
-The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
+The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
 
- `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]`.
+ `/autolens_workspace/output/imaging/mass_sie__source_sersic/mass[sie]_source[bulge]/unique_identifier`.
+
+__Unique Identifier__
+
+In the path above, the `unique_identifier` appears as a collection of characters, where this identifier is generated 
+based on the model, search and dataset that are used in the fit.
+ 
+An identical combination of model, search and dataset generates the same identifier, meaning that rerunning the
+script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
+a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", dataset_name),
@@ -120,8 +129,8 @@ __Model-Fit__
 We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
 search to find which models fit the data with the highest likelihood.
 
-Checkout the folder `autolens_workspace/output/interferometer/mass_sie__source_sersic/mass[sie]_source[bulge]` for 
-live outputs of the results of the fit, including on-the-fly visualization of the best fit model!
+Checkout the output folder for live outputs of the results of the fit, including on-the-fly visualization of the best 
+fit model!
 """
 result = search.fit(model=model, analysis=analysis)
 
