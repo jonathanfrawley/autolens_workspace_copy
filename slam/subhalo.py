@@ -3,7 +3,7 @@ import autolens as al
 from autofit.non_linear.grid import sensitivity as s
 from . import slam_util
 
-from typing import Union, Tuple, ClassVar
+from typing import Union, Tuple, ClassVar, Optional
 import numpy as np
 
 
@@ -16,6 +16,8 @@ def detection_single_plane(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SLaM SUBHALO PIPELINE for fitting imaging data with or without a lens light component, where it is assumed
@@ -41,6 +43,9 @@ def detection_single_plane(
     number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -74,7 +79,11 @@ def detection_single_plane(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", nlive=100
+        path_prefix=path_prefix,
+        name="subhalo[1]_mass[total_refine]",
+        unique_tag=unique_tag,
+        session=session,
+        nlive=100,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -129,6 +138,8 @@ def detection_single_plane(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="subhalo[2]_mass[total]_source_subhalo[search_lens_plane]",
+        unique_tag=unique_tag,
+        session=session,
         nlive=50,
         walks=5,
         facc=0.2,
@@ -188,6 +199,8 @@ def detection_single_plane(
 
     search = af.DynestyStatic(
         name="subhalo[3]_subhalo[single_plane_refine]",
+        unique_tag=unique_tag,
+        session=session,
         path_prefix=path_prefix,
         nlive=100,
     )
@@ -206,6 +219,8 @@ def detection_multi_plane(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SLaM SUBHALO PIPELINE for fitting imaging data with or without a lens light component, where the subhalo is a
@@ -231,6 +246,9 @@ def detection_multi_plane(
     number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -264,7 +282,11 @@ def detection_multi_plane(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="subhalo[1]_mass[total_refine]", nlive=100
+        path_prefix=path_prefix,
+        name="subhalo[1]_mass[total_refine]",
+        unique_tag=unique_tag,
+        session=session,
+        nlive=100,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -321,6 +343,8 @@ def detection_multi_plane(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="subhalo[2]_mass[total]_source_subhalo[multi_plane]",
+        unique_tag=unique_tag,
+        session=session,
         nlive=50,
         walks=5,
         facc=0.2,
@@ -382,6 +406,8 @@ def detection_multi_plane(
 
     search = af.DynestyStatic(
         name="subhalo[3]_subhalo[multi_plane_refine]",
+        unique_tag=unique_tag,
+        session=session,
         path_prefix=path_prefix,
         nlive=100,
     )
@@ -401,6 +427,8 @@ def sensitivity_mapping_imaging(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ):
     """
     The SLaM SUBHALO PIPELINE for performing sensitivity mapping to imaging data with or without a lens light
@@ -430,6 +458,9 @@ def sensitivity_mapping_imaging(
     number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -606,6 +637,8 @@ def sensitivity_mapping_interferometer(
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     number_of_cores: int = 1,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ):
     """
     The SLaM SUBHALO PIPELINE for performing sensitivity mapping to imaging data with or without a lens light
@@ -634,6 +667,9 @@ def sensitivity_mapping_interferometer(
     number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """

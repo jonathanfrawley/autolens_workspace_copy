@@ -47,6 +47,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_1_non_linear_search",
+    unique_tag=dataset_name,
     nlive=40,
 )
 
@@ -87,8 +88,7 @@ print(result.samples.log_likelihoods[99])
 """
 __Workspace__
 
-However, we are not going into any more detail on the result variable in this tutorial, or in the **HowToLens** 
-lectures.
+We are not going into any more detail on the result variable in this tutorial, or in the **HowToLens**  lectures.
 
 A comprehensive description of the results can be found at the following script:
 
@@ -105,49 +105,22 @@ individually using a search, producing a large library of results on your hard d
 directories to navigate, and at some point there will simply be too many results for it to be an efficient use of your 
 time to analyse the results by sifting through the outputs on your hard disk one-by-one.
 
-**PyAutoLens**'s database tools solve this problem, by making it possible for us to load results from hard-disk to a 
-Python script or Jupyter notebook. All we have to do is point the database to the directory containing the results we 
-want to load, for example the results of every search performed in this chapter:
-"""
-# from autofit.database.aggregator import Aggregator
-#
-# database_file = path.join("output", "howtolens", "chapter_2", "database.sqlite")
-#
-# if path.isfile(database_file):
-#     os.remove(database_file)
-#
-# agg = Aggregator.from_database(path.join(database_file))
-# agg.add_directory(path.join("output", "howtolens", "chapter_2"))
+**PyAutoLens**'s database tools solve this problem, by making it possible for us to write the results to a .sqlite 
+database file and load the results from hard-disk to a Python script or Jupyter notebook. This database supports
+advanced queries, so specific results can be loaded and inspected.
 
-agg = af.Aggregator(directory=path.join("output", "howtolens", "chapter_2"))
-
-"""
-We can use the name of a search to load a specific set of results, for example those of just tutorial 1.
-"""
-agg = agg.filter(agg.directory.contains("tutorial_1_non_linear_search"))
-
-"""
-We can now use the `Aggregator` to get specific results from this search, for example the `Samples` object which 
-contains the maximum likelihood model.
-"""
-samples = list(agg.values("samples"))
-
-"""
-From here, we can inspect results as we please, for example printing the maximum log likelihood model of the search.
-"""
-print(samples[0].max_log_likelihood_vector)
-
-"""
-Again, we won't go into any more detail on the aggregator in this tutorial. For those of you modeling large samples of
-lenses for who the tool will prove useful, checkout the full set of database tutorials which can be found at the 
-location `autolens_workspace/notebooks/database`. 
+We won't go into any more detail on the database in this tutorial. If you think the database will be useful, checkout 
+the full set of database tutorials which can be found in the folder `autolens_workspace/notebooks/database`. 
 
 Here, you'll learn how to:
 
- - Use the database to query for results which fit a certain lens model or give a certani result. 
+ - Use the database to query for results which fit a certain lens model or give a certan result. 
+ 
  - Use the `Samples` to produce many different results from the fit, including error estimates on parameters and 
  plots of the probability density function of parameters in 1D and 2D.
+ 
  - Visualize results, for example the fit to a lens dataset.
+
 
 __Wrap Up__
 

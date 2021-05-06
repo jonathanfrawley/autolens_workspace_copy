@@ -17,6 +17,8 @@ def no_lens_light(
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
     mass_centre: Optional[Tuple[float, float]] = None,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SlaM SOURCE PARAMETRIC PIPELINE for fitting imaging data without a lens light component.
@@ -51,6 +53,9 @@ def no_lens_light(
     mass_centre
         If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -82,6 +87,8 @@ def no_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[1]_mass[total]_source[parametric]",
+        unique_tag=unique_tag,
+        session=session,
         nlive=200,
         walks=10,
     )
@@ -122,6 +129,8 @@ def with_lens_light(
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
     mass_centre: Optional[Tuple[float, float]] = None,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SlaM SOURCE PARAMETRIC PIPELINE for fitting imaging data with a lens light component.
@@ -166,6 +175,9 @@ def with_lens_light(
     mass_centre : (float, float)
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -190,7 +202,11 @@ def with_lens_light(
     model = af.Collection(galaxies=af.Collection(lens=lens))
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="source_parametric[1]_light[parametric]", nlive=75
+        path_prefix=path_prefix,
+        name="source_parametric[1]_light[parametric]",
+        unique_tag=unique_tag,
+        session=session,
+        nlive=75,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -234,6 +250,8 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[2]_light[fixed]_mass[total]_source[parametric]",
+        unique_tag=unique_tag,
+        session=session,
         nlive=200,
         walks=10,
     )
@@ -277,6 +295,8 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="source_parametric[3]_light[parametric]_mass[total]_source[parametric]",
+        unique_tag=unique_tag,
+        session=session,
         nlive=100,
     )
 

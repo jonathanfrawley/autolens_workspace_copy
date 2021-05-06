@@ -18,6 +18,8 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__Dataset Paths__
+
 The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
 gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
 
@@ -36,6 +38,8 @@ The path where the dataset will be output, which in this case is:
 dataset_path = path.join("dataset", dataset_type, dataset_label, dataset_name)
 
 """
+__Simulate__
+
 For simulating an image of a strong lens, we recommend using a Grid2DIterate object. This represents a grid of (y,x) 
 coordinates like an ordinary Grid2D, but when the light-profile`s image is evaluated below (using the Tracer) the 
 sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) until the input fractional accuracy of 
@@ -64,6 +68,8 @@ simulator = al.SimulatorImaging(
 )
 
 """
+__Ray Tracing__
+
 Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (x2 elliptical Sersics) for this simulated lens.
 
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
@@ -132,6 +138,8 @@ imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
 imaging_plotter.subplot_imaging()
 
 """
+__Output__
+
 Output the simulated dataset to the dataset path as .fits files.
 """
 imaging.output_to_fits(

@@ -28,10 +28,7 @@ import matplotlib.pyplot as plt
 """
 First, set up the aggregator as we did in the previous tutorial.
 """
-# from autofit.database.aggregator import Aggregator
-# database_file = path.join("output", "database", "database.sqlite")
-# agg = Aggregator.from_database(path.join(database_file))
-agg = af.Aggregator(directory=path.join("output", "database"))
+agg = af.Aggregator.from_database("database.sqlite")
 
 """
 Next, lets create a list of instances of the maximum log likelihood models of each fit.

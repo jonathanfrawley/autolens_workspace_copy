@@ -100,7 +100,9 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search = af.DynestyStatic(path_prefix=path_prefix, name="search[1]__sie", nlive=50)
+search = af.DynestyStatic(
+    path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, nlive=50
+)
 
 analysis = al.AnalysisImaging(dataset=imaging)
 
@@ -153,7 +155,10 @@ You may wish to inspect the `model.info` file of the search 2 model-fit to ensur
 well as the checkout the results to ensure an accurate power-law mass model is inferred.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__power_law", nlive=75
+    path_prefix=path_prefix,
+    name="search[2]__power_law",
+    unique_tag=dataset_name,
+    nlive=75,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)

@@ -26,7 +26,7 @@ __Dataset + Masking__
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+    shape_native=(151, 151), pixel_scales=0.05, radius=3.0
 )
 
 dataset_name = "mass_sie__source_sersic"
@@ -44,13 +44,14 @@ interferometer = interferometer.apply_settings(
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 """
 __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("interferometer", "pipelines", dataset_name)
+path_prefix = path.join("interferometer", "pipelines")
 
 """
 __Redshifts__
@@ -82,7 +83,10 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]_mass[sie]_source[parametric]", nlive=50
+    path_prefix=path_prefix,
+    name="search[1]_mass[sie]_source[parametric]",
+    unique_tag=dataset_name,
+    nlive=50,
 )
 
 analysis = al.AnalysisInterferometer(dataset=interferometer)
@@ -120,7 +124,10 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]_mass[total]_source[parametric]", nlive=100
+    path_prefix=path_prefix,
+    name="search[2]_mass[total]_source[parametric]",
+    unique_tag=dataset_name,
+    nlive=100,
 )
 
 analysis = al.AnalysisInterferometer(dataset=interferometer)

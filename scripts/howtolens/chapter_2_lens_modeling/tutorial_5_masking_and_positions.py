@@ -93,6 +93,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_5_with_custom_mask",
+    unique_tag=dataset_name,
     nlive=40,
     number_of_cores=1,
 )
@@ -195,6 +196,7 @@ analysis = al.AnalysisImaging(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_5_with_positions",
+    unique_tag=dataset_name,
     nlive=40,
     number_of_cores=1,
 )

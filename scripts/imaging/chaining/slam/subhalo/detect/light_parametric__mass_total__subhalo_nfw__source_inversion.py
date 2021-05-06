@@ -72,7 +72,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", dataset_name)
+path_prefix = path.join("imaging", "slam")
 
 """
 __Redshifts__
@@ -119,6 +119,7 @@ disk.centre = (0.0, 0.0)
 
 source_parametric_results = slam.source_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     lens_bulge=bulge,
@@ -148,7 +149,11 @@ __Settings__:
  - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
  in `chaining/examples/parametric_to_inversion.py`) to remove unphysical solutions from the `Inversion` model-fitting.
 """
-settings_lens = al.SettingsLens(positions_threshold=0.2)
+settings_lens = al.SettingsLens(
+    positions_threshold=source_parametric_results.last.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
+)
 
 analysis = al.AnalysisImaging(
     dataset=imaging,
@@ -158,6 +163,7 @@ analysis = al.AnalysisImaging(
 
 source_inversion_results = slam.source_inversion.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_parametric_results=source_parametric_results,
@@ -200,6 +206,7 @@ bulge.centre = disk.centre
 
 light_results = slam.light_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,
@@ -252,6 +259,7 @@ analysis = al.AnalysisImaging(
 
 mass_results = slam.mass_total.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,
@@ -301,6 +309,7 @@ analysis = al.AnalysisImaging(
 
 subhalo_results = slam.subhalo.detection_single_plane(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     mass_results=mass_results,

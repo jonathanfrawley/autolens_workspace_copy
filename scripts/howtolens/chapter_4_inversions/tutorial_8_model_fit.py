@@ -76,6 +76,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_4"),
     name="search[1]_mass[sie]_source[parametric]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -123,6 +124,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_4"),
     name="search[2]_mass[sie]_source[inversion_initialization]",
+    unique_tag=dataset_name,
     nlive=20,
 )
 
@@ -169,6 +171,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_4"),
     name="search[3]_mass[sie]_source[inversion]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

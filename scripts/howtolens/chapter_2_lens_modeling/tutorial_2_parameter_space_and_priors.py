@@ -189,10 +189,25 @@ which may hurt the general performance of your computer.
 You should experiment to figure out the highest value which does not give a noticeable loss in performance of your 
 computer. If you know that your processor is a quad-core process you should be able to use `number_of_cores=4`, 
 and even higher end processors can potentially use even higher values.
+
+__Unique Identifier__
+
+In the previous tutorial, we discussed how a unique tag is generated based on the model fitted and search used. When
+fitting a single dataset this tag is sufficient, however in the future we may want to fit multiple datasets with
+the same model using the same search. 
+
+We can make the unique identifier use the name of the dataset as an additional criteria to generate the unique string, 
+by passing the `dataset_name` to the `unique_tag` of the search, as shown below. This is good practise in general
+and is something we will always adopt when performing model-fits from here on.
+
+The unique tag also places an additional folder after the `path_prefix`. Although this is not necessary to keep results
+separate (as each model-fit has its own unique tag) it makes the results more readable in the output folder, as you
+can see which data each model was fitted too.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_2_custom_priors",
+    unique_tag=dataset_name,
     nlive=40,
     number_of_cores=1,
 )

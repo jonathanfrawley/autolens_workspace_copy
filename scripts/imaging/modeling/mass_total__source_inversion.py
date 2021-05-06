@@ -13,6 +13,10 @@ this reconstruction to be smooth. This uses `Pixelization` and `Regularization` 
 use their simplest forms, a `Rectangular` `Pixelization` and `Constant` `Regularization`.scheme.
 
 Inversions are covered in detail in chapter 4 of the **HowToLens** lectures.
+
+__A NOTE OF CAUTION__
+
+A common issue with `Inversions` is that they...
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -125,13 +129,18 @@ __Unique Identifier__
 In the path above, the `unique_identifier` appears as a collection of characters, where this identifier is generated 
 based on the model, search and dataset that are used in the fit.
  
-An identical combination of model, search and dataset generates the same identifier, meaning that rerunning the
-script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
-a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder. 
+An identical combination of model and search generates the same identifier, meaning that rerunning the script will use 
+the existing results to resume the model-fit. In contrast, if you change the model or search, a new unique identifier 
+will be generated, ensuring that the model-fit results are output into a separate folder.
+
+We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
+with the same model and search results are output to a different folder. We achieve this below by passing 
+the `dataset_name` to the search's `unique_tag`.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "modeling", dataset_name),
+    path_prefix=path.join("imaging", "modeling"),
     name="mass[sie]_source[inversion]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

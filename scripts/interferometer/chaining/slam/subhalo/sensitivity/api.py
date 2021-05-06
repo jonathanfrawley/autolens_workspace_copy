@@ -47,7 +47,7 @@ __Dataset + Masking__
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+    shape_native=(151, 151), pixel_scales=0.05, radius=3.0
 )
 
 dataset_name = "mass_sie__source_sersic"
@@ -83,8 +83,9 @@ base_model = af.Collection(
 )
 
 search_base = af.DynestyStatic(
-    path_prefix=path.join("interferometer", "misc", dataset_name),
+    path_prefix=path.join("interferometer", "misc"),
     name="sensitivity_mapping_base",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -222,8 +223,9 @@ class AnalysisInterferometerSensitivity(al.AnalysisInterferometer):
 We next specify the search used to perform each model fit by the sensitivity mapper.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("interferometer", "misc", dataset_name),
+    path_prefix=path.join("interferometer", "misc"),
     name="sensitivity_mapping",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

@@ -67,6 +67,7 @@ demonstrate that Emcee is please let us know on the PyAutoLens Github!
 search = af.Emcee(
     path_prefix=path.join("imaging", "customize", "non_linear_searches"),
     name="emcee",
+    unique_tag=dataset_name,
     nwalkers=50,
     nsteps=1000,
 )
@@ -91,6 +92,7 @@ GitHub to know how you managed it!
 search = af.PySwarmsGlobal(
     path_prefix=path.join("imaging", "customize", "non_linear_searches"),
     name="pyswarms_global",
+    unique_tag=dataset_name,
     n_particles=50,
     iters=5000,
 )
@@ -100,6 +102,7 @@ search.fit(model=model, analysis=analysis)
 search = af.PySwarmsLocal(
     path_prefix=path.join("imaging", "customize", "non_linear_searches"),
     name="pyswarms_local",
+    unique_tag=dataset_name,
     n_particles=50,
     iters=5000,
 )

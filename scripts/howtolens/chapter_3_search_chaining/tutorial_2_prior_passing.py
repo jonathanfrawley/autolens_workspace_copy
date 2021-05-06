@@ -91,6 +91,7 @@ run it.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_1",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -167,6 +168,7 @@ that were passed.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_2_search_chaining_2",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

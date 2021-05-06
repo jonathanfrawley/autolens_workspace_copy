@@ -19,37 +19,34 @@ from os import path
 import autofit as af
 import autolens as al
 
-"""
-First, set up the aggregator as we did in the previous tutorial.
-"""
-# from autofit.database.aggregator import Aggregator
-# database_file = path.join("output", "database", "database.sqlite")
-# agg = Aggregator.from_database(path.join(database_file))
-agg = af.Aggregator(directory=path.join("output", "database"))
 
 """
-We can filter results to only include completed results. By including the `completed_only` input below, any 
-results which are in the middle of a non-linear will be omitted and not loaded in the `Aggregator`.
+First, we set up the aggregator like we did in the previous tutorial. However, we can also filter results to only 
+include completed results. By including the `completed_only` input below, any results which are in the middle of a 
+non-linear will be omitted and not loaded in the `Aggregator`.
+
+For these tutorials, we only performed 3 model-fits which ran to completion, so this does not remove any results. For
+general database use when you may have many model-fits running simultaneously, this filter can prove useful.
 """
-agg = af.Aggregator(directory=path.join("output", "database"), completed_only=True)
+agg = af.Aggregator.from_database("database.sqlite", completed_only=True)
 
 """
 We can use the `Aggregator`'s to query the database and return only specific fits that we are interested in. We first 
-do this, using the `info` object, whereby we can query any of its entries, for example the `dataset_name` string we 
-input into the model-fit above. 
+do this, using the `unique_tag` which we can query to load the results of a specific `dataset_name` string we 
+input into the model-fit's search. 
 
 By querying using the string `mass_sie__source_sersic__1` the model-fit to only the second strong lens is returned:
 """
 # Feature Missing
 # agg_query = agg.query(agg.directory.contains("mass_sie__source_sersic__1"))
 # samples_gen = agg_query.values("samples")
-agg_filter = agg.filter(agg.directory.contains("runner"))
+# agg_filter = agg.filter(agg.directory.contains("runner"))
 
 """
 As expected, this list now has only 1 MCMCSamples corresponding to the second dataset.
 """
-print("Directory Filtered NestedSampler Samples: \n")
-print("Total Samples Objects = ", len(list(agg_filter.values("samples"))), "\n\n")
+# print("Directory Filtered NestedSampler Samples: \n")
+# print("Total Samples Objects = ", len(list(agg_filter.values("samples"))), "\n\n")
 
 """
 If we query using an incorrect dataset name we get no results:
@@ -57,13 +54,13 @@ If we query using an incorrect dataset name we get no results:
 # Feature Missing
 # agg_query = agg.query(agg.directory.contains("invalid_string"))
 # samples_gen = agg_query.values("samples")
-agg_filter_incorrect = agg.filter(agg.directory.contains("invalid_string"))
-print("Incorrect Phase Name Filtered NestedSampler Samples: \n")
-print(
-    "Total Samples Objects = ",
-    len(list(agg_filter_incorrect.values("samples"))),
-    "\n\n",
-)
+# agg_filter_incorrect = agg.filter(agg.directory.contains("invalid_string"))
+# print("Incorrect Phase Name Filtered NestedSampler Samples: \n")
+# print(
+#     "Total Samples Objects = ",
+#     len(list(agg_filter_incorrect.values("samples"))),
+#     "\n\n",
+# )
 
 """
 We can also query based on the model fitted. 
@@ -78,14 +75,14 @@ of lenses efficiently load and inspect the results.
 `galaxies`, `lens` and `mass`. If the `Model` had used a different name the code below would change correspondingly. 
 Models with multiple galaxies are therefore easily accessed via the database.]
 """
-mass = agg.galaxies.lens.mass
-# agg_query = agg.query(mass == al.mp.EllIsothermal)
-# samples_gen = agg_query.values("samples")
-# print(
-#     "Total Samples Objects via `EllIsothermal` model query = ",
-#     len(list(samples_gen)),
-#     "\n",
-# )
+lens = agg.galaxies.lens
+agg_query = agg.query(lens.mass == al.mp.EllIsothermal)
+samples_gen = agg_query.values("samples")
+print(
+    "Total Samples Objects via `EllIsothermal` model query = ",
+    len(list(samples_gen)),
+    "\n",
+)
 
 """
 Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the 
@@ -93,13 +90,13 @@ inferred value of `sersic_index` for the `EllSersic` of the source's bulge is le
 the first of the three model-fits).
 """
 bulge = agg.galaxies.source.bulge
-# agg_query = agg.query(bulge.sersic_index < 3.0)
-# samples_gen = agg_query.values("samples")
-# print(
-#     "Total Samples Objects In Query `source.bulge.sersic_index < 3.0` = ",
-#     len(list(samples_gen)),
-#     "\n",
-# )
+agg_query = agg.query(bulge.sersic_index < 3.0)
+samples_gen = agg_query.values("samples")
+print(
+    "Total Samples Objects In Query `source.bulge.sersic_index < 3.0` = ",
+    len(list(samples_gen)),
+    "\n",
+)
 
 """
 Advanced queries can be constructed using logic, for example we below we combine the two queries above to find all
@@ -109,27 +106,12 @@ less than 3.0 for the source's bulge.
 The OR logical clause is also supported via the symbol |.
 """
 mass = agg.galaxies.lens.mass
-# bulge = agg.galaxies.source.bulge
-# agg_query = agg.query((mass == al.mp.EllIsothermal) & (bulge.sersic_index < 3.0))
-# samples_gen = agg_query.values("samples")
-# print(
-#     "Total Samples Objects In Query `Gaussian & sigma < 3.0` = ",
-#     len(list(samples_gen)),
-#     "\n",
-# )
-
-"""
-Old Aggregator API... delete soon.
-"""
-agg_filter_multiple = agg.filter(
-    agg.directory.contains("phase__"),
-    agg.directory.contains("dynesty"),
-    agg.directory.contains("mass_sie__source_bulge__0"),
-)
-print("Multiple Filter NestedSampler Samples: \n")
-print()
+agg_query = agg.query((mass == al.mp.EllIsothermal) & (mass.einstein_radius > 1.0))
+samples_gen = agg_query.values("samples")
 print(
-    "Total Samples Objects = ", len(list(agg_filter_multiple.values("samples"))), "\n\n"
+    "Total Samples Objects In Query `EllIsothermal and einstein_radius > 3.0` = ",
+    len(list(samples_gen)),
+    "\n",
 )
 
 """

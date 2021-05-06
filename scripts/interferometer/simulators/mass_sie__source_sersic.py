@@ -35,6 +35,8 @@ The path where the dataset will be output, which in this case is
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
+__Simulate__
+
 For simulating an image of a strong lens, we recommend using a Grid2DIterate object. This represents a grid of (y,x) 
 coordinates like an ordinary Grid2D, but when the light-profile`s image is evaluated below (using the Tracer) the 
 sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) until the input fractional accuracy of 
@@ -44,7 +46,7 @@ This ensures that the divergent and bright central regions of the source galaxy 
 total flux emitted within a pixel.
 """
 grid = al.Grid2DIterate.uniform(
-    shape_native=(151, 151), pixel_scales=0.1, fractional_accuracy=0.9999
+    shape_native=(800, 800), pixel_scales=0.05, fractional_accuracy=0.9999
 )
 
 """
@@ -72,6 +74,8 @@ simulator = al.SimulatorInterferometer(
 )
 
 """
+__Ray Tracing__
+
 Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
 
 For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
@@ -124,9 +128,13 @@ interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 Lets plot the simulated interferometer dataset before we output it to fits.
 """
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+interferometer_plotter.figures_2d(dirty_image=True)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 """
+__Output__
+
 Output the simulated dataset to the dataset path as .fits files.
 """
 interferometer.output_to_fits(
@@ -142,8 +150,11 @@ as .png files.
 """
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
-interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+interferometer_plotter = aplt.InterferometerPlotter(
+    interferometer=interferometer, mat_plot_2d=mat_plot_2d
+)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()

@@ -15,6 +15,8 @@ def no_lens_light(
     smbh: af.Model(al.mp.MassProfile) = None,
     mass_centre: Optional[Tuple[float, float]] = None,
     end_with_hyper_extension: bool = False,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SLaM MASS TOTAL PIPELINE for fitting imaging data without a lens light component.
@@ -39,6 +41,9 @@ def no_lens_light(
     end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -81,7 +86,11 @@ def no_lens_light(
     )
 
     search = af.DynestyStatic(
-        path_prefix=path_prefix, name="mass_total[1]_mass[total]_source", nlive=100
+        path_prefix=path_prefix,
+        name="mass_total[1]_mass[total]_source",
+        unique_tag=unique_tag,
+        session=session,
+        nlive=100,
     )
 
     result_1 = search.fit(model=model, analysis=analysis)
@@ -119,6 +128,8 @@ def with_lens_light(
     smbh: af.Model(al.mp.MassProfile) = None,
     mass_centre: Optional[Tuple[float, float]] = None,
     end_with_hyper_extension: bool = False,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SLaM MASS TOTAL PIPELINE for fitting imaging data with a lens light component.
@@ -145,6 +156,9 @@ def with_lens_light(
     end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -195,6 +209,8 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="mass_total[1]_light[parametric]_mass[total]_source",
+        unique_tag=unique_tag,
+        session=session,
         nlive=100,
     )
 

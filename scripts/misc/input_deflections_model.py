@@ -132,8 +132,9 @@ non-linear searches that **PyAutoLens** supports. If you do not know what a non-
 operates, checkout chapters 1 and 2 of the HowToLens lecture series.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("misc", dataset_name),
+    path_prefix=path.join("misc"),
     name="search__input_deflections",
+    unique_tag=dataset_name,
     nlive=100,
 )
 

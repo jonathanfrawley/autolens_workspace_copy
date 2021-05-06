@@ -24,7 +24,7 @@ class Scribbler:
             plt.imshow(image, interpolation="none")
         else:
             norm = cmap.norm_from_array(array=image)
-            plt.imshow(image, cmap=cmap.config_dict["cmap"], norm=norm)
+            plt.imshow(image, cmap=cmap.config_dict_search["cmap"], norm=norm)
         plt.axis([0, image.shape[1], image.shape[0], 0])
         plt.axis("off")
         if title:

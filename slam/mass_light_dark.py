@@ -19,6 +19,8 @@ def with_lens_light(
     smbh: af.Model(al.mp.MassProfile) = None,
     einstein_mass_range: Optional[Tuple[float, float]] = (0.01, 5.0),
     end_with_hyper_extension: bool = False,
+    unique_tag: Optional[str] = None,
+    session: Optional[bool] = None,
 ) -> af.ResultsCollection:
     """
     The SLaM MASS LIGHT DARK PIPELINE for fitting imaging data with a lens light component.
@@ -57,6 +59,9 @@ def with_lens_light(
     end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
         certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+    unique_tag
+        The unique tag for this model-fit, which will be given a unique entry in the sqlite database and also acts as
+        the folder after the path prefix and before the search name. This is typically the name of the dataset.
     """
 
     """
@@ -137,6 +142,8 @@ def with_lens_light(
     search = af.DynestyStatic(
         path_prefix=path_prefix,
         name="mass_light_dark[1]_light[parametric]_mass[light_dark]_source",
+        unique_tag=unique_tag,
+        session=session,
         nlive=100,
     )
 

@@ -50,7 +50,7 @@ __Dataset + Masking__
 Load the `Interferometer` data, define the visibility and real-space masks and plot them.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+    shape_native=(151, 151), pixel_scales=0.05, radius=3.0
 )
 
 dataset_name = "mass_sie__subhalo_nfw__source_sersic_x2"
@@ -68,13 +68,14 @@ interferometer = interferometer.apply_settings(
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 """
 __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("interferometer", "slam", dataset_name)
+path_prefix = path.join("interferometer", "slam")
 
 """
 __Redshifts__
@@ -115,6 +116,7 @@ analysis = al.AnalysisInterferometer(dataset=interferometer)
 
 source_parametric_results = slam.source_parametric.no_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     mass=af.Model(al.mp.EllIsothermal),
@@ -152,6 +154,7 @@ analysis = al.AnalysisInterferometer(
 
 source_inversion_results = slam.source_inversion.no_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_parametric_results=source_parametric_results,
@@ -176,6 +179,7 @@ analysis = al.AnalysisInterferometer(
 
 mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,

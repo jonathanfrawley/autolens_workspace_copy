@@ -92,6 +92,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[1]__mass[sie]__source_x1[bulge]",
+    unique_tag=dataset_name,
     nlive=40,
     dlogz=5.0,
 )
@@ -126,6 +127,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[2]_mass[sie]_source_x2[bulge]",
+    unique_tag=dataset_name,
     nlive=40,
     dlogz=5.0,
 )
@@ -161,6 +163,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[3]_mass[sie]_source_x3[bulge]",
+    unique_tag=dataset_name,
     nlive=50,
     dlogz=5.0,
 )
@@ -197,6 +200,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="search[4]_mass[sie]_source_x4[bulge]",
+    unique_tag=dataset_name,
     nlive=50,
     dlogz=0.3,
 )

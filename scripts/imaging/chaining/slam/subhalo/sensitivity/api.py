@@ -84,8 +84,9 @@ base_model = af.Collection(
 )
 
 search_base = af.DynestyStatic(
-    path_prefix=path.join("imaging", "misc", dataset_name),
+    path_prefix=path.join("imaging", "misc"),
     name="sensitivity_mapping_base",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -217,8 +218,9 @@ class AnalysisImagingSensitivity(al.AnalysisImaging):
 We next specify the search used to perform each model fit by the sensitivity mapper.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "misc", dataset_name),
+    path_prefix=path.join("imaging", "misc"),
     name="sensitivity_mapping",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

@@ -199,6 +199,7 @@ regions of parameter space, given our improved and more informed priors.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_custom_priors",
+    unique_tag=dataset_name,
     nlive=50,
     number_of_cores=1,
 )
@@ -291,6 +292,7 @@ We now create this search and run it.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_reducing_complexity",
+    unique_tag=dataset_name,
     nlive=50,
     number_of_cores=1,
 )
@@ -367,6 +369,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_4_look_harder",
+    unique_tag=dataset_name,
     nlive=200,
     walks=10,
     number_of_cores=1,

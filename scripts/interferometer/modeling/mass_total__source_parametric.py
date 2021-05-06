@@ -26,7 +26,7 @@ __Masking__
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(200, 200), pixel_scales=0.05, radius=3.0
+    shape_native=(800, 800), pixel_scales=0.05, radius=3.0
 )
 
 """
@@ -47,6 +47,7 @@ interferometer = al.Interferometer.from_fits(
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 """
 We now create the `Interferometer` object which is used to fit the lens model.
@@ -110,8 +111,9 @@ script will use the existing results to resume the model-fit. In contrast, if yo
 a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("interferometer", dataset_name),
+    path_prefix=path.join("interferometer"),
     name="mass[sie]_source[bulge]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -152,6 +154,7 @@ fit_interferometer_plotter = aplt.FitInterferometerPlotter(
     fit=result.max_log_likelihood_fit
 )
 fit_interferometer_plotter.subplot_fit_interferometer()
+fit_interferometer_plotter.subplot_fit_dirty_images()
 
 """
 Checkout `autolens_workspace/notebooks/interferometer/modeling/results.py` for a full description of the result object.

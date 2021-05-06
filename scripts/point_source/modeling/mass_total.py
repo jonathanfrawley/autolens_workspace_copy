@@ -38,7 +38,7 @@ end of the script it will be used when visualizing the results. However, the use
 optional, and if it were not included in the model-fit visualization would simple be performed using grids without
 the image.
 """
-dataset_name = "mass_sie__source_point"
+dataset_name = "mass_sie__source_point__0"
 dataset_path = path.join("dataset", "point_source", dataset_name)
 
 image = al.Array2D.from_fits(
@@ -158,8 +158,9 @@ script will use the existing results to resume the model-fit. In contrast, if yo
 a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder. 
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("point_source", dataset_name),
+    path_prefix=path.join("point_source"),
     name="mass[sie]_source[point]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

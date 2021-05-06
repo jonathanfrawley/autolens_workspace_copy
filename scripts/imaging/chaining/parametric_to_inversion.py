@@ -21,7 +21,7 @@ There are a number of benefits of chaining a parametric source model and `Invers
  - Parametric sources are computationally faster to fit. Therefore, even though the `EllSersic` has more
  parameters for the search to fit than an `Inversion`, the model-fit is faster overall.
 
- - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalizations and the source
+ - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalization_list and the source
  is reconstructed as a demagnified version of the image. (see Chapter 4, tutorial 6 for a complete description of
  this effect). This does not occur for a parametric source, therefore the mass model can be initialized using a
  parametric source, which sets up the search which fits an `Inversion` so as to not sample these unphysical solutions.
@@ -100,7 +100,10 @@ You may wish to inspect the results of the search 1 model-fit to ensure a fast n
 provides a reasonably accurate lens model.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__parametric", nlive=50
+    path_prefix=path_prefix,
+    name="search[1]__parametric",
+    unique_tag=dataset_name,
+    nlive=50,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)
@@ -166,7 +169,10 @@ __Search + Model-Fit__
 We now create the non-linear search and perform the model-fit using this model.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__inversion", nlive=40
+    path_prefix=path_prefix,
+    name="search[2]__inversion",
+    unique_tag=dataset_name,
+    nlive=40,
 )
 
 result_2 = search.fit(model=model, analysis=analysis)

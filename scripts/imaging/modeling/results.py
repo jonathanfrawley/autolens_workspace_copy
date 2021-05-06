@@ -55,8 +55,9 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "modeling", dataset_name),
+    path_prefix=path.join("imaging", "modeling"),
     name="mass[sie]_source[bulge]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

@@ -71,7 +71,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", dataset_name)
+path_prefix = path.join("imaging", "slam")
 
 """
 __Redshifts__
@@ -118,6 +118,7 @@ disk.centre = (0.0, 0.0)
 
 source_parametric_results = slam.source_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     lens_bulge=bulge,
@@ -147,12 +148,17 @@ In this example it:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS 
  PIPELINE [fixed values].
 """
+analysis = al.AnalysisImaging(
+    dataset=imaging, hyper_result=source_parametric_results.last
+)
+
 bulge = af.Model(al.lp.EllSersic)
 disk = af.Model(al.lp.EllExponential)
 bulge.centre = disk.centre
 
 light_results = slam.light_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_parametric_results,
@@ -182,6 +188,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 
 mass_results = slam.mass_total.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_parametric_results,
@@ -209,6 +216,7 @@ analysis = al.AnalysisImaging(dataset=imaging)
 
 subhalo_results = slam.subhalo.detection_single_plane(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     mass_results=mass_results,

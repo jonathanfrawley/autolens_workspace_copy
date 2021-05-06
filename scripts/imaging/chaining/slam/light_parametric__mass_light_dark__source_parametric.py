@@ -70,7 +70,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", dataset_name)
+path_prefix = path.join("imaging", "slam")
 
 """
 __Redshifts__
@@ -115,6 +115,7 @@ bulge.centre = (0.0, 0.0)
 
 source_parametric_results = slam.source_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     lens_bulge=bulge,
@@ -143,10 +144,15 @@ In this example it:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS 
  PIPELINE [fixed values].
 """
+analysis = al.AnalysisImaging(
+    dataset=imaging, hyper_result=source_parametric_results.last
+)
+
 bulge = af.Model(al.lp.EllSersic)
 
 light_results = slam.light_parametric.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_parametric_results,
@@ -182,6 +188,7 @@ dark.centre = lens_bulge.centre
 
 mass_results = slam.mass_light_dark.with_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_parametric_results,

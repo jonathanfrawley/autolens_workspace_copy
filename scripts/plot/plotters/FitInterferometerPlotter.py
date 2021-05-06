@@ -84,6 +84,25 @@ The `FitInterferometerPlotter` may also plot a subplot of these attributes.
 fit_interferometer_plotter.subplot_fit_interferometer()
 
 """
+The dirty images of the interferometer fit can also be plotted, which use the transformer of the interferometer 
+to map the visibilities, noise-map, residual-map or other quantitiy to a real-space image.
+
+Bare in mind the fit itself uses the visibilities and not the dirty images, so these images do not provide a direct
+visualization of the fit itself. However, they are easier to inspect than the fits plotted above which are in Fourier
+space and make it more straight forward to determine if an unphysical lens model is being fitted.
+"""
+fit_interferometer_plotter.figures_2d(
+    dirty_image=True,
+    dirty_noise_map=True,
+    dirty_signal_to_noise_map=True,
+    dirty_model_image=True,
+    dirty_residual_map=True,
+    dirty_normalized_residual_map=True,
+    dirty_chi_squared_map=True,
+)
+fit_interferometer_plotter.subplot_fit_dirty_images()
+
+"""
 It can plot of the image of an input plane, where this image is the real-space image of the `Tracer`.
 """
 fit_interferometer_plotter.figures_2d(image=True)

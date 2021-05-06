@@ -125,7 +125,10 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="hyper[1]_light[parametric]", nlive=50
+    path_prefix=path_prefix,
+    name="hyper[1]_light[parametric]",
+    unique_tag=dataset_name,
+    nlive=50,
 )
 
 result_1 = search.fit(model=model, analysis=analysis)
@@ -147,6 +150,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[2]_light[fixed]_mass[sie]_source[parametric]",
+    unique_tag=dataset_name,
     nlive=75,
 )
 
@@ -173,6 +177,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[3]_light[parametric]_mass[total]_source[parametric]",
+    unique_tag=dataset_name,
     nlive=100,
 )
 
@@ -260,6 +265,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[4]_light[fixed]_mass[fixed]_source[inversion_initialization]",
+    unique_tag=dataset_name,
     nlive=20,
 )
 
@@ -291,6 +297,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[5]_light[fixed]_mass[total]_source[inversion_magnification]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -319,6 +326,7 @@ analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5)
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[6]_light[fixed]_mass[fixed]_source[inversion_initialization]",
+    unique_tag=dataset_name,
     nlive=30,
     dlogz=setup_hyper.dlogz,
     sample="rstagger",
@@ -379,6 +387,7 @@ analysis = al.AnalysisImaging(dataset=imaging, hyper_result=result_5, preloads=p
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[7]_light[fixed]_mass[total]_source[inversion]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -448,6 +457,7 @@ analysis = al.AnalysisImaging(
 search = af.DynestyStatic(
     path_prefix=path_prefix,
     name="hyper[8]_light[parametric]_mass[total]_source[inversion]",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

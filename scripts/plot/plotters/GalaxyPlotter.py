@@ -49,14 +49,25 @@ We now pass the galaxy and grid to a `GalaxyPlotter` and call various `figure_*`
 plot different attributes.
 """
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy, grid=grid)
-galaxy_plotter.figures_2d(
-    image=True,
-    convergence=True,
-    potential=False,
-    deflections_y=True,
-    deflections_x=True,
-    magnification=True,
-)
+# galaxy_plotter.figures_2d(
+#     image=True,
+#     convergence=True,
+#     potential=False,
+#     deflections_y=True,
+#     deflections_x=True,
+#     magnification=True,
+# )
+# galaxy_plotter.figures_1d(image=True, convergence=True, potential=True)
+
+"""
+We can plot decomposed 1D profiles, which display a property of the galaxy in addition to those of its individual light 
+and mass profiles. 
+
+For the 1D plot of each profile, the 1D grid of (x) coordinates is centred on the profile and aligned with the 
+major-axis. This means that if the galaxy consists of multiple profiles with different centres or angles the 1D plots 
+are defined in a common way and appear aligned on the figure.
+"""
+galaxy_plotter.figures_1d_decomposed(image=True, convergence=True, potential=True)
 
 """
 The `GalaxyPlotter` also has subplot method that plot each individual `Profile` in 2D as well as a 1D plot showing all

@@ -22,10 +22,7 @@ import autolens.plot as aplt
 """
 First, set up the aggregator as we did in the previous tutorial.
 """
-# from autofit.database.aggregator import Aggregator
-# database_file = path.join("output", "database", "database.sqlite")
-# agg = Aggregator.from_database(path.join(database_file))
-agg = af.Aggregator(directory=path.join("output", "database"))
+agg = af.Aggregator.from_database("database.sqlite")
 
 """
 We can also use the aggregator to load the dataset of every lens our search fitted. This generator returns the 

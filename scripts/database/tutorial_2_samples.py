@@ -1,5 +1,5 @@
 """
-Database 1: Samples
+Database 2: Samples
 ===================
 
 After fitting a large suite of strong lens data, we can use the aggregator to load the database's results. We can then
@@ -28,23 +28,10 @@ from os import path
 import autofit as af
 
 """
-We now load the results in the `output` folder into a sqlite database using the `Aggregator`. We simply point to the 
-path where we want the database to be created and add the directory `autolens_workspace/output/database`.
-
-Checkout the output folder, you should see a `database.sqlite` file which contains the model-fits to the 3 `Gaussian`
-datasets.
+First, note how the results are not contained in the `output` folder after each search completes. Instead, they are
+contained in the `database.sqlite` file, which we can load using the `Aggregator`.
 """
-# from autofit.database.aggregator import Aggregator
-#
-# database_file = path.join("output", "database", "database.sqlite")
-#
-# if path.isfile(database_file):
-#     os.remove(database_file)
-#
-# agg = Aggregator.from_database(path.join(database_file))
-# agg.add_directory(path.join("output", "database"))
-
-agg = af.Aggregator(directory=path.join("output", "database"))
+agg = af.Aggregator.from_database("database.sqlite")
 
 """
 Before using the aggregator to inspect results, let me quickly cover Python generators. A generator is an object that 

@@ -135,6 +135,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_slow",
+    unique_tag=dataset_name,
     nlive=150,
     dlogz=0.8,
 )
@@ -165,7 +166,10 @@ print(result_slow.samples.total_samples)
 Now lets run the search with fast setting, so we can compare the total number of iterations required.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("howtolens", "chapter_2"), name="tutorial_6_fast", nlive=30
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_6_fast",
+    unique_tag=dataset_name,
+    nlive=30,
 )
 
 print(
@@ -222,6 +226,7 @@ iterations is n_particles * iters. Lets try a total of 50000 iterations, a facto
 search = af.PySwarmsLocal(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_pso",
+    unique_tag=dataset_name,
     n_particles=50,
     iters=1000,
 )
@@ -267,6 +272,7 @@ but it is sill pretty successful. I've included an example run of Emcee below.
 search = af.Emcee(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_6_mcmc",
+    unique_tag=dataset_name,
     nwalkers=50,
     nsteps=1000,
 )

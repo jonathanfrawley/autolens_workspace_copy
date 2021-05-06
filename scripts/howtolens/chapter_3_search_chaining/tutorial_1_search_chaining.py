@@ -138,6 +138,7 @@ Now lets create the search and analysis.
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_1",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -271,6 +272,7 @@ faster than we are used to!
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_3"),
     name="tutorial_1_search_chaining_2",
+    unique_tag=dataset_name,
     nlive=50,
 )
 

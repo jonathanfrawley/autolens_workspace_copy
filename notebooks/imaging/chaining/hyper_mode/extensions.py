@@ -50,7 +50,7 @@ def hyper_fit(
         hyper_model=hyper_model,
         setup_hyper=setup_hyper,
         result=result,
-        analysis=analysis,
+        analysis=analysis.no_positions,
     )
 
 

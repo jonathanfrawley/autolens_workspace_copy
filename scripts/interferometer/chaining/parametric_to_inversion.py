@@ -21,7 +21,7 @@ There are a number of benefits of chaining a parametric source model and `Invers
  - Parametric sources are computationally faster to fit. Therefore, even though the `EllSersic` has more
  parameters for the search to fit than an `Inversion`, the model-fit is faster overall.
 
- - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalizations and the source
+ - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalization_list and the source
  is reconstructed as a demagnified version of the image. (see Chapter 4, tutorial 6 for a complete description of
  this effect). This does not occur for a parametric source, therefore the mass model can be initialized using a
  parametric source, which sets up the search which fits an `Inversion` so as to not sample these unphysical solutions.
@@ -67,6 +67,7 @@ interferometer = interferometer.apply_settings(
 
 interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
 interferometer_plotter.subplot_interferometer()
+interferometer_plotter.subplot_dirty_images()
 
 """
 __Model (Search 1)__
@@ -94,6 +95,7 @@ provides a reasonably accurate lens model.
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_inversion"),
     name="search[1]__parametric",
+    unique_tag=dataset_name,
     nlive=50,
 )
 
@@ -145,10 +147,16 @@ This threshold is multiplied by the `auto_positions_factor` to ensure it is not 
 plausible mass models). If, after this multiplication, the threshold is below the `auto_positions_minimum_threshold`, 
 it is rounded up to this minimum value.
 """
-settings_lens = al.SettingsLens(positions_threshold=0.2)
+settings_lens = al.SettingsLens(
+    positions_threshold=result_1.positions_threshold_from(
+        factor=3.0, minimum_threshold=0.2
+    )
+)
 
 analysis = al.AnalysisInterferometer(
-    dataset=interferometer, settings_lens=settings_lens
+    dataset=interferometer,
+    positions=result_1.image_plane_multiple_image_positions,
+    settings_lens=settings_lens,
 )
 
 """
@@ -159,6 +167,7 @@ We now create the non-linear search and perform the model-fit using this model.
 search = af.DynestyStatic(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_inversion"),
     name="search[2]__inversion",
+    unique_tag=dataset_name,
     nlive=40,
 )
 

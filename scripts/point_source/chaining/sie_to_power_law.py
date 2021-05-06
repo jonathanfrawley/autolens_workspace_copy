@@ -10,6 +10,7 @@ In this script, we chain two searches to fit a `PointSourceDict` with a strong l
 The two searches break down as follows:
 
  1) Models the lens galaxy's mass as an `EllIsothermal` and the source galaxy's as a point `PointSource`.
+
  2) Models the lens galaxy's mass an an `EllPowerLaw` and the source galaxy's as a point `PointSource`.
 
 __Why Chain?__
@@ -48,7 +49,7 @@ __Dataset__
 
 Load and plot the `Imaging` of the point-source dataset, purely for visualization of the strong lens.
 """
-dataset_name = "mass_sie__source_point"
+dataset_name = "mass_sie__source_point__0"
 dataset_path = path.join("dataset", "point_source", dataset_name)
 
 image = al.Array2D.from_fits(
@@ -116,7 +117,9 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search = af.DynestyStatic(path_prefix=path_prefix, name="search[1]__sie", nlive=50)
+search = af.DynestyStatic(
+    path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, nlive=50
+)
 
 analysis = al.AnalysisPointSource(
     point_source_dict=point_source_dict, solver=positions_solver
@@ -169,7 +172,10 @@ You may wish to inspect the `model.info` file of the search 2 model-fit to ensur
 well as the checkout the results to ensure an accurate power-law mass model is inferred.
 """
 search = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__power_law", nlive=75
+    path_prefix=path_prefix,
+    name="search[2]__power_law",
+    unique_tag=dataset_name,
+    nlive=75,
 )
 
 analysis = al.AnalysisPointSource(

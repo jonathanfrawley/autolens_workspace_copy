@@ -69,7 +69,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "slam", dataset_name)
+path_prefix = path.join("imaging", "slam")
 
 """
 __Redshifts__
@@ -151,6 +151,7 @@ analysis = al.AnalysisImaging(
 
 source_inversion_results = slam.source_inversion.no_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_parametric_results=source_parametric_results,
@@ -204,6 +205,7 @@ analysis = al.AnalysisImaging(
 
 mass_results = slam.mass_total.no_lens_light(
     path_prefix=path_prefix,
+    unique_tag=dataset_name,
     analysis=analysis,
     setup_hyper=setup_hyper,
     source_results=source_inversion_results,

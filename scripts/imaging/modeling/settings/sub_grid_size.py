@@ -75,7 +75,9 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.EllSersic)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "settings"), name="sub_grid_size"
+    path_prefix=path.join("imaging", "settings"),
+    name="sub_grid_size",
+    unique_tag=dataset_name,
 )
 
 analysis = al.AnalysisImaging(dataset=imaging)

@@ -93,6 +93,7 @@ model = af.Collection(
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_3_realism_and_complexity",
+    unique_tag=dataset_name,
     nlive=80,
     number_of_cores=1,
 )
@@ -147,6 +148,7 @@ probability of getting close the global maxima, meaning it converges on a local 
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
     name="tutorial_3_realism_and_complexity__local_maxima",
+    unique_tag=dataset_name,
     nlive=5,
     number_of_cores=1,
 )
