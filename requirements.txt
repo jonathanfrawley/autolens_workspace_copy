@@ -1,1 +1,1 @@
-autolens==1.15.1
+autolens==1.15.2
