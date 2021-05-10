@@ -35,34 +35,34 @@ marginalize over all other parameters.
 
 Instead, we need to compute the axis-ratio of every lens model sampled by the non-linear search and from this determine 
 the PDF of the axis-ratio. When combining the different axis-ratios we weight each value by its `weight`. For Dynesty,
-the nested sampler we fitted our aggregator sample with, this down weights the model which gave lower likelihood fits.
-For other non-linear search methods (e.g. MCMC) the weights can take on a different meaning but can still be used for
+the nested sampler we fitted our aggregator sample with, this down weight_list the model which gave lower likelihood fits.
+For other non-linear search methods (e.g. MCMC) the weight_list can take on a different meaning but can still be used for
 combining different model results.
 
 Below, we get an instance of every Dynesty sample using the `Samples`, compute that models axis-ratio, store them in a 
 list and find the weighted median value with errors.
 
-This function takes the list of axis-ratio values with their sample weights and computes the weighted mean and 
+This function takes the list of axis-ratio values with their sample weight_list and computes the weighted mean and 
 standard deviation of these values.
 """
 
 
-def weighted_mean_and_standard_deviation(values, weights):
+def weighted_mean_and_standard_deviation(values, weight_list):
     """
     Return the weighted average and standard deviation.
-    values, weights -- Numpy ndarrays with the same shape.
+    values, weight_list -- Numpy ndarrays with the same shape.
     """
     values = np.asarray(values)
-    weights = np.asarray(weights)
-    average = np.average(values, weights=weights)
+    weight_list = np.asarray(weight_list)
+    average = np.average(values, weight_list=weight_list)
     # Fast and numerically precise:
-    variance = np.average((values - average) ** 2, weights=weights)
+    variance = np.average((values - average) ** 2, weight_list=weight_list)
     return average, np.sqrt(variance)
 
 
 """
 Now, we iterate over each Samples object, using every model instance to compute its axis-ratio. We combine these 
-axis-ratios with the samples weights to give us the weighted mean axis-ratio and error.
+axis-ratios with the samples weight_list to give us the weighted mean axis-ratio and error.
 
 To do this, we again use a generator. Whislt the axis-ratio is a fairly light-weight value, and this could be
 performed using a list without crippling your comptuer`s memory, for other quantities this is not the case. Thus, for
@@ -75,11 +75,11 @@ def axis_ratio_error_from_agg_obj(agg_obj):
     samples = agg_obj.samples
 
     axis_ratios = []
-    weights = []
+    weight_list = []
 
     for sample_index in range(samples.total_accepted_samples):
 
-        weight = samples.samples[sample_index].weights
+        weight = samples.samples[sample_index].weight
 
         if weight > 1e-4:
 
@@ -90,9 +90,11 @@ def axis_ratio_error_from_agg_obj(agg_obj):
             )
 
             axis_ratios.append(axis_ratio)
-            weights.append(weight)
+            weight_list.append(weight)
 
-    return weighted_mean_and_standard_deviation(values=axis_ratios, weights=weights)
+    return weighted_mean_and_standard_deviation(
+        values=axis_ratios, weight_list=weight_list
+    )
 
 
 axis_ratio_values = list(agg.map(func=axis_ratio_error_from_agg_obj))

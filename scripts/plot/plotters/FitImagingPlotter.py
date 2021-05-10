@@ -173,7 +173,7 @@ We can even extract an `InversionPlotter` from the `FitImagingPlotter` and use i
 which will now include the caustic and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstruction=True, regularization_weights=True)
+inversion_plotter.figures_2d(reconstruction=True, regularization_weight_list=True)
 
 """
 Finish.

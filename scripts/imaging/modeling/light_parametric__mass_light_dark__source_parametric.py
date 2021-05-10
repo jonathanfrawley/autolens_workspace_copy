@@ -60,7 +60,7 @@ example we fit a lens model where:
  - The lens galaxy's light and stellar mass is a parametric `EllSersic` [8 parameters].
  
  - The lens galaxy's dark matter mass distribution is a `EllNFW` whose centre is aligned with the 
- `EllSersic` bulge of the light and stellar mass mdoel above [5 parameters].
+ `EllSersic` bulge of the light and stellar mass model above [5 parameters].
  
  - The lens mass model also includes an `ExternalShear` [2 parameters].
  
@@ -155,6 +155,7 @@ The search returns a result object, which includes:
 
  - The lens model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
+ - Information on the posterior as estimated by the `Dynesty` non-linear search. 
 """
 print(result.max_log_likelihood_instance)
 
@@ -165,6 +166,9 @@ tracer_plotter.subplot_tracer()
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
+
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
 
 """
 Checkout `autolens_workspace/notebooks/imaging/modeling/results.py` for a full description of the result object.

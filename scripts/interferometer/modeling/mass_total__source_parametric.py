@@ -143,6 +143,7 @@ The search returns a result object, which includes:
 
  - The lens model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitInterferometer` objects.
+  - Information on the posterior as estimated by the `Dynesty` non-linear search.
 """
 print(result.max_log_likelihood_instance)
 
@@ -155,6 +156,9 @@ fit_interferometer_plotter = aplt.FitInterferometerPlotter(
 )
 fit_interferometer_plotter.subplot_fit_interferometer()
 fit_interferometer_plotter.subplot_fit_dirty_images()
+
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
 
 """
 Checkout `autolens_workspace/notebooks/interferometer/modeling/results.py` for a full description of the result object.

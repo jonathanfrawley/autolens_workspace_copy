@@ -44,8 +44,8 @@ To gain further insight, we can inspect the results of the previous tutorial and
 `PDF' for short. These provide a visual representation of where the non-linear search found the highest likelihood
 regions of parameter space for each parameter.
 
-Navigate to the folder `autolens_workspace/output/howtolens/tutorial_1_non_linear_search/images`
-and open the `pdf_triangle.png` figure, where:
+Navigate to the folder `autolens_workspace/output/howtolens/tutorial_1_non_linear_search/images/searches`
+and open the `cornerplot.png` figure, where:
 
  - The 1D plots of curved lines show, in one dimension, the values of each parameter that gave the highest likelihood
  solutions.

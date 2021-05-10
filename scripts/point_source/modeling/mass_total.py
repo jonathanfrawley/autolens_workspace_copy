@@ -192,6 +192,7 @@ The search returns a result object, which includes:
 
  - The lens model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` object.
+ - Information on the posterior as estimated by the `Dynesty` non-linear search.
 """
 print(result.max_log_likelihood_instance)
 
@@ -199,6 +200,9 @@ tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer, grid=result.grid
 )
 tracer_plotter.subplot_tracer()
+
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
 
 """
 Checkout `autolens_workspace/notebooks/modeling/results.py` for a full description of the result object.

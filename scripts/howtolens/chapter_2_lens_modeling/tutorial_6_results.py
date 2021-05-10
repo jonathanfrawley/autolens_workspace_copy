@@ -81,9 +81,9 @@ estimates and the error inferred for every parameter.
 """
 print(result.samples)
 print("Parameters of 100th Sample:")
-print(result.samples.parameters[99][:])
+print(result.samples.parameter_lists[99][:])
 print("Log Likelihood of 100th Sample:")
-print(result.samples.log_likelihoods[99])
+print(result.samples.log_likelihood_list[99])
 
 """
 __Workspace__

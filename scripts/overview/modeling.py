@@ -107,7 +107,7 @@ result = search.fit(model=model, analysis=analysis)
 
 """
 Whilst navigating the output folder, you may of noted the results were contained in a folder that appears as a random
-collection of charachters. 
+collection of characters. 
 
 This is the model-fit's unique identifier, which is generated based on the model, search and dataset used by the fit. 
 Fitting an identical model, search and dataset will generate the same identifier, meaning that rerunning the script 
@@ -115,7 +115,7 @@ will use the existing results to resume the model-fit. In contrast, if you chang
 unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
 
 The fit above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer`` and ``FitImaging``
-objects and which can easily be plotted.
+objects and information on the posterior estimated by Dynesty, all of which can easily be plotted.
 """
 tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer, grid=imaging.grid
@@ -125,10 +125,13 @@ tracer_plotter.subplot_tracer()
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
 
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
+
 """
 In fact, this ``Result`` object contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model.
 
-The script `autolens_workspace/examples/mdoel/result.py` contains a full description of all information contained
-in a ``Result``.
+The script `autolens_workspace/notebooks/imaging/modeling/result.py` contains a full description of all information 
+contained in a ``Result``.
 """

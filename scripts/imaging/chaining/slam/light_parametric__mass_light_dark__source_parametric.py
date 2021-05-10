@@ -171,7 +171,7 @@ initialize the model priors . In this example it:
  LIGHT PARAMETRIC PIPELINE].
 
  - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` whose centre is aligned with bulge of 
- the light and stellar mass mdoel above [5 parameters].
+ the light and stellar mass model above [5 parameters].
 
  - Uses the `EllSersic` model representing a bulge for the source's light [priors initialized from SOURCE 
  PARAMETRIC PIPELINE].

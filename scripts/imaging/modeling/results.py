@@ -96,12 +96,12 @@ The `Samples` class contains all the parameter samples, which is a list of lists
  - The inner list is the size of the number of free parameters in the fit.
 """
 print("All parameters of the very first sample")
-print(samples.parameters[0])
+print(samples.parameter_lists[0])
 print("The fourth parameter of the tenth sample")
-print(samples.parameters[9][3])
+print(samples.parameter_lists[9][3])
 
 """
-The `Samples` class contains the log likelihood, log prior, log posterior and weights of every sample, where:
+The `Samples` class contains the log likelihood, log prior, log posterior and weight_list of every sample, where:
 
    - The log likelihood is the value evaluated from the likelihood function (e.g. -0.5 * chi_squared + the noise 
      normalization).
@@ -116,10 +116,10 @@ The `Samples` class contains the log likelihood, log prior, log posterior and we
      method used in this example they are weighted as a combination of the log likelihood value and prior..
 """
 print("log(likelihood), log(prior), log(posterior) and weight of the tenth sample.")
-print(samples.log_likelihoods[9])
-print(samples.log_priors[9])
-print(samples.log_posteriors[9])
-print(samples.weights[9])
+print(samples.log_likelihood_list[9])
+print(samples.log_prior_list[9])
+print(samples.log_posterior_list[9])
+print(samples.weight_list[9])
 
 """
 The `Samples` contain the maximum log likelihood model of the fit (we actually used this when we used the 
@@ -230,24 +230,15 @@ The maximum log likelihood of each model fit and its Bayesian log evidence (esti
 algorithm) are also available.
 """
 print("Maximum Log Likelihood and Log Evidence: \n")
-print(max(samples.log_likelihoods))
+print(max(samples.log_likelihood_list))
 print(samples.log_evidence)
 
 """
-The Probability Density Functions (PDF's) of the results can be plotted using the library:
-
- corner.py: https://corner.readthedocs.io/en/latest/
-
-(In built visualization for PDF's and non-linear searches is a future feature of PyAutoFit, but for now you`ll have to 
-use the libraries yourself!).
+The Probability Density Functions (PDF's) of the results can be plotted using Dynesty's in-built visualization tools, 
+which are wrapped via the `DynestyPlotter` object.
 """
-import corner
-
-corner.corner(
-    xs=samples.parameters,
-    weights=samples.weights,
-    labels=samples.model.parameter_labels,
-)
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
 
 
 """

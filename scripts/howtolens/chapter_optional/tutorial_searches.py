@@ -1,6 +1,6 @@
 """
-Tutorial 5: Alternative Searches
-================================
+Tutorial: Alternative Searches
+==============================
 
 Up to now, we've always used the non-linear search Dynesty and not considered the input parameters that control its
 sampling. In this tutorial, we'll consider how we can change these setting to balance finding the global maxima
@@ -63,7 +63,7 @@ publication `https://arxiv.org/abs/1904.02180`.
 
 nlive:
 
-Dynesty is a `nested sampling` algorithm. As we described in tutorial 1, it throws down a set of `live points` in 
+Dynesty is a `nested sampling` algorithm. As we described in chapter 2, it throws down a set of `live points` in 
 parameter space, where each live point corresponds to a lens model with a given set of parameters. These points are
 initially distributed according to our priors, hence why tuning our priors allows us to sample parameter space faster.
  
@@ -133,8 +133,8 @@ model = af.Collection(
 )
 
 search = af.DynestyStatic(
-    path_prefix=path.join("howtolens", "chapter_2"),
-    name="tutorial_6_slow",
+    path_prefix=path.join("howtolens", "chapter_optional"),
+    name="tutorial_searches_slow",
     unique_tag=dataset_name,
     nlive=150,
     dlogz=0.8,
@@ -163,11 +163,11 @@ print("Total Dynesty Iterations (If you skip running the search, this is ~ 50000
 print(result_slow.samples.total_samples)
 
 """
-Now lets run the search with fast setting, so we can compare the total number of iterations required.
+Now lets run the search with fast settings, so we can compare the total number of iterations required.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("howtolens", "chapter_2"),
-    name="tutorial_6_fast",
+    name="tutorial_searches_fast",
     unique_tag=dataset_name,
     nlive=30,
 )
@@ -222,10 +222,52 @@ likelihood regions of parameter space are.
 Unlike Dynesty, this algorithm requires us to specify how many iterations it should perform to find the global 
 maxima solutions. Here, an iteration is the number of samples performed by every particle, so the total number of
 iterations is n_particles * iters. Lets try a total of 50000 iterations, a factor 10 less than our Dynesty runs above. 
+
+In our experience, pyswarms is ineffective at initializing a lens model and therefore needs a the initial swarm of
+particles to surround the the highest likelihood lens models. We set this starting point up below by manually inputting 
+`GaussianPriors` on every parameter, where the centre of these priors is near the true values of the simulated lens data.
+
+Given this need for a robust starting point, PySwarms is only suited to model-fits where we have this information. It may
+therefore be useful when performing lens modeling search chaining (see HowToLens chapter 3). However, even in such
+circumstances, we have found that is often unrealible and often infers a local maxima.
 """
+lens_bulge = af.Model(al.lp.EllSersic)
+lens_bulge.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+lens_bulge.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+lens_bulge.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+lens_bulge.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+lens_bulge.intensity = af.GaussianPrior(mean=1.0, sigma=0.3)
+lens_bulge.effective_radius = af.GaussianPrior(mean=0.8, sigma=0.2)
+lens_bulge.sersic_index = af.GaussianPrior(mean=4.0, sigma=1.0)
+
+mass = af.Model(al.mp.EllIsothermal)
+mass.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
+mass.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
+mass.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+mass.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+mass.einstein_radius = af.GaussianPrior(mean=1.4, sigma=0.4)
+
+shear = af.Model(al.mp.ExternalShear)
+shear.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
+shear.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
+
+bulge = af.Model(al.lp.EllSersic)
+bulge.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+bulge.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+bulge.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+bulge.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+bulge.intensity = af.GaussianPrior(mean=0.3, sigma=0.3)
+bulge.effective_radius = af.GaussianPrior(mean=0.2, sigma=0.2)
+bulge.sersic_index = af.GaussianPrior(mean=1.0, sigma=1.0)
+
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
 search = af.PySwarmsLocal(
-    path_prefix=path.join("howtolens", "chapter_2"),
-    name="tutorial_6_pso",
+    path_prefix=path.join("howtolens", "chapter_optional"),
+    name="tutorial_searches_pso",
     unique_tag=dataset_name,
     n_particles=50,
     iters=1000,
@@ -245,33 +287,94 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_pso.max_log_likelihood_f
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
-It worked, and was much faster than Dynesty!
-
-So, when should we use Dynesty and when should we use PySwarms? Its simple:
-
- - If we don't care about errors and want to get the global maxima solution as quickly as possible, we should use
-      PySwarms.
-      
- - If we want a model with robust and precise errors, we should use Dynesty.
-    
-There is one exception however, for complex models whose priors have not be well tuned or initialized by a previous 
-search, PySwarms has a tendancy to locate a local maxima. Dynesty`s slower but more complete sampling of parameter space 
-will often find the global maxima when PySwarms doesn`t. So, if you're not happy with the results PySwarms is giving, 
-it may be shrewd to bite-the-button on run-time and use Dynesty to get your initial lens model fit.
-
-In the next chapter, when we introduce pipelines, you'll note that are our general strategy to lens modeling is to
-initialize the model-fit with Dynesty, perform intermediate searches that refine the model with PySwarms and then
-end with Dynesty for robust errors. Here, we choose our non-linear searches based on what result we want!
+In our experience, the parameter spaces fitted by lens models are too complex for `PySwarms` to be used without a lot
+of user attention and care and careful setting up of the initialization priors, as shown above.
 
 __MCMC__
 
 For users familiar with Markov Chain Monte Carlo (MCMC) non-linear samplers, PyAutoFit supports the non-linear
-search *Emcee* (af.Emcee). We have found this to be less effective at lens modeling than Dynesty and PySwarms,
-but it is sill pretty successful. I've included an example run of Emcee below.
+searches `Emcee` and `Zeus`. Like PySwarms, these also need a good starting point, and are generally less effective at 
+lens modeling than Dynesty. 
+
+I've included an example runs of Emcee and Zeus below, where the model is set up using `UniformPriors` to give
+the starting point of the MCMC walkers. 
 """
+lens_bulge = af.Model(al.lp.EllSersic)
+lens_bulge.centre.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+lens_bulge.centre.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+lens_bulge.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+lens_bulge.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+lens_bulge.intensity = af.UniformPrior(lower_limit=0.5, upper_limit=1.5)
+lens_bulge.effective_radius = af.UniformPrior(lower_limit=0.2, upper_limit=1.6)
+lens_bulge.sersic_index = af.UniformPrior(lower_limit=3.0, upper_limit=5.0)
+
+
+mass = af.Model(al.mp.EllIsothermal)
+mass.centre.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+mass.centre.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+mass.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+mass.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+mass.einstein_radius = af.UniformPrior(lower_limit=1.0, upper_limit=2.0)
+
+shear = af.Model(al.mp.ExternalShear)
+shear.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
+    lower_limit=-0.1, upper_limit=0.1
+)
+shear.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
+    lower_limit=-0.1, upper_limit=0.1
+)
+
+bulge = af.Model(al.lp.EllSersic)
+bulge.centre.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+bulge.centre.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+bulge.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+bulge.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
+    lower_limit=-0.3, upper_limit=0.3
+)
+bulge.intensity = af.UniformPrior(lower_limit=0.1, upper_limit=0.5)
+bulge.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.4)
+bulge.sersic_index = af.UniformPrior(lower_limit=0.5, upper_limit=2.0)
+
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+search = af.Zeus(
+    path_prefix=path.join("howtolens", "chapter_2"),
+    name="tutorial_searches_zeus",
+    unique_tag=dataset_name,
+    nwalkers=50,
+    nsteps=1000,
+)
+
+print(
+    "Zeus has begun running - checkout the workspace/output"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+)
+
+result_zeus = search.fit(model=model, analysis=analysis)
+
+print("Zeus has finished run - you may now continue the notebook.")
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_zeus.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
+
+
 search = af.Emcee(
     path_prefix=path.join("howtolens", "chapter_2"),
-    name="tutorial_6_mcmc",
+    name="tutorial_searches_emcee",
     unique_tag=dataset_name,
     nwalkers=50,
     nsteps=1000,
@@ -283,9 +386,9 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-result_mcmc = search.fit(model=model, analysis=analysis)
+result_emcee = search.fit(model=model, analysis=analysis)
 
 print("Emcee has finished run - you may now continue the notebook.")
 
-fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_mcmc.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result_emcee.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()

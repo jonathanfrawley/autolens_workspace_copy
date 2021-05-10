@@ -78,7 +78,7 @@ inversion_plotter.figures_2d(
     residual_map=True,
     normalized_residual_map=True,
     chi_squared_map=True,
-    regularization_weights=True,
+    regularization_weight_list=True,
     interpolated_reconstruction=True,
     interpolated_errors=True,
 )

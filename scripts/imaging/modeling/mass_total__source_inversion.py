@@ -195,6 +195,7 @@ The search returns a result object, which includes:
 
  - The lens model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
+ - Information on the posterior as estimated by the `Dynesty` non-linear search.
 """
 print(result.max_log_likelihood_instance)
 
@@ -205,6 +206,9 @@ tracer_plotter.subplot_tracer()
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
+
+dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+dynesty_plotter.cornerplot()
 
 """
 Checkout `autolens_workspace/notebooks/imaging/modeling/results.py` for a full description of the result object.

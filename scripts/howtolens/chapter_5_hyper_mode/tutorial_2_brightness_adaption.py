@@ -154,7 +154,7 @@ algorithm', which is a standard algorithm for partioning data in statistics.
 
 In simple terms, this algorithm works as follows:
 
- 1) Give the KMeans algorithm a set of weighted data (e.g. these weights are determined from the hyper-image).
+ 1) Give the KMeans algorithm a set of weighted data (e.g. these weight_list are determined from the hyper-image).
     
  2) For a given number of K-clusters, this algorithm finds a set of $(y,x)$ coordinates that equally partition the 
  weighted data-set. Wherever the data has higher weighting, more clusters congregate and visa versa.

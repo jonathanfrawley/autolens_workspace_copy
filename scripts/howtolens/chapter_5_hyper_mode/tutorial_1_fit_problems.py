@@ -268,14 +268,14 @@ adding up the difference in fluxes between all source-pixels multiplied by one s
 coefficient. This means that, every single source pixel receives the same `level` of regularization, regardless of 
 whether it is reconstructing the bright central regions of the source or its faint exterior regions. 
 
-To visualize this, we are going to plot the `regularization_weights`. The `FitImagingPlotter` does not have a
+To visualize this, we are going to plot the `regularization_weight_list`. The `FitImagingPlotter` does not have a
 method that is able to plot this attribute of the `Inversion`. However, the `FitImagingPlotter` has its own 
 `InversionPlotter` which we can use to make this plot. The benefit of using this is that it inherits from the
 `FitImagingPlotter` properties like the caustics, so they appear on the figure (this would not happen if we manually 
 set up an `InversionPlotter` as we did in previous tutorials.
 """
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(regularization_weights=True)
+inversion_plotter.figures_2d(regularization_weight_list=True)
 
 """
 As you can see, all pixels are regularized with our input regularization_coefficient value of 3.6.

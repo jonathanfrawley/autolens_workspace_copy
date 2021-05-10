@@ -305,6 +305,19 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_imaging_plotter.subplot_fit_imaging()
 
 """
+The Probability Density Functions (PDF's) of the results can be plotted using Dynesty's in-built visualization 
+library, which is wrapped via the `EmceePlotter` object.
+
+The PDF shows the 1D and 2D probabilities estimated for every parameter after the model-fit. The two dimensional 
+figures can show the degeneracies between different parameters, for example how increasing the intensity $I$ of the
+source galaxy and decreasing its effective radius $R_{Eff}$ lead to similar likelihoods and probabilities.
+
+This PDF will be discussed more in the next tutorial.
+"""
+emcee_plotter = aplt.EmceePlotter(samples=result.samples)
+emcee_plotter.corner()
+
+"""
 The fit looks good and we've therefore found a model close to the one I used to simulate the image with (you can 
 confirm this yourself if you want, by comparing the inferred parameters to those found in the script
 `autolens_workspace/notebooks/imaging/simulators/no_lens_light/mass_sis__source_sersic.py`).

@@ -101,7 +101,7 @@ Okay, so the inversion`s fit looks just like it did in the previous tutorials. L
 the effective regularization weight of each source pixel is our input coefficient value of 3.3.
 """
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(regularization_weights=True)
+inversion_plotter.figures_2d(regularization_weight_list=True)
 
 """
 __Adaptive Regularization__
@@ -125,7 +125,7 @@ fit = fit_imaging_with_source_galaxy(
 )
 
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstruction=True, regularization_weights=True)
+inversion_plotter.figures_2d(reconstruction=True, regularization_weight_list=True)
 
 """
 So, as expected, we now have a variable regularization scheme. The regularization of the source's brightest regions 
@@ -210,7 +210,7 @@ fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
 
 inversion_plotter = fit_imaging_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstruction=True, regularization_weights=True)
+inversion_plotter.figures_2d(reconstruction=True, regularization_weight_list=True)
 
 print("Evidence using adaptive regularization. ", fit.log_evidence)
 

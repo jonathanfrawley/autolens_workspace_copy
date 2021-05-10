@@ -226,7 +226,7 @@ initialize the model priors . In this example it:
  light and its stellar mass [12 parameters: fixed from LIGHT PARAMETRIC PIPELINE].
 
  - The lens galaxy's dark matter mass distribution is a `EllNFWMCRLudlow` whose centre is aligned with bulge of 
- the light and stellar mass mdoel above [5 parameters].
+ the light and stellar mass model above [5 parameters].
 
  - Uses an `Inversion` for the source's light [priors fixed from SOURCE INVERSION PIPELINE].
 

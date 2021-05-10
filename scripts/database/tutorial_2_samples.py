@@ -26,6 +26,7 @@ likely already encountered when analysing the results of a model-fit. Neverthele
 import os
 from os import path
 import autofit as af
+import autolens.plot as aplt
 
 """
 First, note how the results are not contained in the `output` folder after each search completes. Instead, they are
@@ -72,9 +73,9 @@ The `Samples` class contains all the parameter samples, which is a list of lists
 for samples in agg.values("samples"):
 
     print("All parameters of the very first sample")
-    print(samples.parameters[0])
+    print(samples.parameter_lists[0])
     print("The third parameter of the tenth sample")
-    print(samples.parameters[9][2])
+    print(samples.parameter_lists[9][2])
 
 print("Samples: \n")
 print(agg.values("samples"))
@@ -82,7 +83,7 @@ print()
 print("Total Samples Objects = ", len(list(agg.values("samples"))), "\n")
 
 """
-The `Samples` class contains the log likelihood, log prior, log posterior and weights of every sample, where:
+The `Samples` class contains the log likelihood, log prior, log posterior and weight_list of every sample, where:
 
  - The log likelihood is the value evaluated from the likelihood function (e.g. -0.5 * chi_squared + the noise  
  normalization).
@@ -98,10 +99,10 @@ The `Samples` class contains the log likelihood, log prior, log posterior and we
 """
 for samples in agg.values("samples"):
     print("log(likelihood), log(prior), log(posterior) and weight of the tenth sample.")
-    print(samples.log_likelihoods[9])
-    print(samples.log_priors[9])
-    print(samples.log_posteriors[9])
-    print(samples.weights[9])
+    print(samples.log_likelihood_list[9])
+    print(samples.log_prior_list[9])
+    print(samples.log_posterior_list[9])
+    print(samples.weight_list[9])
 
 """
 We can use the outputs to create a list of the maximum log likelihood model of each fit to our three images.
@@ -234,7 +235,7 @@ the aggregator for images that we fit with many different models and many differ
 the evidences allows us to perform Bayesian model comparison!
 """
 print("Maximum Log Likelihoods and Log Evidences: \n")
-print([max(samps.log_likelihoods) for samps in agg.values("samples")])
+print([max(samps.log_likelihood_list) for samps in agg.values("samples")])
 print([samps.log_evidence for samps in agg.values("samples")])
 
 """
@@ -246,24 +247,13 @@ print("Model Results Summary: \n")
 print(results, "\n")
 
 """
-The Probability Density Functions (PDF's) of the results can be plotted using the library:
-
- corner.py: https://corner.readthedocs.io/en/latest/
-
-(In built visualization for PDF's and non-linear searches is a future feature of PyAutoFit, but for now you`ll have to 
-use the libraries yourself!).
-
-(uncomment the code below to make a corner.py plot.)
+The Probability Density Functions (PDF's) of the every model-fit can be plotted using Dynesty's in-built visualization 
+tools, which are wrapped via the `DynestyPlotter` object.
 """
-# import corner
-#
-# for samples in agg.values("samples"):
-#
-#     corner.corner(
-#         xs=samples.parameters,
-#         weights=samples.weights,
-#         labels=samples.model.parameter_labels,
-#     )
+for samples in agg.values("samples"):
+
+    dynesty_plotter = aplt.DynestyPlotter(samples=samples)
+    dynesty_plotter.cornerplot()
 
 """
 Finished.
